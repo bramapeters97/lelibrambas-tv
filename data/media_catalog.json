@@ -86,7 +86,7 @@
     "year": 2006,
     "description": "Somewhere between campsite routines, Spanish sunshine and absolutely no need to know what day it is, Mas Patoxas became home for a little while. This is summer 2006 exactly as it should be remembered.",
     "category": "VAKANTIEFILMS",
-    "poster_url": "artwork/generic_cinema_2.png",
+    "poster_url": "artwork/mas_patoxas_spain.png",
     "stream_video_id": "http://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/e01c167f8edda1cb540db2771ee1a6f5/watch"
   },
   {
@@ -122,7 +122,7 @@
     "year": 2007,
     "description": "Swap swimwear for ski gear: Val Thorens takes the family archive high into the French Alps. Snow, speed and just enough confidence to make pointing a camera downhill seem like a perfectly sensible idea.",
     "category": "VAKANTIEFILMS",
-    "poster_url": "artwork/generic_cinema_2.png",
+    "poster_url": "artwork/val_thorens_france.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/3418b6888d1256a94c8f8820c8e400a6/watch"
   },
   {
@@ -347,7 +347,7 @@
     "year": 2015,
     "description": "Meet Doortje and Guusje: two names, twice the personality and apparently enough material to earn their own title in the archive. Some duos simply refuse to remain supporting characters.",
     "category": "OTHERS",
-    "poster_url": "artwork/generic_cinema_2.png",
+    "poster_url": "artwork/doortje_guusje.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/00b824031502ad91c99a67d1319b701d/watch"
   }
 ]
