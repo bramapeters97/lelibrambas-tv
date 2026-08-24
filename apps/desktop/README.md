@@ -1,4 +1,4 @@
-# LeliBramBas+ desktop shell
+# LELIBRAMBAS+ desktop shell
 
 This workspace wraps the TV web build in a deliberately small Electron process. The renderer remains the same Vite/React TV application in development and production; Electron does not own a second UI implementation.
 

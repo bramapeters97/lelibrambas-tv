@@ -192,7 +192,7 @@ function ensureWorkspacePackageLinks() {
 const [major, minor] = process.versions.node.split('.').map(Number);
 if (major < 22 || major >= 25 || (major === 22 && minor < 13)) {
   throw new Error(
-    'LeliBramBas+ requires Node.js 22.13 or newer, up to Node 24. Node 24 LTS is recommended.',
+    'LELIBRAMBAS+ requires Node.js 22.13 or newer, up to Node 24. Node 24 LTS is recommended.',
   );
 }
 
@@ -278,4 +278,4 @@ if (demoMediaMarkers.some((marker) => !existsSync(marker))) {
   console.log('[setup] Reusing the existing synthetic demo media.');
 }
 rmSync(runtime.cache, { recursive: true, force: true });
-console.log(`LeliBramBas+ setup is complete. Runtime files: ${runtime.home}`);
+console.log(`LELIBRAMBAS+ setup is complete. Runtime files: ${runtime.home}`);

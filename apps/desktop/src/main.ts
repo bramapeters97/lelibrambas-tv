@@ -165,7 +165,7 @@ function installSmokeProbe(window: BrowserWindow): void {
 
   window.webContents.once('did-finish-load', () => {
     const title = window.webContents.getTitle();
-    if (title !== 'LeliBramBas+') {
+    if (title !== 'LELIBRAMBAS+') {
       clearTimeout(timeout);
       console.error(`[desktop-smoke] Unexpected renderer title: ${JSON.stringify(title)}`);
       app.exit(1);
@@ -206,7 +206,7 @@ function installSmokeProbe(window: BrowserWindow): void {
 
 function createMainWindow(): BrowserWindow {
   const window = new BrowserWindow({
-    title: 'LeliBramBas+',
+    title: 'LELIBRAMBAS+',
     width: WINDOW_DEFAULTS.width,
     height: WINDOW_DEFAULTS.height,
     minWidth: WINDOW_DEFAULTS.minWidth,

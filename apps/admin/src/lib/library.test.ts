@@ -53,7 +53,7 @@ describe('library helpers', () => {
   });
 
   it('rejects unrelated JSON and falls back safely for corrupt local state', () => {
-    expect(() => parseSnapshotJson('{"hello":"world"}')).toThrow(/not a LeliBramBas\+/);
+    expect(() => parseSnapshotJson('{"hello":"world"}')).toThrow(/not a LELIBRAMBAS\+/);
     const fallback = loadStoredSnapshot({ getItem: () => '{not-json' });
     expect(fallback.videos).toHaveLength(35);
   });

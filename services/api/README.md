@@ -1,4 +1,4 @@
-# LeliBramBas+ Worker API
+# LELIBRAMBAS+ Worker API
 
 This package is a private-by-default Cloudflare Worker architecture. It uses generated binding types plus native D1, R2, and Stream bindings; it does not call Cloudflare REST APIs from the Worker. No resource has been created or deployed.
 

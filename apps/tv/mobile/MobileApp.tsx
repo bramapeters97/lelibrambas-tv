@@ -22,7 +22,7 @@ type MobileTab = 'home' | 'search' | 'collections' | 'saved';
 
 const demo = {
   title: 'Private Archive Preview',
-  subtitle: 'A short synthetic LeliBramBas+ preview',
+  subtitle: 'A short synthetic LELIBRAMBAS+ preview',
   description:
     'A warm placeholder reel for testing mobile playback without family media, real filenames or personal paths.',
 };
@@ -41,7 +41,7 @@ function pressedStyle(pressed: boolean) {
 function Wordmark() {
   return (
     <Text style={styles.wordmark} accessibilityRole="header">
-      LeliBramBas<Text style={styles.wordmarkPlus}>+</Text>
+      LELIBRAMBAS<Text style={styles.wordmarkPlus}>+</Text>
     </Text>
   );
 }

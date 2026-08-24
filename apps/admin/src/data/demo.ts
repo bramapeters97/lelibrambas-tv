@@ -442,7 +442,7 @@ export const demoRails: HomeRail[] = [
 ];
 
 export const demoSettings: AdminSettings = {
-  libraryLabel: 'LeliBramBas+ Private Archive',
+  libraryLabel: 'LELIBRAMBAS+ Private Archive',
   outputFolder: '.\\synthetic-library-output',
   concurrency: 1,
   autoGenerateArtwork: true,

@@ -1,4 +1,4 @@
-# LeliBramBas+
+# LELIBRAMBAS+
 
 Open PowerShell in the cloned repository root (the directory containing `package.json`), then run:
 

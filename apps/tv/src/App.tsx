@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import type HlsInstance from 'hls.js';
 import { installSpatialNavigation } from '@lelibrambas/navigation';
 import {
@@ -10,7 +11,7 @@ import {
   writeProgress,
 } from '@lelibrambas/shared';
 import type { Profile, VideoRecord } from '@lelibrambas/types';
-import { catalogue, collections, homeRails, profiles } from './catalogue';
+import { catalogue, collections, profiles } from './catalogue';
 import {
   CollectionsScreen,
   HubsScreen,
@@ -21,6 +22,10 @@ import {
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
 
 type Screen = 'ident' | 'profiles' | 'details' | 'player' | BrowseScreenId;
+
+type TransitionDocument = Document & {
+  startViewTransition?: (update: () => void) => { finished: Promise<void> };
+};
 
 export type PlaybackAvailability = {
   playable: boolean;
@@ -143,8 +148,8 @@ function durationLabel(video: VideoRecord): string {
 
 function Wordmark({ compact = false }: { compact?: boolean }) {
   return (
-    <div className={compact ? 'wordmark compact' : 'wordmark'} aria-label="LeliBramBas plus">
-      LeliBramBas<span>+</span>
+    <div className={compact ? 'wordmark compact' : 'wordmark'} aria-label="LELIBRAMBAS plus">
+      LELIBRAMBAS<span>+</span>
     </div>
   );
 }
@@ -176,7 +181,7 @@ function StudioIdent({ onDone }: { onDone: () => void }) {
   }, [capture]);
 
   return (
-    <main className="ident-screen" aria-label="LeliBramBas private archive ident">
+    <main className="ident-screen" aria-label="LELIBRAMBAS+ private archive ident">
       <audio ref={audioRef} src={launchJingleUrl} preload="auto" autoPlay={!capture} />
       <div className="ident-lights" aria-hidden="true">
         {Array.from({ length: 18 }, (_, index) => (
@@ -188,7 +193,7 @@ function StudioIdent({ onDone }: { onDone: () => void }) {
         <b>B</b>
       </div>
       <div className="ident-copy">
-        <h1>LeliBramBas+</h1>
+        <h1>LELIBRAMBAS+</h1>
         <p>A private family archive</p>
       </div>
     </main>
@@ -223,7 +228,7 @@ function ProfilePicker({ onSelect }: { onSelect: (profile: Profile) => void }) {
           </button>
         ))}
       </div>
-      <footer>A private LeliBramBas+ prototype with synthetic demo media</footer>
+      <footer>A private LELIBRAMBAS+ prototype with synthetic demo media</footer>
     </main>
   );
 }
@@ -285,28 +290,6 @@ function Home({
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
-  const rails = homeRails
-    .filter((rail) => rail.visible)
-    .map((rail) =>
-      rail.id === 'continue-watching'
-        ? {
-            ...rail,
-            videoIds: catalogue
-              .filter((item) => {
-                const progress = progressFor(profile, item);
-                return (
-                  playbackAvailability(item).playable && progress.seconds > 0 && !progress.completed
-                );
-              })
-              .sort(
-                (a, b) =>
-                  Date.parse(progressFor(profile, b).updatedAt) -
-                  Date.parse(progressFor(profile, a).updatedAt),
-              )
-              .map((item) => item.id),
-          }
-        : rail,
-    );
   return (
     <main className="tv-shell">
       <NavigationRail
@@ -373,67 +356,13 @@ function Home({
               >
                 <i>{String(index + 1).padStart(2, '0')}</i>
                 <span>
-                  <small>LeliBramBas+</small>
+                  <small>LELIBRAMBAS+</small>
                   <strong>{collection.title}</strong>
                 </span>
               </button>
             ))}
           </div>
         </section>
-        {rails.map((rail) => (
-          <section className="rail-section home-multi-rail" key={rail.id}>
-            <div className="rail-heading">
-              <h2>{rail.title}</h2>
-              <span>{rail.videoIds.length} records</span>
-            </div>
-            <div className="card-rail">
-              {rail.videoIds
-                .slice(0, 12)
-                .map((id) => catalogue.find((item) => item.id === id))
-                .filter((item): item is VideoRecord => Boolean(item))
-                .map((video, index) => {
-                  const progress = progressFor(profile, video);
-                  return (
-                    <button
-                      key={video.id}
-                      data-focusable
-                      data-focus-id={`card-${rail.id}-${video.id}`}
-                      className="video-card"
-                      onClick={() => onDetails(video)}
-                      style={paletteStyle(video)}
-                    >
-                      <span className="card-art">
-                        <i className="card-glow" />
-                        <small>{video.location?.toUpperCase()}</small>
-                        <b>{String(index + 1).padStart(2, '0')}</b>
-                        {video.processingStatus !== 'ready' && (
-                          <em className={`card-status status-${video.processingStatus}`}>
-                            {video.processingStatus === 'processing'
-                              ? 'Preparing'
-                              : video.processingStatus === 'failed'
-                                ? 'Needs review'
-                                : 'Catalogue only'}
-                          </em>
-                        )}
-                      </span>
-                      <span className="card-copy">
-                        <strong>{video.title}</strong>
-                        <small>
-                          {video.year ?? 'Year unknown'} - {durationLabel(video)}
-                        </small>
-                        {progress.seconds > 0 && !progress.completed && (
-                          <ProgressBar
-                            progress={progress.seconds}
-                            duration={video.durationSeconds}
-                          />
-                        )}
-                      </span>
-                    </button>
-                  );
-                })}
-            </div>
-          </section>
-        ))}
       </section>
     </main>
   );
@@ -482,7 +411,7 @@ function Details({
         ←
       </button>
       <section className="details-copy">
-        <p className="studio-line">LeliBramBas+ catalogue placeholder</p>
+        <p className="studio-line">LELIBRAMBAS+ catalogue placeholder</p>
         <h1>{video.title}</h1>
         <p className="subtitle">{video.subtitle}</p>
         <div className="metadata">
@@ -1002,11 +931,24 @@ export default function App() {
   const history = useRef<Array<{ screen: Screen; focusId: string | null }>>([]);
   const pendingFocusId = useRef<string | null>(null);
 
+  const transitionToScreen = useCallback((next: Screen) => {
+    const update = () => flushSync(() => setScreen(next));
+    const transitionDocument = document as TransitionDocument;
+    if (
+      matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !transitionDocument.startViewTransition
+    ) {
+      update();
+      return;
+    }
+    void transitionDocument.startViewTransition(update).finished.catch(() => undefined);
+  }, []);
+
   const replaceScreen = useCallback((next: Screen) => {
     screenRef.current = next;
     pendingFocusId.current = null;
-    setScreen(next);
-  }, []);
+    transitionToScreen(next);
+  }, [transitionToScreen]);
 
   const go = useCallback((next: Screen) => {
     const currentScreen = screenRef.current;
@@ -1015,8 +957,8 @@ export default function App() {
     history.current.push({ screen: currentScreen, focusId: active?.dataset.focusId ?? null });
     screenRef.current = next;
     pendingFocusId.current = null;
-    setScreen(next);
-  }, []);
+    transitionToScreen(next);
+  }, [transitionToScreen]);
 
   const back = useCallback(() => {
     const previous = history.current.pop();
@@ -1024,22 +966,22 @@ export default function App() {
     if (next === screenRef.current && !previous) return;
     screenRef.current = next;
     pendingFocusId.current = previous?.focusId ?? null;
-    setScreen(next);
-  }, []);
+    transitionToScreen(next);
+  }, [transitionToScreen]);
 
   const openProfiles = useCallback(() => {
     history.current = [];
     screenRef.current = 'profiles';
     pendingFocusId.current = null;
-    setScreen('profiles');
-  }, []);
+    transitionToScreen('profiles');
+  }, [transitionToScreen]);
 
   const replayIntro = useCallback(() => {
     history.current = [];
     screenRef.current = 'ident';
     pendingFocusId.current = null;
-    setScreen('ident');
-  }, []);
+    transitionToScreen('ident');
+  }, [transitionToScreen]);
 
   useEffect(() => installSpatialNavigation(document.body, back), [back]);
   useEffect(() => {
@@ -1081,26 +1023,40 @@ export default function App() {
     window.addEventListener('keydown', shortcut);
     return () => window.removeEventListener('keydown', shortcut);
   }, [go, screen]);
+  const transitionKey =
+    screen === 'details' || screen === 'player' ? `${screen}:${video.id}` : screen;
+  const useFallbackTransition =
+    !matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    !(document as TransitionDocument).startViewTransition;
+  const renderScreen = (content: React.ReactNode) => (
+    <div
+      className={`screen-transition${useFallbackTransition ? ' screen-transition-fallback' : ''}`}
+      data-screen={screen}
+      key={transitionKey}
+    >
+      {content}
+    </div>
+  );
   if (screen === 'ident')
-    return (
+    return renderScreen(
       <StudioIdent
         onDone={() => {
           replaceScreen('profiles');
         }}
-      />
+      />,
     );
   if (screen === 'profiles')
-    return (
+    return renderScreen(
       <ProfilePicker
         onSelect={(next) => {
           setProfile(next);
           setStored('profile-id', next.id);
           replaceScreen('home');
         }}
-      />
+      />,
     );
   if (screen === 'details')
-    return (
+    return renderScreen(
       <Details
         video={video}
         profile={profile}
@@ -1109,11 +1065,11 @@ export default function App() {
           setVideo(next);
           go('player');
         }}
-      />
+      />,
     );
   if (screen === 'player')
-    return (
-      <Player key={video.id} video={video} profile={profile} onBack={back} onPlayNext={setVideo} />
+    return renderScreen(
+      <Player video={video} profile={profile} onBack={back} onPlayNext={setVideo} />,
     );
   const onNavigate = (next: BrowseScreenId) => go(next);
   const onDetails = (next: VideoRecord) => {
@@ -1121,36 +1077,36 @@ export default function App() {
     go('details');
   };
   if (screen === 'search')
-    return (
+    return renderScreen(
       <SearchScreen
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
-      />
+      />,
     );
   if (screen === 'hubs')
-    return (
+    return renderScreen(
       <HubsScreen
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
-      />
+      />,
     );
   if (screen === 'collections')
-    return (
+    return renderScreen(
       <CollectionsScreen
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
-      />
+      />,
     );
-  return (
+  return renderScreen(
     <Home
       profile={profile}
       onNavigate={onNavigate}
@@ -1161,6 +1117,6 @@ export default function App() {
         setVideo(next);
         go('player');
       }}
-    />
+    />,
   );
 }

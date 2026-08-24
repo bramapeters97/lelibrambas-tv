@@ -50,6 +50,46 @@ body {
   overflow-x: hidden;
   background: var(--void);
 }
+.screen-transition {
+  min-height: 100vh;
+  overflow-x: clip;
+  background: var(--void);
+}
+::view-transition-group(root) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.2, 0.72, 0.18, 1);
+}
+::view-transition-old(root) {
+  animation: tv-screen-out 180ms cubic-bezier(0.4, 0, 1, 1) both;
+  transform-origin: 50% 48%;
+}
+::view-transition-new(root) {
+  animation: tv-screen-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: 50% 48%;
+}
+@keyframes tv-screen-out {
+  to {
+    opacity: 0;
+    transform: scale(1.018);
+    filter: blur(1.5px);
+  }
+}
+@keyframes tv-screen-in {
+  from {
+    opacity: 0;
+    transform: scale(0.982);
+    filter: blur(1.5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+.screen-transition-fallback {
+  animation: tv-screen-in 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: 50% 48%;
+}
 button,
 input {
   font: inherit;
@@ -1440,6 +1480,10 @@ button:focus-visible,
   .ident-lights i {
     opacity: 1;
     transform: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none !important;
   }
 }
 

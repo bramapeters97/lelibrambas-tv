@@ -246,7 +246,7 @@ function BrowseChrome({
         </header>
         {children}
         <footer className="browse-footer">
-          LeliBramBas+ - Private family archive prototype - Synthetic demo media
+          LELIBRAMBAS+ - Private family archive prototype - Synthetic demo media
         </footer>
       </section>
     </main>
@@ -313,7 +313,7 @@ export function HubsScreen({
           >
             <span className="hub-monogram">{item.code}</span>
             <i />
-            <small>LeliBramBas+</small>
+            <small>LELIBRAMBAS+</small>
             <strong>{item.title}</strong>
             <em>{item.line}</em>
           </button>

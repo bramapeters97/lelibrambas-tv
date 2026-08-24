@@ -77,7 +77,7 @@ function print(value: unknown): void {
 
 function usage(): string {
   return [
-    'LeliBramBas+ non-destructive video importer',
+    'LELIBRAMBAS+ non-destructive video importer',
     '',
     'Commands:',
     '  scan --folder <path> [--manifest <json|csv>] [--output <folder>]',

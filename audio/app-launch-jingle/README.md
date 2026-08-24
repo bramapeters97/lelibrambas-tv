@@ -1,4 +1,4 @@
-# LeliBramBas+ launch jingle
+# LELIBRAMBAS+ launch jingle
 
 This folder contains an original, synthetic app-opening sonic logo. It uses warm orchestral swells, harp-like plucks, magical glass highlights, and an uplifting add-nine resolution without quoting another service's melody.
 

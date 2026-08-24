@@ -1,6 +1,6 @@
 # Security and privacy
 
-LeliBramBas+ is private-by-design, but this repository is a prototype, not a completed security accreditation. Its public-safe fixtures are synthetic. Real media, personal paths, tokens, signing keys, device state, and cloud identifiers must stay outside Git and browser bundles.
+LELIBRAMBAS+ is private-by-design, but this repository is a prototype, not a completed security accreditation. Its public-safe fixtures are synthetic. Real media, personal paths, tokens, signing keys, device state, and cloud identifiers must stay outside Git and browser bundles.
 
 ## Trust boundaries
 

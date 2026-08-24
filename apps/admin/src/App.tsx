@@ -137,7 +137,7 @@ export default function App() {
   }, [importOpen, selectedVideo]);
 
   useEffect(() => {
-    document.title = `${viewMeta[view].title} · LeliBramBas+ Library Manager`;
+    document.title = `${viewMeta[view].title} · LELIBRAMBAS+ Library Manager`;
   }, [view]);
 
   const handleGlobalSearch = (event: React.FormEvent<HTMLFormElement>) => {
@@ -335,7 +335,7 @@ export default function App() {
           </span>
           <span>
             <strong>
-              LeliBramBas<span>+</span>
+              LELIBRAMBAS<span>+</span>
             </strong>
             <small>Library Manager</small>
           </span>

@@ -289,7 +289,7 @@ export function isLibrarySnapshot(value: unknown): value is LibrarySnapshot {
 export function parseSnapshotJson(text: string): LibrarySnapshot {
   const value: unknown = JSON.parse(text);
   if (!isLibrarySnapshot(value)) {
-    throw new Error('This JSON file is not a LeliBramBas+ library export.');
+    throw new Error('This JSON file is not a LELIBRAMBAS+ library export.');
   }
   return value;
 }

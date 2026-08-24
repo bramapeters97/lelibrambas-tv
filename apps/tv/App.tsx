@@ -35,7 +35,7 @@ function NativeTvApp() {
       <View style={styles.root}>
         <Text style={styles.eyebrow}>WHO IS WATCHING?</Text>
         <Text style={styles.logo}>
-          Lelibrambas<Text style={styles.plus}>+</Text>
+          LELIBRAMBAS<Text style={styles.plus}>+</Text>
         </Text>
         <TVFocusGuideView style={styles.row} autoFocus trapFocusLeft trapFocusRight>
           {['Bart & Astrid', 'Bram & Edvin', 'Eline & Luca'].map((name) => (

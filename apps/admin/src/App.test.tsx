@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import App from './App';
 
-describe('LeliBramBas+ Library Manager', () => {
+describe('LELIBRAMBAS+ Library Manager', () => {
   beforeEach(() => {
     window.localStorage.clear();
     window.location.hash = '#/dashboard';
@@ -12,7 +12,7 @@ describe('LeliBramBas+ Library Manager', () => {
   it('renders the deterministic archive dashboard', () => {
     render(<App />);
 
-    expect(document.querySelector('.brand-lockup strong')).toHaveTextContent('LeliBramBas+');
+    expect(document.querySelector('.brand-lockup strong')).toHaveTextContent('LELIBRAMBAS+');
     expect(screen.getByTestId('dashboard-view')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Good morning.' })).toBeInTheDocument();
     expect(screen.getByText('35', { selector: '.hero-metric strong' })).toBeInTheDocument();

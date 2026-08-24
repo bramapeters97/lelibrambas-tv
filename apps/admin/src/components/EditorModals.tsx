@@ -501,7 +501,7 @@ export function ImportModal({
             </span>
             <span>
               <strong>Import catalogue data</strong>
-              <small>Validated LeliBramBas+ JSON or CSV</small>
+              <small>Validated LELIBRAMBAS+ JSON or CSV</small>
             </span>
             <Icon name="chevron" />
           </button>

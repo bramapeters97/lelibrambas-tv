@@ -149,13 +149,13 @@ export function RailsView({ rails, videos, onUpdate, onMove }: RailsViewProps) {
           <header className="panel__header panel__header--compact">
             <div>
               <p className="eyebrow">Living-room preview</p>
-              <h3>LeliBramBas+</h3>
+              <h3>LELIBRAMBAS+</h3>
             </div>
             <span className="viewer-preview__live">Preview</span>
           </header>
           <div className="viewer-preview__screen">
             <div className="viewer-preview__hero">
-              <span>LeliBramBas+</span>
+              <span>LELIBRAMBAS+</span>
               <strong>{videos[0]?.title ?? 'Synthetic catalogue'}</strong>
               <small>JEUGDFILMS - Catalogue only</small>
             </div>

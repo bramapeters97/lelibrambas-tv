@@ -10,8 +10,8 @@ if (-not (Test-Path -LiteralPath $inputFile -PathType Leaf)) {
 }
 
 $commonMetadata = @(
-  '-metadata', 'title=LeliBramBas+ App Launch',
-  '-metadata', 'artist=LeliBramBas+',
+  '-metadata', 'title=LELIBRAMBAS+ App Launch',
+  '-metadata', 'artist=LELIBRAMBAS+',
   '-metadata', 'comment=Original synthetic app launch jingle'
 )
 

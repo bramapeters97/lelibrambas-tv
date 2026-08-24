@@ -160,13 +160,6 @@ export const collections: Collection[] = archivePlaceholderCategories.map((categ
 }));
 
 export const homeRails: HomeRail[] = [
-  {
-    id: 'all-folder-placeholders',
-    title: 'Complete private directory',
-    order: 0,
-    visible: true,
-    videoIds: catalogue.map((video) => video.id),
-  },
   ...archivePlaceholderCategories.map((category, index) => ({
     id: slugify(category.name),
     title: category.name,

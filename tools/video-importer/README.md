@@ -1,4 +1,4 @@
-# LeliBramBas+ video importer
+# LELIBRAMBAS+ video importer
 
 Use [`../../README_VIDEO_IMPORT.md`](../../README_VIDEO_IMPORT.md) for the complete Windows workflow and safe LocalAppData paths. The short `\.\imports` paths below are illustrative only and are not ignored at the project root.
 

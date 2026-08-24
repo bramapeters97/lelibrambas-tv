@@ -587,7 +587,7 @@ writeFileSync(mobilePath, createWav(16));
 const finalLoudness = integratedLoudness(left, right);
 const finalPeak = samplePeak(left, right);
 const summary = {
-  title: 'LeliBramBas+ Launch Jingle',
+  title: 'LELIBRAMBAS+ Launch Jingle',
   composition: 'Original synthetic sonic logo',
   durationSeconds: FRAME_COUNT / SAMPLE_RATE,
   sampleRateHz: SAMPLE_RATE,
