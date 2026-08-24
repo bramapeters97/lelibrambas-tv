@@ -18,6 +18,7 @@
     "start": "node scripts/start.mjs",
     "setup": "node scripts/setup.mjs",
     "dev": "node scripts/dev.mjs",
+    "build": "corepack yarn build:web",
     "dev:tv-web": "node ./node_modules/vite/bin/vite.js apps/tv --configLoader runner --host 127.0.0.1 --port 5173",
     "dev:mobile": "corepack yarn workspace @lelibrambas/tv dev:mobile",
     "dev:mobile-native": "corepack yarn workspace @lelibrambas/tv dev:mobile-native",

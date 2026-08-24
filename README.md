@@ -24,6 +24,27 @@ corepack yarn validate
 corepack yarn test:e2e
 ```
 
+## Publish the browser viewer with Cloudflare Pages
+
+Connect this repository to a Cloudflare Pages project and use these build settings once:
+
+| Setting                    | Value                         |
+| -------------------------- | ----------------------------- |
+| Production branch          | `main`                        |
+| Root directory             | Leave blank (repository root) |
+| Build command              | `corepack yarn build`         |
+| Build output directory     | `apps/tv/dist`                |
+| Build environment variable | `YARN_VERSION=1.22.22`        |
+
+The checked-in `.node-version` selects Node 24.19.0, while `YARN_VERSION` and the root
+`package.json` select Yarn 1.22.22. Each production-branch push then rebuilds and publishes the
+browser viewer. Attach `lelibrambas.com` to this Pages project under **Custom domains**; the domain
+does not change the build command or output directory.
+
+Do not select `apps/tv` as the Pages root directory. This is a Yarn workspace, so dependency
+installation and the build must start at the repository root. Cloudflare serves the generated
+`apps/tv/dist/index.html`; the Library Manager and native apps are not part of this deployment.
+
 With the public test asset configured and network access available, verify the real HLS path with
 `corepack yarn test:stream`. On Windows, `corepack yarn test:stream:electron` verifies the same
 asset through the packaged Electron protocol and content-security policy.

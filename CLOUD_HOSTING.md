@@ -23,6 +23,20 @@ output is `apps/tv/dist`; the two public Stream variables must be present when t
 The Library Manager is intentionally local-only and must not be published without authentication
 and origin controls.
 
+## Cloudflare Pages Git build contract
+
+For the GitHub-connected Pages project that serves the browser viewer, configure the production
+branch as `main`, leave the root directory blank, use `corepack yarn build`, and set the build
+output directory to `apps/tv/dist`. Set the Pages build environment variable
+`YARN_VERSION=1.22.22`. The repository pins Node in `.node-version`, pins the package manager in
+`package.json`, and exposes the conventional root `build` script so the Pages build is
+deterministic. `apps/tv/index.html` is Vite's entry point and becomes `apps/tv/dist/index.html`.
+
+The custom domain `lelibrambas.com` must be attached to that same Pages project in Cloudflare. DNS
+and the custom domain select where the already-built site is served; they do not choose which
+workspace to build. Keep the API Worker as a separate future deployment until its bindings and
+security gates are deliberately provisioned.
+
 ## Intended topology
 
 | Service           | Intended private responsibility                                                                                          | Current repository state                                             |
