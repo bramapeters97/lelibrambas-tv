@@ -2,6 +2,8 @@
 
 This workspace wraps the TV web build in a deliberately small Electron process. The renderer remains the same Vite/React TV application in development and production; Electron does not own a second UI implementation.
 
+The browser favicon is also used as the desktop window icon in development and packaged builds.
+
 ## Commands
 
 - `yarn desktop:dev` from the monorepo root compiles the Electron main process, starts the TV Vite server on `http://127.0.0.1:5173`, and opens the shell. Vite supplies renderer hot-module replacement.

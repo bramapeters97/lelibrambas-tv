@@ -22,19 +22,37 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ page, request }) => {
+  const launchDescription =
+    "We're celebrating the launch of our new streaming-service Lelibrambas+. What's to discover? Subscribe to get access to the exclusive Peters Family-archive..";
+  await expect(page.locator('meta[name="description"]')).toHaveAttribute(
+    'content',
+    launchDescription,
+  );
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
     'content',
     'LELIBRAMBAS+',
   );
   await expect(page.locator('meta[property="og:description"]')).toHaveAttribute(
     'content',
-    'A Private Family Archive',
+    launchDescription,
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',
     'https://lelibrambas.com/lelibrambas-share.png',
   );
+  await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute(
+    'content',
+    'image/png',
+  );
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1672');
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '941');
+  await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
+    'content',
+    launchDescription,
+  );
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', /(?:^|\/)favicon\.png$/);
   expect((await request.get('/lelibrambas-share.png')).ok()).toBe(true);
+  expect((await request.get('/favicon.png')).ok()).toBe(true);
 });
 
 test('profile to home to details passes the selected row exact stream URL to playback', async ({
@@ -143,13 +161,14 @@ test('home collection shortcuts open the selected collection and home rows mirro
 }) => {
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
 
-  const collectionCardAnimations = await page.locator('.home-hubs-row button').evaluateAll(
-    (elements) =>
+  const collectionCardAnimations = await page
+    .locator('.home-hubs-row button')
+    .evaluateAll((elements) =>
       elements.map((element) => {
         const style = getComputedStyle(element, '::after');
         return { name: style.animationName, duration: style.animationDuration };
       }),
-  );
+    );
   expect(collectionCardAnimations).toHaveLength(4);
   expect(collectionCardAnimations).toEqual(
     Array.from({ length: 4 }, () => ({ name: 'home-collection-shade', duration: '2s' })),

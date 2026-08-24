@@ -54,6 +54,12 @@ function rendererRoot(): string {
     : resolve(app.getAppPath(), '../tv/dist');
 }
 
+function windowIconPath(): string {
+  return developmentMode
+    ? resolve(app.getAppPath(), '../tv/public/favicon.png')
+    : join(rendererRoot(), 'favicon.png');
+}
+
 function installLocalRendererProtocol(): void {
   protocol.handle(APP_PROTOCOL, async (request) => {
     const filePath = resolveRendererFile(rendererRoot(), request.url);
@@ -209,6 +215,7 @@ function installSmokeProbe(window: BrowserWindow): void {
 function createMainWindow(): BrowserWindow {
   const window = new BrowserWindow({
     title: 'LELIBRAMBAS+',
+    icon: windowIconPath(),
     width: WINDOW_DEFAULTS.width,
     height: WINDOW_DEFAULTS.height,
     minWidth: WINDOW_DEFAULTS.minWidth,
