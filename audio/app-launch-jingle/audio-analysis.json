@@ -1,0 +1,13 @@
+{
+  "title": "LeliBramBas+ Launch Jingle",
+  "composition": "Original synthetic sonic logo",
+  "durationSeconds": 4.8,
+  "sampleRateHz": 48000,
+  "channels": 2,
+  "integratedLufs": -16,
+  "samplePeakDbfs": -4.5,
+  "sourceFiles": [
+    "lelibrambas-plus-magical-app-launch-master-48k-24bit.wav",
+    "lelibrambas-plus-magical-app-launch-mobile-48k-16bit.wav"
+  ]
+}

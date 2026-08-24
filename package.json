@@ -1,0 +1,60 @@
+{
+  "name": "lelibrambas-plus",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=22.13.0 <25"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*",
+    "tools/*",
+    "infra/*"
+  ],
+  "scripts": {
+    "start": "node scripts/start.mjs",
+    "setup": "node scripts/setup.mjs",
+    "dev": "node scripts/dev.mjs",
+    "dev:tv-web": "node ./node_modules/vite/bin/vite.js apps/tv --configLoader runner --host 127.0.0.1 --port 5173",
+    "dev:mobile": "corepack yarn workspace @lelibrambas/tv dev:mobile",
+    "dev:mobile-native": "corepack yarn workspace @lelibrambas/tv dev:mobile-native",
+    "dev:admin": "node ./node_modules/vite/bin/vite.js apps/admin --configLoader runner --host 127.0.0.1 --port 4174",
+    "desktop:dev": "corepack yarn workspace @lelibrambas/desktop dev",
+    "desktop:build": "corepack yarn workspace @lelibrambas/desktop build",
+    "desktop:package": "corepack yarn workspace @lelibrambas/desktop dist:portable",
+    "tv:prebuild": "corepack yarn workspace @lelibrambas/tv prebuild:tv",
+    "android:tv": "corepack yarn workspace @lelibrambas/tv android:tv",
+    "mobile:prebuild": "corepack yarn workspace @lelibrambas/tv prebuild:mobile",
+    "ios:mobile": "corepack yarn workspace @lelibrambas/tv ios:mobile",
+    "build:web": "node ./node_modules/typescript/bin/tsc -p apps/tv/tsconfig.json --noEmit && node ./node_modules/vite/bin/vite.js build apps/tv --configLoader runner",
+    "build:admin": "node ./node_modules/typescript/bin/tsc -p apps/admin/tsconfig.json --noEmit && node ./node_modules/vite/bin/vite.js build apps/admin --configLoader runner",
+    "test": "node scripts/test.mjs",
+    "test:e2e": "node scripts/test-e2e.mjs",
+    "lint": "node ./node_modules/eslint/bin/eslint.js .",
+    "typecheck": "node scripts/typecheck.mjs",
+    "format:check": "node ./node_modules/prettier/bin/prettier.cjs --check .",
+    "validate": "node scripts/validate.mjs",
+    "screenshots": "node scripts/capture-screenshots.mjs",
+    "demo:media": "node scripts/generate-demo-media.mjs",
+    "importer": "node ./node_modules/tsx/dist/cli.mjs ./tools/video-importer/src/cli.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "24.3.0",
+    "@types/react": "19.1.12",
+    "@types/react-dom": "19.1.9",
+    "@typescript-eslint/eslint-plugin": "8.65.0",
+    "@typescript-eslint/parser": "8.65.0",
+    "cross-env": "10.1.0",
+    "eslint": "9.34.0",
+    "eslint-plugin-react-hooks": "5.2.0",
+    "prettier": "3.6.2",
+    "tsx": "4.20.5",
+    "typescript": "6.0.3",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  }
+}

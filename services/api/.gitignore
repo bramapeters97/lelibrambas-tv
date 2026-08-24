@@ -1,0 +1,6 @@
+.dev.vars
+.env
+.wrangler/
+.npm-cache/
+node_modules/
+dist/

@@ -1,0 +1,16 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/types" },
+    { "path": "./packages/catalog" },
+    { "path": "./packages/design-system" },
+    { "path": "./packages/media" },
+    { "path": "./packages/navigation" },
+    { "path": "./packages/shared" },
+    { "path": "./apps/tv" },
+    { "path": "./apps/admin" },
+    { "path": "./tools/video-importer" },
+    { "path": "./services/api" },
+    { "path": "./infra/d1" }
+  ]
+}

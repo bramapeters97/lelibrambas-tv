@@ -1,0 +1,6 @@
+.local/
+.lelibrambas-import/
+imports/
+converted/
+*.state.json
+*.log.jsonl

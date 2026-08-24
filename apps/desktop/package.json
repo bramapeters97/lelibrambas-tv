@@ -1,0 +1,72 @@
+{
+  "name": "@lelibrambas/desktop",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist-electron/main.js",
+  "engines": {
+    "node": ">=22.12.0 <25"
+  },
+  "scripts": {
+    "dev": "node scripts/build.mjs --electron-only && node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "build:electron": "node scripts/build.mjs --electron-only",
+    "build:tv": "node scripts/build.mjs --tv-only",
+    "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+    "test": "node scripts/build.mjs --electron-only && node --test test/smoke.test.mjs",
+    "smoke": "node scripts/build.mjs --electron-only && node --test test/smoke.test.mjs",
+    "smoke:electron": "node scripts/build.mjs && node ../../node_modules/electron/cli.js . --smoke-test",
+    "dist": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win portable --x64",
+    "dist:portable": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win portable --x64",
+    "dist:nsis": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win nsis --x64"
+  },
+  "devDependencies": {
+    "@types/node": "24.3.0",
+    "electron": "43.4.0",
+    "electron-builder": "26.15.7",
+    "typescript": "6.0.3"
+  },
+  "build": {
+    "appId": "com.lelibrambas.plus",
+    "productName": "LeliBramBas+",
+    "asar": true,
+    "compression": "maximum",
+    "npmRebuild": false,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../tv/dist",
+        "to": "tv-dist",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "LeliBramBasPlus-${version}-${arch}-portable.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "artifactName": "LeliBramBasPlus-Setup-${version}-${arch}.${ext}"
+    }
+  }
+}

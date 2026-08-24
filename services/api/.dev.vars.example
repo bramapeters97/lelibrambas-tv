@@ -1,0 +1,2 @@
+ADMIN_API_TOKEN="replace-with-a-long-random-local-token"
+STREAM_WEBHOOK_SECRET="replace-with-the-stream-webhook-signing-secret"

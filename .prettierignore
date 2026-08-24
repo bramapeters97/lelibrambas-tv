@@ -1,0 +1,14 @@
+node_modules
+.corepack
+.tools
+.npm-cache
+.yarn-cache
+dist
+dist-electron
+build
+release
+android
+ios
+coverage
+assets
+*.lock

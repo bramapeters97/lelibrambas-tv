@@ -1,0 +1,2 @@
+Set-Location 'C:\Users\brama\OneDrive\Documenten\Projects\lelibrambas-plus'
+corepack yarn start

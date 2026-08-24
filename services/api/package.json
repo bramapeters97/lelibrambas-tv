@@ -1,0 +1,31 @@
+{
+  "name": "@lelibrambas/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "node ../../node_modules/wrangler/bin/wrangler.js deploy --dry-run --outdir dist",
+    "dev": "node ../../node_modules/wrangler/bin/wrangler.js dev",
+    "generate:types": "node ../../node_modules/wrangler/bin/wrangler.js types ./worker-configuration.d.ts --env-interface Env",
+    "test": "node ../../node_modules/vitest/vitest.mjs run",
+    "typecheck": "node ../../node_modules/wrangler/bin/wrangler.js types ./worker-configuration.d.ts --env-interface Env && node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@lelibrambas/media": "file:../../packages/media",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260731.1",
+    "@types/node": "26.1.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  },
+  "optionalDependencies": {
+    "wrangler": "4.115.0"
+  },
+  "engines": {
+    "node": ">=20.19.0 <25"
+  }
+}
