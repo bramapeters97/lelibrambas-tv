@@ -24,25 +24,28 @@ corepack yarn validate
 corepack yarn test:e2e
 ```
 
-## Publish the browser viewer with Cloudflare Pages
+## Publish the browser viewer with Cloudflare Workers Builds
 
-Connect this repository to a Cloudflare Pages project and use these build settings once:
+Connect this repository to the `lelibrambas-tv` Worker and use these build settings once:
 
-| Setting                    | Value                         |
-| -------------------------- | ----------------------------- |
-| Production branch          | `main`                        |
-| Root directory             | Leave blank (repository root) |
-| Build command              | `corepack yarn build`         |
-| Build output directory     | `apps/tv/dist`                |
-| Build environment variable | `YARN_VERSION=1.22.22`        |
+| Setting                    | Value                          |
+| -------------------------- | ------------------------------ |
+| Production branch          | `main`                         |
+| Root directory             | `/`                            |
+| Build command              | `corepack yarn build`          |
+| Deploy command             | `npx wrangler deploy`          |
+| Version command            | `npx wrangler versions upload` |
+| Build environment variable | `YARN_VERSION=1.22.22`         |
+| Build environment variable | `NODE_VERSION=24.19.0`         |
 
 The checked-in `.node-version` selects Node 24.19.0, while `YARN_VERSION` and the root
-`package.json` select Yarn 1.22.22. Each production-branch push then rebuilds and publishes the
-browser viewer. Attach `lelibrambas.com` to this Pages project under **Custom domains**; the domain
-does not change the build command or output directory.
+`package.json` select Yarn 1.22.22. The root `wrangler.jsonc` names the Worker, supplies its required
+compatibility date, points Workers Static Assets at `apps/tv/dist`, and enables SPA navigation.
+Each production-branch push then rebuilds and publishes the browser viewer. Attach
+`lelibrambas.com` to this Worker under **Settings > Domains & Routes > Custom Domain**.
 
-Do not select `apps/tv` as the Pages root directory. This is a Yarn workspace, so dependency
-installation and the build must start at the repository root. Cloudflare serves the generated
+Do not select `apps/tv` as the build root directory. This is a Yarn workspace, so dependency
+installation, the build, and Wrangler must start at the repository root. Cloudflare serves the generated
 `apps/tv/dist/index.html`; the Library Manager and native apps are not part of this deployment.
 
 With the public test asset configured and network access available, verify the real HLS path with
