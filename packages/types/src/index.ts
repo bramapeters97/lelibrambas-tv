@@ -119,7 +119,7 @@ export interface HomeRail {
 export interface Device {
   id: string;
   name: string;
-  platform: 'android-tv' | 'tvos' | 'windows' | 'web';
+  platform: 'tvos' | 'windows' | 'web';
   status: 'pending' | 'approved' | 'denied' | 'revoked' | 'expired';
   pairingCode: string;
   expiresAt: string;

@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 127.0.0.1 --port 4174",
-    "build": "tsc -p tsconfig.json --noEmit && vite build",
-    "preview": "vite preview --host 127.0.0.1 --port 4174",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run --config vitest.config.ts",
-    "test:watch": "vitest --config vitest.config.ts"
+    "dev": "node ../../node_modules/vite/bin/vite.js --configLoader runner --host 127.0.0.1 --port 4174",
+    "build": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit && node ../../node_modules/vite/bin/vite.js build --configLoader runner",
+    "preview": "node ../../node_modules/vite/bin/vite.js preview --configLoader runner --host 127.0.0.1 --port 4174",
+    "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
+    "test": "node ../../node_modules/vitest/vitest.mjs run --configLoader runner --config vitest.config.ts",
+    "test:watch": "node ../../node_modules/vitest/vitest.mjs --configLoader runner --config vitest.config.ts"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -25,7 +25,7 @@
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "6.0.5",
     "jsdom": "30.0.1",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "vite": "8.2.1",
     "vitest": "4.1.10"
   }

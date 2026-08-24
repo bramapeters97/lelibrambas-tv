@@ -8,240 +8,62 @@ import type {
   VideoRecord,
 } from '../types';
 
+type CatalogueCategory = 'JEUGDFILMS' | 'VAKANTIEFILMS' | 'EVENTS' | 'OVERIGE';
+
 interface CatalogueSeed {
   title: string;
   description: string;
   year: number | null;
-  category: 'JEUGDFILMS' | 'VAKANTIEFILMS' | 'EVENTS' | 'OVERIGE';
+  category: CatalogueCategory;
   shelf: string;
 }
 
-const catalogueSeeds: CatalogueSeed[] = [
+interface CategorySeed {
+  category: CatalogueCategory;
+  titlePrefix: string;
+  shelf: string;
+  itemCount: number;
+}
+
+const categorySeeds: CategorySeed[] = [
   {
-    title: 'Eline Maria Peters (Part 1)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Eline Maria Peters.',
-    year: null,
     category: 'JEUGDFILMS',
-    shelf: 'Eline Maria Peters',
+    titlePrefix: 'Jeugdfilm',
+    shelf: 'Synthetic childhood collection',
+    itemCount: 3,
   },
   {
-    title: 'Eline Maria Peters (Part 2)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Eline Maria Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Eline Maria Peters',
-  },
-  {
-    title: 'Eline Maria Peters (Part 3)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Eline Maria Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Eline Maria Peters',
-  },
-  {
-    title: 'Eline Maria Peters (Part 4)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Eline Maria Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Eline Maria Peters',
-  },
-  {
-    title: 'Bram Albertus Peters (Part 1)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Bram Albertus Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Bram Albertus Peters',
-  },
-  {
-    title: 'Bram Albertus Peters (Part 2)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Bram Albertus Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Bram Albertus Peters',
-  },
-  {
-    title: 'Bram Albertus Peters (Part 3)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Bram Albertus Peters.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Bram Albertus Peters',
-  },
-  {
-    title: 'Zomervakanties (Part 1)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Zomervakanties.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Zomervakanties',
-  },
-  {
-    title: 'Zomervakanties (Part 2)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Zomervakanties.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Zomervakanties',
-  },
-  {
-    title: 'Zomervakanties (Part 3)',
-    description: 'Catalogue-only placeholder for JEUGDFILMS / Zomervakanties.',
-    year: null,
-    category: 'JEUGDFILMS',
-    shelf: 'Zomervakanties',
-  },
-  {
-    title: 'The United States of America (2013)',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: 2013,
     category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
+    titlePrefix: 'Vakantiefilm',
+    shelf: 'Synthetic holiday collection',
+    itemCount: 17,
   },
   {
-    title: 'The United States of America (2014)',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: 2014,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'The United States of America (2015)',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: 2015,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'South Africa',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Baltic Capitals',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Antalya, Turkey',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Mas Patoxas, Spain',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Corfu, Greece',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Frejus, France',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Argeles, France',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Val Thorens, France',
-    description: 'Synthetic travel placeholder for VAKANTIEFILMS.',
-    year: null,
-    category: 'VAKANTIEFILMS',
-    shelf: 'VAKANTIEFILMS',
-  },
-  {
-    title: 'Huwelijk Bart & Astrid',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: null,
     category: 'EVENTS',
-    shelf: 'EVENTS',
+    titlePrefix: 'Evenementfilm',
+    shelf: 'Synthetic event collection',
+    itemCount: 8,
   },
   {
-    title: 'Jubileum J. Meijer B.V.',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: null,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: 'Huwelijk Eline & Luca (Bram)',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: null,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: 'Huwelijk Eline & Luca (Event)',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: null,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: 'Gouden Bruiloft Opa en Oma',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: null,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: 'Lucky (2004)',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: 2004,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: 'Lucky (2013)',
-    description: 'Synthetic event placeholder for EVENTS.',
-    year: 2013,
-    category: 'EVENTS',
-    shelf: 'EVENTS',
-  },
-  {
-    title: "Musical De Boskampi's",
-    description: 'Synthetic standalone placeholder for OVERIGE.',
-    year: null,
     category: 'OVERIGE',
-    shelf: 'OVERIGE',
-  },
-  {
-    title: 'Schoolkamp Nutterden',
-    description: 'Synthetic standalone placeholder for OVERIGE.',
-    year: null,
-    category: 'OVERIGE',
-    shelf: 'OVERIGE',
-  },
-  {
-    title: 'Afsluiting Basisschool',
-    description: 'Synthetic standalone placeholder for OVERIGE.',
-    year: null,
-    category: 'OVERIGE',
-    shelf: 'OVERIGE',
-  },
-  {
-    title: 'Bram & Astrid in de Goliath',
-    description: 'Synthetic standalone placeholder for OVERIGE.',
-    year: null,
-    category: 'OVERIGE',
-    shelf: 'OVERIGE',
+    titlePrefix: 'Overige film',
+    shelf: 'Synthetic miscellaneous collection',
+    itemCount: 7,
   },
 ];
+
+const catalogueSeeds: CatalogueSeed[] = categorySeeds.flatMap((category) =>
+  Array.from({ length: category.itemCount }, (_, index) => {
+    const sequence = String(index + 1).padStart(2, '0');
+    return {
+      title: `${category.titlePrefix} ${sequence}`,
+      description: `Fictional ${category.category} catalogue placeholder ${sequence}.`,
+      year: null,
+      category: category.category,
+      shelf: category.shelf,
+    };
+  }),
+);
 
 const palettes: Array<[string, string]> = [
   ['#6E4A3E', '#E9C778'],
@@ -267,7 +89,7 @@ const processingByIndex: Record<number, ProcessingStatus> = {
   22: 'awaiting-review',
   27: 'uploaded',
   28: 'ready-to-upload',
-  31: 'unavailable',
+  34: 'unavailable',
 };
 
 function slugify(title: string): string {
@@ -283,41 +105,40 @@ export const demoVideos: VideoRecord[] = catalogueSeeds.map((seed, index) => {
   const durationSeconds = 900 + ((index * 311) % 4_200);
   const palette = palettes[index % palettes.length] ?? palettes[0] ?? ['#6E4A3E', '#E9C778'];
   const generatedDate = `2026-08-${String((index % 14) + 1).padStart(2, '0')}T10:00:00.000Z`;
-  const explicitYear = seed.year;
 
   return {
     id: `video-${String(index + 1).padStart(2, '0')}`,
     slug: slugify(seed.title),
     title: seed.title,
-    subtitle: 'Synthetic catalogue-only archive placeholder',
+    subtitle: 'Fictional catalogue-only archive placeholder',
     description: seed.description,
     originalFilename: `synthetic-admin-entry-${String(index + 1).padStart(2, '0')}.placeholder`,
     sourceType: 'generated-demo',
     sourceReference: `Synthetic demo source ${String(index + 1).padStart(2, '0')}`,
-    recordingDate: explicitYear ? `${explicitYear}-01-01` : null,
+    recordingDate: null,
     approximateDate: true,
-    year: explicitYear,
+    year: seed.year,
     durationSeconds,
-    aspectRatio: seed.category === 'JEUGDFILMS' || seed.year === 2004 ? '4:3' : '16:9',
+    aspectRatio: seed.category === 'JEUGDFILMS' ? '4:3' : '16:9',
     resolution: 'Synthetic placeholder',
     frameRate: 25,
     interlaced: seed.category === 'JEUGDFILMS',
-    people: ['Family'],
+    people: ['Synthetic family'],
     place: seed.shelf,
-    country: seed.year ? seed.category : '',
-    tags: [seed.category, seed.shelf, 'synthetic', 'catalogue-only'],
+    country: '',
+    tags: [seed.category, 'synthetic', 'catalogue-only'],
     categories: [seed.category],
     collection: seed.shelf,
     seasonNumber: seed.category === 'JEUGDFILMS' ? 1 : null,
     episodeNumber:
       seed.category === 'JEUGDFILMS'
         ? catalogueSeeds.filter((candidate, candidateIndex) => {
-            return candidate.shelf === seed.shelf && candidateIndex <= index;
+            return candidate.category === seed.category && candidateIndex <= index;
           }).length
         : null,
     previewStartSeconds: 0,
-    featured: index === 0 || index === 10 || index === 21 || index === 28,
-    visibility: index === 31 ? 'hidden' : 'family',
+    featured: index === 0 || index === 3 || index === 20 || index === 28,
+    visibility: index === 34 ? 'hidden' : 'family',
     processingStatus,
     playbackProvider: processingStatus === 'uploaded' ? 'cloudflare-stream' : 'local',
     playbackAssetId: processingStatus === 'uploaded' ? `synthetic_stream_${index + 1}` : null,
@@ -328,7 +149,7 @@ export const demoVideos: VideoRecord[] = catalogueSeeds.map((seed, index) => {
         : `2026-08-${String(15 - (index % 12)).padStart(2, '0')}T20:15:00.000Z`,
     addedDate: generatedDate,
     restorationNotes:
-      'Synthetic demo record only. No original media, real filenames, OneDrive paths or production references are bundled.',
+      'Fictional demo record only. No original media, private filenames, source paths or production references are bundled.',
     legacyFormat: seed.category === 'JEUGDFILMS' ? 'Synthetic 4:3 placeholder' : null,
     chapters: [
       { id: `chapter-${index}-1`, title: 'Opening placeholder', timeSeconds: 0 },
@@ -353,9 +174,9 @@ export const demoVideos: VideoRecord[] = catalogueSeeds.map((seed, index) => {
 
 export const demoJobs: ImportJob[] = [
   {
-    id: 'job-jeugdfilms-eline',
-    displayName: 'Eline Maria Peters (Part 1) review',
-    sourceReference: 'Synthetic demo source 01',
+    id: 'job-video-ts-review',
+    displayName: 'Synthetic VIDEO_TS review',
+    sourceReference: 'Synthetic demo source VIDEO_TS-01',
     sourceKind: 'video-ts',
     status: 'review',
     progress: 100,
@@ -371,9 +192,9 @@ export const demoJobs: ImportJob[] = [
     requiresHydration: false,
     candidates: [
       {
-        id: 'eline-title-1',
+        id: 'synthetic-title-1',
         titleNumber: 1,
-        label: 'Eline Maria Peters (Part 1) - main title',
+        label: 'Synthetic main title',
         durationSeconds: 3_218,
         chapters: 10,
         resolution: '720 x 576',
@@ -385,9 +206,9 @@ export const demoJobs: ImportJob[] = [
         role: 'main-title',
       },
       {
-        id: 'eline-title-2',
+        id: 'synthetic-title-2',
         titleNumber: 2,
-        label: 'Eline Maria Peters (Part 1) - possible extra',
+        label: 'Synthetic possible extra',
         durationSeconds: 512,
         chapters: 3,
         resolution: '720 x 576',
@@ -399,7 +220,7 @@ export const demoJobs: ImportJob[] = [
         role: 'extra',
       },
       {
-        id: 'eline-title-3',
+        id: 'synthetic-title-3',
         titleNumber: 7,
         label: 'Synthetic menu loop',
         durationSeconds: 24,
@@ -420,9 +241,9 @@ export const demoJobs: ImportJob[] = [
     ],
   },
   {
-    id: 'job-usa-2014',
-    displayName: 'The United States of America (2014) viewing copy',
-    sourceReference: 'Synthetic demo source 12',
+    id: 'job-processing-demo',
+    displayName: 'Synthetic viewing copy',
+    sourceReference: 'Synthetic demo source FILE-01',
     sourceKind: 'file',
     status: 'processing',
     progress: 64,
@@ -437,12 +258,12 @@ export const demoJobs: ImportJob[] = [
     duplicateOf: null,
     requiresHydration: false,
     candidates: [],
-    log: ['Synthetic source verified', 'Viewing copy 64% complete', 'Original source is read-only'],
+    log: ['Synthetic source verified', 'Viewing copy 64% complete', 'Source is read-only'],
   },
   {
-    id: 'job-lucky-2004',
-    displayName: 'Lucky (2004)',
-    sourceReference: 'Synthetic demo source 27',
+    id: 'job-failed-demo',
+    displayName: 'Synthetic unavailable source',
+    sourceReference: 'Synthetic demo source FILE-02',
     sourceKind: 'file',
     status: 'failed',
     progress: 37,
@@ -457,16 +278,12 @@ export const demoJobs: ImportJob[] = [
     duplicateOf: null,
     requiresHydration: true,
     candidates: [],
-    log: [
-      'Catalogue placeholder detected',
-      'Source bytes unavailable by design',
-      'No source content was modified',
-    ],
+    log: ['Catalogue placeholder detected', 'Source bytes unavailable by design'],
   },
   {
-    id: 'job-boskampis',
-    displayName: "Musical De Boskampi's",
-    sourceReference: 'Synthetic demo source 29',
+    id: 'job-ready-demo',
+    displayName: 'Synthetic prepared viewing copy',
+    sourceReference: 'Synthetic demo source FILE-03',
     sourceKind: 'file',
     status: 'ready',
     progress: 100,
@@ -484,9 +301,9 @@ export const demoJobs: ImportJob[] = [
     log: ['Conversion verified', 'Thumbnail candidates generated', 'Ready for demo upload job'],
   },
   {
-    id: 'job-baltic-capitals',
-    displayName: 'Baltic Capitals',
-    sourceReference: 'Synthetic demo source 15',
+    id: 'job-uploaded-demo',
+    displayName: 'Synthetic uploaded viewing copy',
+    sourceReference: 'Synthetic demo source FILE-04',
     sourceKind: 'file',
     status: 'uploaded',
     progress: 100,
@@ -501,12 +318,12 @@ export const demoJobs: ImportJob[] = [
     duplicateOf: null,
     requiresHydration: false,
     candidates: [],
-    log: ['Upload job completed in demo mode', 'Provider asset mapping stored locally'],
+    log: ['Upload job completed in demo mode', 'Synthetic provider mapping stored locally'],
   },
   {
-    id: 'job-duplicate-usa-2013',
-    displayName: 'The United States of America (2013) duplicate placeholder',
-    sourceReference: 'Synthetic demo source duplicate',
+    id: 'job-duplicate-demo',
+    displayName: 'Synthetic duplicate placeholder',
+    sourceReference: 'Synthetic demo source DUPLICATE-01',
     sourceKind: 'file',
     status: 'review',
     progress: 100,
@@ -518,57 +335,57 @@ export const demoJobs: ImportJob[] = [
     preset: 'Automatic',
     etaMinutes: null,
     error: null,
-    duplicateOf: 'video-11',
+    duplicateOf: 'video-01',
     requiresHydration: false,
     candidates: [],
-    log: ['Synthetic fingerprint matches The United States of America (2013)', 'Awaiting review'],
+    log: ['Synthetic fingerprint matches another fictional record', 'Awaiting review'],
   },
 ];
 
 export const demoDevices: DeviceRecord[] = [
   {
-    id: 'device-living-room',
-    name: 'Living room Apple TV',
+    id: 'device-tv-demo',
+    name: 'Demo Apple TV',
     platform: 'Apple TV',
     state: 'approved',
     pairingCode: null,
     codeExpiresAt: null,
     approvedAt: '2026-08-12T19:20:00.000Z',
     lastSeen: '2026-08-17T08:51:00.000Z',
-    profile: 'Family',
+    profile: 'Bart & Astrid',
   },
   {
-    id: 'device-office',
-    name: 'Bram Windows preview',
+    id: 'device-desktop-demo',
+    name: 'Demo Windows preview',
     platform: 'Windows',
     state: 'approved',
     pairingCode: null,
     codeExpiresAt: null,
     approvedAt: '2026-08-15T17:08:00.000Z',
     lastSeen: '2026-08-17T09:04:00.000Z',
-    profile: 'Bram',
+    profile: 'Bram & Edvin',
   },
   {
-    id: 'device-mobile',
-    name: 'Family iPhone preview',
+    id: 'device-mobile-demo',
+    name: 'Demo iPhone preview',
     platform: 'iPhone',
     state: 'pending',
-    pairingCode: 'M7K-2QF',
+    pairingCode: 'DEMO-01',
     codeExpiresAt: '2026-08-17T10:30:00.000Z',
     approvedAt: null,
     lastSeen: '2026-08-17T10:20:00.000Z',
-    profile: 'Guest',
+    profile: 'Eline & Luca',
   },
   {
-    id: 'device-old-browser',
-    name: 'Old browser preview',
+    id: 'device-browser-demo',
+    name: 'Demo browser preview',
     platform: 'Web preview',
     state: 'revoked',
     pairingCode: null,
     codeExpiresAt: null,
     approvedAt: '2026-07-21T11:00:00.000Z',
     lastSeen: '2026-07-22T09:32:00.000Z',
-    profile: 'Family',
+    profile: 'Bart & Astrid',
   },
 ];
 
@@ -583,44 +400,44 @@ export const demoRails: HomeRail[] = [
   {
     id: 'jeugdfilms',
     title: 'JEUGDFILMS',
-    rule: 'Top-level folder category',
+    rule: 'Top-level structural category',
     visible: true,
-    itemCount: 10,
+    itemCount: 3,
   },
   {
     id: 'vakantiefilms',
     title: 'VAKANTIEFILMS',
-    rule: 'Top-level folder category',
+    rule: 'Top-level structural category',
     visible: true,
-    itemCount: 11,
+    itemCount: 17,
   },
   {
     id: 'events',
     title: 'EVENTS',
-    rule: 'Top-level folder category',
-    visible: true,
-    itemCount: 7,
-  },
-  {
-    id: 'overige',
-    title: 'OVERIGE',
-    rule: 'Top-level folder category',
-    visible: true,
-    itemCount: 4,
-  },
-  {
-    id: 'recent-demo',
-    title: 'Recently Prepared',
-    rule: 'Ready or published, newest demo activity first',
+    rule: 'Top-level structural category',
     visible: true,
     itemCount: 8,
   },
   {
-    id: 'featured',
-    title: 'Family Screening Shelf',
-    rule: 'Featured catalogue-only placeholders',
+    id: 'overige',
+    title: 'OVERIGE',
+    rule: 'Top-level structural category',
     visible: true,
-    itemCount: 5,
+    itemCount: 7,
+  },
+  {
+    id: 'recent-demo',
+    title: 'Recently Prepared',
+    rule: 'Ready or published, newest fictional activity first',
+    visible: true,
+    itemCount: 9,
+  },
+  {
+    id: 'featured',
+    title: 'Synthetic Screening Shelf',
+    rule: 'Featured fictional catalogue placeholders',
+    visible: true,
+    itemCount: 4,
   },
 ];
 

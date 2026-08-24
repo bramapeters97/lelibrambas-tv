@@ -41,7 +41,7 @@ The web/admin CSS and native StyleSheet currently duplicate or closely mirror th
 
 ## Focus and input
 
-Every actionable TV element needs an obvious focused state that does not rely on colour alone. The web viewer uses a white outline, offset, scale, and elevation; the native shell uses `Pressable` focused styles and `TVFocusGuideView`. Spatial movement must be deterministic with arrow/D-pad input, and Back must return one logical level.
+Every actionable TV element needs an obvious focused state that does not rely on colour alone. The web viewer uses a white outline, offset, scale, and elevation; the native tvOS shell uses `Pressable` focused styles and `TVFocusGuideView`. Spatial movement must be deterministic with arrow-key or directional remote input, and Back/Menu must return one logical level.
 
 Do not place important actions behind hover, pointer gestures, or text entry alone. Keep focus targets large, avoid surprise focus jumps after async state changes, and retest at 1280x720 and 1920x1080.
 

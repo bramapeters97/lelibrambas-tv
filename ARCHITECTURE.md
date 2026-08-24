@@ -8,7 +8,7 @@ flowchart LR
   CLI --> Copies["Separate viewing copies"]
   CLI --> Manifest["Private local manifest + job state"]
   Seed["Validated fictional catalogue"] --> Web["React DOM TV viewer"]
-  Seed --> Native["Expo native TV / phone entry"]
+  Seed --> Native["Expo native tvOS / iPhone entry"]
   Seed --> Admin["Local Library Manager prototype"]
   Copies -. "future local service" .-> Provider["Provider-neutral media contract"]
   Provider -. "future integration" .-> Web
@@ -26,32 +26,33 @@ Solid lines describe current runtime relationships. Dashed lines are implemented
 
 `apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles, home rails, discovery views, search, details, local watchlists/progress, player states, synthetic playback, deterministic capture routes, keyboard spatial navigation, and the renderer packaged by Electron.
 
-`apps/tv/App.tsx` is the Expo/React Native entry for two native targets. It dispatches on
-`Platform.isTV`: television builds render the smaller profile/home/player TV shell with
+`apps/tv/App.tsx` is the Expo/React Native entry for two Apple targets. It dispatches on
+`Platform.isTV`: tvOS builds render the smaller profile/home/player shell with
 remote-aware focus, while phones render `apps/tv/mobile/MobileApp.tsx`. The phone branch provides
 profile selection, Home, Search, Collections, Saved, catalogue details, and a bundled demo player.
 Both branches use explicit local screen state.
 
-The TV shell, phone branch, and rich viewer share catalogue/types/helper packages and visual
+The tvOS shell, phone branch, and rich viewer share catalogue/types/helper packages and visual
 intent, but not complete components or navigation state. React Native Web `0.21.2` renders the
 phone branch for its Expo web/Safari preview; the rich Vite viewer renders with React DOM directly.
 A Safari pass is web evidence, not native iOS evidence. No surface currently makes a feature-parity
 claim, and native parity must be implemented and tested explicitly.
 
-Neither Expo Router nor React Navigation is installed. Both viewers use small explicit screen-state machines. Expo documents React Navigation as TV-compatible, so it remains a reasonable future choice if native flow complexity warrants it.
+Neither Expo Router nor React Navigation is installed. Both viewers use small explicit screen-state machines. Expo documents React Navigation as tvOS-compatible, so it remains a reasonable future choice if native flow complexity warrants it.
 
-`apps/tv/app.config.ts` selects its native target from `EXPO_TV`: `1`/`true` enables the TV plugin
-target and landscape orientation; other values select the phone target and default orientation.
-The root `tv:prebuild` and `android:tv` scripts explicitly set the TV target through their workspace
-scripts. `mobile:prebuild`, `ios:mobile`, and both mobile development scripts explicitly select the
-phone target. Clean prebuild output must be regenerated when switching targets.
+`apps/tv/app.config.ts` selects its Apple target from `EXPO_TV`: `1`/`true` enables the tvOS plugin
+target and landscape orientation; other values select the iPhone target and default orientation.
+The root `tv:prebuild` and workspace `tvos` scripts explicitly select tvOS. `mobile:prebuild`,
+`ios:mobile`, and both mobile development scripts explicitly select iPhone. Clean iOS prebuild
+output must be regenerated when switching targets. The shared React Native TV fork and config plugin
+are retained only for tvOS, and native application targets are limited to iPhone and tvOS.
 
 ## Application and package boundaries
 
 | Area                     | Responsibility                                               | Persistence/network now                    |
 | ------------------------ | ------------------------------------------------------------ | ------------------------------------------ |
 | `packages/types`         | Zod-backed catalogue models                                  | None                                       |
-| `packages/catalog`       | Deterministic 28-title seed, profiles, rails, people, places | None                                       |
+| `packages/catalog`       | Deterministic 35-title seed, profiles, rails, people, places | None                                       |
 | `packages/shared`        | Progress/player/pairing helpers                              | Renderer callers persist locally           |
 | `packages/navigation`    | Geometry-based web focus selection                           | DOM only                                   |
 | `packages/design-system` | Semantic colour, motion, and TV-safe-area constants          | Renderers currently mirror values manually |
@@ -71,8 +72,8 @@ phone target. Clean prebuild output must be regenerated when switching targets.
 
 ## Build and generated artifacts
 
-Expo Continuous Native Generation treats `apps/tv/android/` and `apps/tv/ios/` as disposable,
-target-specific outputs of `app.config.ts`; both are ignored. Web builds land in each app's `dist/`.
+Expo Continuous Native Generation treats `apps/tv/ios/` as disposable, target-specific output of
+`app.config.ts`; it is ignored. Web builds land in each app's `dist/`.
 Electron installers land in `apps/desktop/release/`. Playwright artifacts and importer state are
 ignored. Screenshot capture is the deliberate exception: it writes synthetic review images to the
 repository-root `assets/lelibrambas-plus/screenshots/`.

@@ -42,16 +42,14 @@ const rawCatalogue: VideoRecord[] = archivePlaceholders.map((placeholder, index)
   const year = yearFromFolderName(placeholder.title);
   const collectionId = slugify(placeholder.category);
   const palette = palettes[index % palettes.length] ?? palettes[0]!;
-  const directoryLabel = placeholder.directory.join(' / ');
-  const shelf = placeholder.group ?? placeholder.category;
 
   return {
     id,
     slug: slugify(placeholder.title),
     title: placeholder.title,
-    subtitle: `${shelf} - synthetic directory placeholder`,
+    subtitle: `${placeholder.category} - fictional catalogue placeholder`,
     description:
-      'This catalogue-only record mirrors a private archive folder name. The poster, thumbnail and playback state are synthetic placeholders; no family media or source files are included.',
+      'This fictional catalogue-only record preserves the private archive structure without exposing family names, places, filenames or source media.',
     originalFilename: `synthetic-folder-entry-${String(index + 1).padStart(2, '0')}.placeholder`,
     sourceType: 'synthetic',
     recordingDate: year ? `${year}-01-01` : null,
@@ -62,16 +60,10 @@ const rawCatalogue: VideoRecord[] = archivePlaceholders.map((placeholder, index)
     resolution: 'Not inspected',
     frameRate: 25,
     interlaced: false,
-    people: ['Family'],
-    location: shelf,
+    people: ['Synthetic family'],
+    location: 'Synthetic archive',
     country: null,
-    tags: [
-      placeholder.category,
-      ...(placeholder.group ? [placeholder.group] : []),
-      'Synthetic placeholder',
-      'Media not inspected',
-      directoryLabel,
-    ],
+    tags: [placeholder.category, 'Synthetic placeholder', 'Media not inspected'],
     categories: [placeholder.category],
     collectionId,
     seasonNumber: null,
@@ -95,7 +87,8 @@ const rawCatalogue: VideoRecord[] = archivePlaceholders.map((placeholder, index)
     progressSeconds: 0,
     lastWatched: null,
     addedDate: '2026-08-17T12:00:00.000Z',
-    restorationNotes: `Demo placeholder for ${directoryLabel}. No original media has been inspected or bundled.`,
+    restorationNotes:
+      'Fictional demo placeholder only. No original media, private metadata or source files have been inspected or bundled.',
     legacyFormat: null,
     chapterMarkers: [],
     playCount: 0,
@@ -106,45 +99,36 @@ export const catalogue = validateCatalogue(rawCatalogue);
 
 export const profiles: Profile[] = [
   {
-    id: 'bram',
-    name: 'Bram',
-    initials: 'BP',
+    id: 'bart-astrid',
+    name: 'Bart & Astrid',
+    initials: 'BA',
     accent: '#70D8FF',
     watchlist: ['folder-placeholder-01', 'folder-placeholder-03'],
     recentlyDiscovered: ['JEUGDFILMS', 'VAKANTIEFILMS'],
   },
   {
-    id: 'edvin',
-    name: 'Edvin',
-    initials: 'EP',
+    id: 'bram-edvin',
+    name: 'Bram & Edvin',
+    initials: 'BE',
     accent: '#8275FF',
     watchlist: ['folder-placeholder-11'],
     recentlyDiscovered: ['OVERIGE'],
   },
   {
-    id: 'family',
-    name: 'Family',
-    initials: 'LB',
+    id: 'eline-luca',
+    name: 'Eline & Luca',
+    initials: 'EL',
     accent: '#E9C778',
-    pin: '2026',
     watchlist: ['folder-placeholder-02', 'folder-placeholder-18'],
     recentlyDiscovered: ['JEUGDFILMS', 'EVENTS', 'OVERIGE', 'VAKANTIEFILMS'],
-  },
-  {
-    id: 'guest',
-    name: 'Guest',
-    initials: 'G',
-    accent: '#72DDA6',
-    watchlist: [],
-    recentlyDiscovered: [],
   },
 ];
 
 export const people: Person[] = [
   {
-    id: 'family',
-    name: 'Family',
-    initials: 'LB',
+    id: 'synthetic-family',
+    name: 'Synthetic Family',
+    initials: 'SF',
     accent: '#E9C778',
     description:
       'Synthetic placeholder metadata only; people in the media have not been identified.',
@@ -153,10 +137,10 @@ export const people: Person[] = [
 
 export const places: Place[] = [
   {
-    id: 'family-archive',
-    name: 'Family Archive',
-    country: 'Private prototype',
-    description: 'Directory placeholders only. Media locations have not been inspected.',
+    id: 'synthetic-archive',
+    name: 'Synthetic Archive',
+    country: 'Fictional collection',
+    description: 'Fictional placeholders only. Media locations have not been inspected.',
     palette: ['#241A22', '#6E4A3E', '#E9C778'],
   },
 ];

@@ -1,2 +1,3 @@
-Set-Location 'C:\Users\brama\OneDrive\Documenten\Projects\lelibrambas-plus'
+Open PowerShell in the cloned repository root (the directory containing package.json), then run:
+
 corepack yarn start

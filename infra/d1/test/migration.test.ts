@@ -58,7 +58,7 @@ describe('D1 initial migration', () => {
     database.exec(`
       INSERT INTO users (id, display_name) VALUES ('user-1', 'Family');
       INSERT INTO profiles (id, user_id, display_name, avatar_key, accent_token)
-        VALUES ('profile-1', 'user-1', 'Bram', 'bram', 'aurora');
+        VALUES ('profile-1', 'user-1', 'Viewer One', 'viewer-one', 'aurora');
       INSERT INTO videos (id, slug, title, source_type) VALUES ('video-1', 'stockholm', 'Stockholm', 'mp4');
       INSERT INTO watchlist (profile_id, video_id) VALUES ('profile-1', 'video-1');
       DELETE FROM profiles WHERE id = 'profile-1';

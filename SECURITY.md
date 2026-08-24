@@ -14,7 +14,7 @@ Do not expose the admin Vite server to a LAN/public origin. Its default `127.0.0
 
 The Electron shell enables context isolation, Chromium sandboxing, web security, and safe dialogs; it disables Node in renderer/workers, webviews, mixed content, drag navigation, and DevTools in packaged mode. It exposes no preload API or IPC.
 
-Development accepts only a plain HTTP loopback origin. Production uses traversal-checked `lelibrambas://app` assets. New windows, downloads, webviews, external navigation/redirects, device permissions, and permission requests are denied. Packaged HTML receives a CSP that allows local scripts only; images/media/connections may use HTTP(S), so remote service allow-listing should be tightened when an endpoint is chosen.
+Development accepts only a plain HTTP loopback origin. Production uses traversal-checked `lelibrambas://app` assets. New windows, downloads, webviews, external navigation/redirects, device permissions, and permission requests are denied. Packaged HTML receives a CSP that allows local scripts and HTTPS media traffic only to Cloudflare Stream delivery hosts; frames, insecure HTTP, and WebSockets remain blocked.
 
 ### Importer and local filesystem
 
@@ -41,7 +41,12 @@ Before production, review and tune the existing pairing limits, extend abuse con
 
 The Worker config actually consumes bindings `DB`, `ARTWORK`, and `STREAM`; variable `STREAM_DELIVERY_DOMAIN`; and secrets `ADMIN_API_TOKEN` and `STREAM_WEBHOOK_SECRET`.
 
-`.env.example` mirrors only the current Worker variable and secret names with non-secret placeholders. Real resource IDs, account credentials, API tokens, and private signing keys are deliberately excluded; direct D1, R2, and Stream bindings are configured separately in `services/api/wrangler.jsonc`.
+`.env.example` contains non-secret placeholders for the current Worker settings and the optional
+public viewer test stream. The two `VITE_STREAM_PLACEHOLDER_*` values are deliberately public:
+Vite bundles them into the browser application. Never put a signed playback token, API token,
+account credential, or private asset identifier in either value. Real resource IDs, account
+credentials, API tokens, and private signing keys are excluded; direct D1, R2, and Stream bindings
+are configured separately in `services/api/wrangler.jsonc`.
 
 Never prefix server secrets with `VITE_` or place them in `apps/*`. The nested ignore file covers `.env` and `.env.local`, but not every possible secret filename; in particular, do not create `.dev.vars`, production environment files, private keys, or certificates inside the repository unless the ignore policy is first reviewed and extended. Use Wrangler's secret store only in a deliberately authorised deployment. Cloudflare account/API tokens should be scoped to the minimum resources and should not be available inside the Worker when a native binding suffices.
 

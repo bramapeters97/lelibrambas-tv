@@ -38,10 +38,10 @@ function NativeTvApp() {
           Lelibrambas<Text style={styles.plus}>+</Text>
         </Text>
         <TVFocusGuideView style={styles.row} autoFocus trapFocusLeft trapFocusRight>
-          {['Bram', 'Edvin', 'Family', 'Guest'].map((name) => (
+          {['Bart & Astrid', 'Bram & Edvin', 'Eline & Luca'].map((name) => (
             <Pressable
               key={name}
-              hasTVPreferredFocus={name === 'Bram'}
+              hasTVPreferredFocus={name === 'Bart & Astrid'}
               onPress={() => setScreen('home')}
               style={({ focused }) => [styles.profile, focused && styles.focused]}
             >
@@ -99,7 +99,11 @@ function NativeTvApp() {
 }
 
 export default function NativeApp() {
-  return Platform.isTV ? <NativeTvApp /> : <MobileApp />;
+  if (Platform.isTV) {
+    // The native TV shell is available only for the configured Apple target.
+    return Platform.OS === 'ios' ? <NativeTvApp /> : null;
+  }
+  return <MobileApp />;
 }
 
 const styles = StyleSheet.create({

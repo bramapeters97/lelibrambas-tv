@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
-import { archivePlaceholderCategories, catalogue, collections } from '@lelibrambas/catalog';
 import { getStored, setStored } from '@lelibrambas/shared';
 import type { Profile, VideoRecord } from '@lelibrambas/types';
+import { archivePlaceholderCategories, catalogue, collections } from './catalogue';
 
 export type BrowseScreenId = 'home' | 'search' | 'hubs' | 'collections';
 
@@ -66,6 +66,17 @@ const navItems: Array<{ id: PrimaryNavScreenId; icon: NavIconId; label: string }
   { id: 'collections', icon: 'collections', label: 'Collections' },
 ];
 
+function CinemaIcon() {
+  return (
+    <svg className="nav-wordmark__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <path d="M4 8.5h16v9.8c0 1-.8 1.7-1.8 1.7H5.8c-1 0-1.8-.7-1.8-1.7Z" />
+      <path d="m4.7 8.5 2-4.5h13.1L18 8.5" />
+      <path d="m9.4 4-2 4.5M14.8 4l-2 4.5" />
+      <path d="m10.2 12 4.7 2.5-4.7 2.5Z" />
+    </svg>
+  );
+}
+
 function NavIcon({ name }: { name: NavIconId }) {
   if (name === 'home') {
     return (
@@ -100,6 +111,7 @@ function durationLabel(video: VideoRecord): string {
   if (video.sourceType === 'synthetic' && video.processingStatus === 'unavailable') {
     return 'Catalogue only';
   }
+  if (video.durationSeconds < 60) return `${Math.round(video.durationSeconds)} sec`;
   return `${Math.round(video.durationSeconds / 60)} min`;
 }
 
@@ -125,12 +137,8 @@ export function NavigationRail({
         aria-label="Replay entrance with logo and tune"
         onClick={onReplayIntro}
       >
-        <span className="nav-wordmark__letters">
-          LBT<sup>&trade;</sup>
-        </span>
-        <i className="sparkle sparkle-one" aria-hidden="true" />
-        <i className="sparkle sparkle-two" aria-hidden="true" />
-        <i className="sparkle sparkle-three" aria-hidden="true" />
+        <CinemaIcon />
+        <span className="nav-wordmark__label">Intro</span>
       </button>
       {navItems.map((item) => (
         <button
@@ -392,7 +400,7 @@ export function SearchScreen({
               autoFocus
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try JEUGDFILMS, Lucky or 2014"
+              placeholder="Try JEUGDFILMS, Vakantiefilm or 01"
             />
             <button
               data-focusable
@@ -405,7 +413,7 @@ export function SearchScreen({
           </div>
           <div className="recent-searches">
             <span>Recent</span>
-            {['JEUGDFILMS', 'Lucky', '2014'].map((item) => (
+            {['JEUGDFILMS', 'Vakantiefilm', '01'].map((item) => (
               <button
                 key={item}
                 data-focusable

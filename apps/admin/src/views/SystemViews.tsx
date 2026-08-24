@@ -137,7 +137,7 @@ export function DevicesView({ devices, onUpdate }: DevicesViewProps) {
                   onClick={() =>
                     onUpdate(device.id, {
                       state: 'pending',
-                      pairingCode: 'R8D-4LM',
+                      pairingCode: 'DEMO-02',
                       codeExpiresAt: '2026-08-17T10:45:00.000Z',
                     })
                   }

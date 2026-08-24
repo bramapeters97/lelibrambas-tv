@@ -2,6 +2,27 @@
 
 Nothing in this repository is provisioned or deployed. The Cloudflare code is a production-shaped adapter with placeholder identifiers, unit tests, a D1 migration, and a Wrangler dry-run build. It is not connected to the checked-in viewer or Library Manager.
 
+The rich viewer can use one existing public Cloudflare Stream video as temporary synthetic
+playback. Set `VITE_STREAM_PLACEHOLDER_ASSET_ID` and
+`VITE_STREAM_PLACEHOLDER_HLS_URL` in an ignored `apps/tv/.env.local` file or as build-time host
+variables. Vite exposes both values to every viewer, so use only an intentionally public test asset;
+never use credentials or a signed/private URL. Without both values, the checked-in synthetic
+catalogue remains visible but safely reports playback as unavailable. Chromium/Electron playback
+uses the locally bundled `hls.js`; Safari uses native HLS.
+
+After configuring those public values, `corepack yarn test:stream` builds the production viewer and
+confirms that the manifest loads and playback advances in Chromium. It is intentionally separate
+from the offline-safe `validate` command because it requires the external test stream.
+
+`apps/tv/public/_headers` supplies a restrictive policy for static platforms that honor the
+Cloudflare Pages-style `_headers` file. Other hosts must apply equivalent response headers in their
+own configuration; merely uploading the built files does not make a host consume that file.
+
+Build the static viewer from the repository root with `corepack yarn build:web`. The deployable
+output is `apps/tv/dist`; the two public Stream variables must be present when that build runs.
+The Library Manager is intentionally local-only and must not be published without authentication
+and origin controls.
+
 ## Intended topology
 
 | Service           | Intended private responsibility                                                                                          | Current repository state                                             |

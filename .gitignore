@@ -11,12 +11,13 @@ build/
 coverage/
 playwright-report/
 test-results/
-apps/tv/android/
 apps/tv/ios/
 apps/desktop/release/
 apps/desktop/dist-electron/
 tools/video-importer/.state/
 tools/video-importer/imports/
+# Private local source inventory; never commit archive filenames or paths.
+DIRECTORY.txt
 .env
 .env.local
 *.log

@@ -15,7 +15,8 @@
     "typecheck": "node ../../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
     "test": "node scripts/build.mjs --electron-only && node --test test/smoke.test.mjs",
     "smoke": "node scripts/build.mjs --electron-only && node --test test/smoke.test.mjs",
-    "smoke:electron": "node scripts/build.mjs && node ../../node_modules/electron/cli.js . --smoke-test",
+    "smoke:electron": "node scripts/build.mjs && node scripts/run-smoke.mjs",
+    "smoke:stream": "node scripts/build.mjs && node scripts/run-smoke.mjs --stream",
     "dist": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win portable --x64",
     "dist:portable": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win portable --x64",
     "dist:nsis": "node scripts/build.mjs && node ../../node_modules/electron-builder/cli.js --win nsis --x64"

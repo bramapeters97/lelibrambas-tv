@@ -29,7 +29,7 @@ describe('viewer playback state', () => {
   });
 
   it('does not offer an unavailable folder placeholder as Up Next', () => {
-    const next = nextPlayableVideo(catalogue[0]!);
+    const next = nextPlayableVideo(catalogue[0]!, catalogue);
     expect(next).toBeNull();
   });
 });

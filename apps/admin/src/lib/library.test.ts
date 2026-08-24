@@ -13,14 +13,20 @@ import {
 
 describe('library helpers', () => {
   it('calculates deterministic dashboard metrics', () => {
-    const metrics = calculateMetrics(createDemoSnapshot());
+    const snapshot = createDemoSnapshot();
+    const metrics = calculateMetrics(snapshot);
 
-    expect(metrics.totalVideos).toBe(32);
+    expect(metrics.totalVideos).toBe(35);
     expect(metrics.dvdSources).toBe(0);
     expect(metrics.processing).toBe(1);
     expect(metrics.failed).toBe(1);
-    expect(metrics.missingDates).toBe(27);
-    expect(metrics.missingArtwork).toBe(2);
+    expect(metrics.missingDates).toBe(35);
+    expect(metrics.missingArtwork).toBe(3);
+    expect([...new Set(snapshot.devices.map((device) => device.profile))]).toEqual([
+      'Bart & Astrid',
+      'Bram & Edvin',
+      'Eline & Luca',
+    ]);
   });
 
   it('formats archive sizes and durations for the interface', () => {
@@ -41,14 +47,14 @@ describe('library helpers', () => {
     const imported = videosFromCsv(videosToCsv(source));
 
     expect(imported).toHaveLength(2);
-    expect(imported[0]?.title).toBe('Eline Maria Peters (Part 1)');
-    expect(imported[0]?.people).toEqual(['Family']);
+    expect(imported[0]?.title).toBe('Jeugdfilm 01');
+    expect(imported[0]?.people).toEqual(['Synthetic family']);
     expect(imported[1]?.recordingDate).toBeNull();
   });
 
   it('rejects unrelated JSON and falls back safely for corrupt local state', () => {
     expect(() => parseSnapshotJson('{"hello":"world"}')).toThrow(/not a LeliBramBas\+/);
     const fallback = loadStoredSnapshot({ getItem: () => '{not-json' });
-    expect(fallback.videos).toHaveLength(32);
+    expect(fallback.videos).toHaveLength(35);
   });
 });

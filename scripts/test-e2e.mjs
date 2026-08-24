@@ -11,6 +11,7 @@ await build({
   root: tvRoot,
   configFile,
   configLoader: 'runner',
+  mode: 'e2e',
 });
 
 const server = await preview({

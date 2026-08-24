@@ -1,7 +1,19 @@
 import { spawnSync } from 'node:child_process';
-import { existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import {
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  readlinkSync,
+  realpathSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { platform } from 'node:process';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getRuntimePaths } from './runtime-paths.mjs';
 
@@ -14,13 +26,19 @@ const npmCli = resolve(dirname(process.execPath), 'node_modules', 'npm', 'bin', 
 const runtime = getRuntimePaths();
 process.on('exit', () => rmSync(runtime.cache, { recursive: true, force: true }));
 const projectNodeModules = join(root, 'node_modules');
+const dependencyStatePath = join(runtime.home, 'dependency-state.json');
 const dependencyMarkers = [
   join(runtime.nodeModules, 'typescript', 'bin', 'tsc'),
   join(runtime.nodeModules, 'vite', 'bin', 'vite.js'),
   join(runtime.nodeModules, 'expo', 'package.json'),
+  join(runtime.nodeModules, 'react', 'package.json'),
+  join(runtime.nodeModules, 'react-dom', 'package.json'),
+  join(runtime.nodeModules, 'hls.js', 'package.json'),
   join(runtime.nodeModules, 'tsx', 'dist', 'cli.mjs'),
   join(runtime.nodeModules, 'vitest', 'vitest.mjs'),
   join(runtime.nodeModules, 'eslint', 'bin', 'eslint.js'),
+  join(runtime.nodeModules, 'electron', 'package.json'),
+  join(runtime.nodeModules, 'electron', 'install.js'),
 ];
 
 function run(command, args, options = {}) {
@@ -41,17 +59,43 @@ function samePath(left, right) {
   return isWindows ? left.toLowerCase() === right.toLowerCase() : left === right;
 }
 
+function assertProjectNodeModulesPath(projectPath) {
+  const resolvedProjectPath = resolve(projectPath);
+  const relativeProjectPath = relative(root, resolvedProjectPath);
+  const isInsideRepository =
+    relativeProjectPath !== '' &&
+    relativeProjectPath !== '..' &&
+    !relativeProjectPath.startsWith(`..${sep}`) &&
+    !isAbsolute(relativeProjectPath);
+
+  if (!isInsideRepository || basename(resolvedProjectPath) !== 'node_modules') {
+    throw new Error(`Refusing to replace unsafe dependency path: ${resolvedProjectPath}.`);
+  }
+
+  return resolvedProjectPath;
+}
+
 function ensureDependencyLink(projectPath, externalPath) {
+  const safeProjectPath = assertProjectNodeModulesPath(projectPath);
   mkdirSync(externalPath, { recursive: true });
-  if (!existsSync(projectPath)) {
-    symlinkSync(externalPath, projectPath, isWindows ? 'junction' : 'dir');
+  if (!linkEntryExists(safeProjectPath)) {
+    symlinkSync(externalPath, safeProjectPath, isWindows ? 'junction' : 'dir');
     return;
   }
-  if (!lstatSync(projectPath).isSymbolicLink()) {
-    throw new Error(`Project-local dependencies must be moved from ${projectPath} to ${externalPath}.`);
+
+  const projectStat = lstatSync(safeProjectPath);
+  if (!projectStat.isSymbolicLink()) {
+    if (!projectStat.isDirectory()) {
+      throw new Error(`Refusing to replace non-directory dependency path: ${safeProjectPath}.`);
+    }
+    console.log(`[setup] Replacing stale project-local dependencies at ${safeProjectPath}.`);
+    rmSync(safeProjectPath, { recursive: true, force: true });
+    symlinkSync(externalPath, safeProjectPath, isWindows ? 'junction' : 'dir');
+    return;
   }
-  if (!samePath(realpathSync(projectPath), realpathSync(externalPath))) {
-    throw new Error(`${projectPath} must point to ${externalPath}.`);
+
+  if (!samePath(realpathSync(safeProjectPath), realpathSync(externalPath))) {
+    throw new Error(`${safeProjectPath} must point to ${externalPath}.`);
   }
 }
 
@@ -98,6 +142,37 @@ function getWorkspacePackages() {
   return workspaces;
 }
 
+function currentDependencyState() {
+  const inputPaths = [
+    join(root, 'package.json'),
+    join(root, 'yarn.lock'),
+    ...getWorkspacePackages().map((workspace) => join(workspace.path, 'package.json')),
+  ].sort((left, right) => left.localeCompare(right));
+  const hash = createHash('sha256');
+  for (const inputPath of inputPaths) {
+    hash.update(relative(root, inputPath).replaceAll('\\', '/'));
+    hash.update('\0');
+    hash.update(readFileSync(inputPath));
+    hash.update('\0');
+  }
+  return {
+    schemaVersion: 1,
+    dependencyDigest: hash.digest('hex'),
+    platform: process.platform,
+    architecture: process.arch,
+    nodeMajor: Number(process.versions.node.split('.')[0]),
+  };
+}
+
+function matchesRecordedDependencyState(expected) {
+  try {
+    const recorded = JSON.parse(readFileSync(dependencyStatePath, 'utf8'));
+    return Object.entries(expected).every(([key, value]) => recorded[key] === value);
+  } catch {
+    return false;
+  }
+}
+
 function ensureWorkspacePackageLinks() {
   for (const workspace of getWorkspacePackages()) {
     const linkPath = join(runtime.nodeModules, ...workspace.name.split('/'));
@@ -123,7 +198,11 @@ if (major < 22 || major >= 25 || (major === 22 && minor < 13)) {
 
 ensureExternalDependencyLinks();
 
-if (dependencyMarkers.some((marker) => !existsSync(marker))) {
+const dependencyState = currentDependencyState();
+if (
+  dependencyMarkers.some((marker) => !existsSync(marker)) ||
+  !matchesRecordedDependencyState(dependencyState)
+) {
   runYarn([
     'install',
     '--frozen-lockfile',
@@ -132,6 +211,13 @@ if (dependencyMarkers.some((marker) => !existsSync(marker))) {
     '--cache-folder',
     runtime.yarnCache,
   ]);
+  const missingMarkers = dependencyMarkers.filter((marker) => !existsSync(marker));
+  if (missingMarkers.length > 0) {
+    throw new Error(
+      `Dependency installation finished without ${missingMarkers.length} required package marker(s).`,
+    );
+  }
+  writeFileSync(dependencyStatePath, `${JSON.stringify(dependencyState, null, 2)}\n`, 'utf8');
 } else {
   console.log(`[setup] Reusing external dependencies from ${runtime.nodeModules}.`);
 }

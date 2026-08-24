@@ -11,7 +11,7 @@ CREATE TABLE devices (
   id TEXT PRIMARY KEY,
   user_id TEXT REFERENCES users(id) ON DELETE SET NULL,
   name TEXT NOT NULL,
-  platform TEXT NOT NULL CHECK (platform IN ('android-tv', 'tvos', 'windows', 'web', 'unknown')),
+  platform TEXT NOT NULL CHECK (platform IN ('tvos', 'windows', 'web', 'unknown')),
   pairing_code TEXT UNIQUE,
   pairing_expires_at TEXT,
   token_hash TEXT UNIQUE,

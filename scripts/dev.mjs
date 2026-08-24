@@ -1,22 +1,15 @@
 import { spawn } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { platform } from 'node:process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const yarnCli = process.env.npm_execpath;
-
-function spawnYarn(args) {
-  if (yarnCli && existsSync(yarnCli)) {
-    return spawn(process.execPath, [yarnCli, ...args], { stdio: 'inherit' });
-  }
-  return spawn('corepack', ['yarn', ...args], {
-    stdio: 'inherit',
-    shell: platform === 'win32',
-  });
-}
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const vite = resolve(root, 'node_modules', 'vite', 'bin', 'vite.js');
+const spawnVite = (args) =>
+  spawn(process.execPath, [vite, ...args], { cwd: root, stdio: 'inherit' });
 
 const children = [
-  spawnYarn(['workspace', '@lelibrambas/tv', 'dev']),
-  spawnYarn(['workspace', '@lelibrambas/admin', 'dev']),
+  spawnVite(['apps/tv', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '5173']),
+  spawnVite(['apps/admin', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '4174']),
 ];
 
 let stopping = false;
@@ -33,7 +26,7 @@ for (const child of children) {
     stop(1);
   });
   child.on('exit', (code) => {
-    if (!stopping && code) stop(code);
+    if (!stopping) stop(code ?? 0);
   });
 }
 process.on('SIGINT', () => stop());

@@ -19,102 +19,66 @@ export interface ArchivePlaceholder {
   itemIndex: number;
 }
 
-const jeugdfilmsGroups: ArchivePlaceholderGroup[] = [
-  {
-    name: 'Eline Maria Peters',
-    movies: [
-      'Eline Maria Peters (Part 1)',
-      'Eline Maria Peters (Part 2)',
-      'Eline Maria Peters (Part 3)',
-      'Eline Maria Peters (Part 4)',
-    ],
-  },
-  {
-    name: 'Bram Albertus Peters',
-    movies: [
-      'Bram Albertus Peters (Part 1)',
-      'Bram Albertus Peters (Part 2)',
-      'Bram Albertus Peters (Part 3)',
-    ],
-  },
-  {
-    name: 'Zomervakanties',
-    movies: ['Zomervakanties (Part 1)', 'Zomervakanties (Part 2)', 'Zomervakanties (Part 3)'],
-  },
-];
+interface PlaceholderCategorySeed {
+  name: string;
+  description: string;
+  titlePrefix: string;
+  itemCount: number;
+}
 
-export const archivePlaceholderCategories: ArchivePlaceholderCategory[] = [
+function orderedTitles(prefix: string, count: number): string[] {
+  return Array.from(
+    { length: count },
+    (_, index) => `${prefix} ${String(index + 1).padStart(2, '0')}`,
+  );
+}
+
+// These counts and their order mirror the private directory at a structural level only.
+// Titles are intentionally fictional so no family names, places or source filenames are checked in.
+const categorySeeds: PlaceholderCategorySeed[] = [
   {
     name: 'JEUGDFILMS',
-    description: 'Childhood chapters grouped exactly like the private folder structure.',
-    groups: jeugdfilmsGroups,
-    movies: jeugdfilmsGroups.flatMap((group) => group.movies),
+    description: 'Three fictional childhood-film placeholders for the private archive prototype.',
+    titlePrefix: 'Jeugdfilm',
+    itemCount: 3,
   },
   {
     name: 'VAKANTIEFILMS',
-    description: 'Travel folders represented with synthetic catalogue-only placeholders.',
-    movies: [
-      'The United States of America (2013)',
-      'The United States of America (2014)',
-      'The United States of America (2015)',
-      'South Africa',
-      'Baltic Capitals',
-      'Antalya, Turkey',
-      'Mas Patoxas, Spain',
-      'Corfu, Greece',
-      'Frejus, France',
-      'Argeles, France',
-      'Val Thorens, France',
-    ],
+    description: 'Seventeen fictional holiday-film placeholders for the private archive prototype.',
+    titlePrefix: 'Vakantiefilm',
+    itemCount: 17,
   },
   {
     name: 'EVENTS',
-    description: 'Milestones and event folders kept as fictional demo entries.',
-    movies: [
-      'Huwelijk Bart & Astrid',
-      'Jubileum J. Meijer B.V.',
-      'Huwelijk Eline & Luca (Bram)',
-      'Huwelijk Eline & Luca (Event)',
-      'Gouden Bruiloft Opa en Oma',
-      'Lucky (2004)',
-      'Lucky (2013)',
-    ],
+    description: 'Eight fictional event-film placeholders for the private archive prototype.',
+    titlePrefix: 'Evenementfilm',
+    itemCount: 8,
   },
   {
     name: 'OVERIGE',
-    description: 'Standalone folders for school, stage and everyday archive moments.',
-    movies: [
-      "Musical De Boskampi's",
-      'Schoolkamp Nutterden',
-      'Afsluiting Basisschool',
-      'Bram & Astrid in de Goliath',
-    ],
+    description:
+      'Seven fictional miscellaneous-film placeholders for the private archive prototype.',
+    titlePrefix: 'Overige film',
+    itemCount: 7,
   },
 ];
 
-export const archivePlaceholders: ArchivePlaceholder[] = archivePlaceholderCategories.flatMap(
-  (category, categoryIndex): ArchivePlaceholder[] => {
-    if (category.groups?.length) {
-      let itemIndex = 0;
-      return category.groups.flatMap((group) =>
-        group.movies.map((title) => ({
-          title,
-          category: category.name,
-          group: group.name,
-          directory: [category.name, group.name, title],
-          categoryIndex,
-          itemIndex: itemIndex++,
-        })),
-      );
-    }
+export const archivePlaceholderCategories: ArchivePlaceholderCategory[] = categorySeeds.map(
+  (seed) => ({
+    name: seed.name,
+    description: seed.description,
+    movies: orderedTitles(seed.titlePrefix, seed.itemCount),
+  }),
+);
 
-    return category.movies.map((title, itemIndex) => ({
+export const archivePlaceholders: ArchivePlaceholder[] = archivePlaceholderCategories.flatMap(
+  (category, categoryIndex) =>
+    category.movies.map((title, itemIndex) => ({
       title,
       category: category.name,
       group: null,
       directory: [category.name, title],
       categoryIndex,
       itemIndex,
-    }));
-  },
+    })),
 );

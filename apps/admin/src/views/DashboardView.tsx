@@ -30,6 +30,11 @@ export function DashboardView({
   const reviewJobs = snapshot.jobs.filter((job) => job.status === 'review').length;
   const readyJobs = snapshot.jobs.filter((job) => job.status === 'ready').length;
   const published = snapshot.videos.filter((video) => video.publishState === 'published').length;
+  const readyTitles = snapshot.videos.filter(
+    (video) => video.processingStatus !== 'failed' && video.processingStatus !== 'unavailable',
+  ).length;
+  const readiness =
+    snapshot.videos.length === 0 ? 0 : Math.round((readyTitles / snapshot.videos.length) * 100);
 
   const openQueue = (filter: QueueFilter) => {
     onQueueFilter(filter);
@@ -46,7 +51,7 @@ export function DashboardView({
       <section className="dashboard-welcome">
         <div className="dashboard-welcome__copy">
           <p className="eyebrow">Monday, 17 August · Local archive</p>
-          <h2>Good morning, Bram.</h2>
+          <h2>Good morning.</h2>
           <p>
             Your private archive prototype is healthy. A few synthetic records need a human decision
             before the next family screening.
@@ -64,13 +69,15 @@ export function DashboardView({
             </button>
           </div>
         </div>
-        <div className="archive-health" aria-label="Archive readiness 87 percent">
+        <div className="archive-health" aria-label={`Archive readiness ${readiness} percent`}>
           <div className="archive-health__ring">
-            <span>87%</span>
+            <span>{readiness}%</span>
           </div>
           <div>
             <strong>Archive readiness</strong>
-            <span>28 of 32 titles ready</span>
+            <span>
+              {readyTitles} of {snapshot.videos.length} titles ready
+            </span>
           </div>
         </div>
       </section>

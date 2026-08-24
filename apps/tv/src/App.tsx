@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { catalogue, collections, homeRails, profiles } from '@lelibrambas/catalog';
+import type HlsInstance from 'hls.js';
 import { installSpatialNavigation } from '@lelibrambas/navigation';
 import {
   clampSeek,
@@ -10,6 +10,7 @@ import {
   writeProgress,
 } from '@lelibrambas/shared';
 import type { Profile, VideoRecord } from '@lelibrambas/types';
+import { catalogue, collections, homeRails, profiles } from './catalogue';
 import {
   CollectionsScreen,
   HubsScreen,
@@ -95,22 +96,25 @@ export function presentationSecondsForMedia(
   );
 }
 
-export function nextPlayableVideo(current: VideoRecord): VideoRecord | null {
+export function nextPlayableVideo(
+  current: VideoRecord,
+  records: readonly VideoRecord[] = catalogue,
+): VideoRecord | null {
   const playable = (candidate: VideoRecord) =>
     candidate.id !== current.id &&
     playbackAvailability(candidate).playable &&
     candidate.visibility !== 'hidden';
   if (current.collectionId) {
-    const episodes = catalogue
+    const episodes = records
       .filter((candidate) => candidate.collectionId === current.collectionId)
       .sort((a, b) => (a.episodeNumber ?? 0) - (b.episodeNumber ?? 0));
     const currentIndex = episodes.findIndex((candidate) => candidate.id === current.id);
     const nextEpisode = episodes.slice(currentIndex + 1).find(playable);
     if (nextEpisode) return nextEpisode;
   }
-  const currentIndex = catalogue.findIndex((candidate) => candidate.id === current.id);
+  const currentIndex = records.findIndex((candidate) => candidate.id === current.id);
   return (
-    [...catalogue.slice(currentIndex + 1), ...catalogue.slice(0, Math.max(0, currentIndex))].find(
+    [...records.slice(currentIndex + 1), ...records.slice(0, Math.max(0, currentIndex))].find(
       playable,
     ) ?? null
   );
@@ -133,6 +137,7 @@ function durationLabel(video: VideoRecord): string {
   if (video.sourceType === 'synthetic' && video.processingStatus === 'unavailable') {
     return 'Length unknown';
   }
+  if (video.durationSeconds < 60) return `${Math.round(video.durationSeconds)} sec`;
   return `${Math.round(video.durationSeconds / 60)} min`;
 }
 
@@ -144,8 +149,7 @@ function Wordmark({ compact = false }: { compact?: boolean }) {
   );
 }
 
-const openingHeaderVideo =
-  catalogue.find((item) => item.title === 'The United States of America (2015)') ?? catalogue[0]!;
+const openingHeaderVideo = catalogue.find((item) => item.featured) ?? catalogue[0]!;
 
 function StudioIdent({ onDone }: { onDone: () => void }) {
   const capture = new URLSearchParams(location.search).get('capture') === '1';
@@ -187,9 +191,6 @@ function StudioIdent({ onDone }: { onDone: () => void }) {
         <h1>LeliBramBas+</h1>
         <p>A private family archive</p>
       </div>
-      <button data-focusable data-focus-id="skip-ident" className="ident-skip" onClick={onDone}>
-        Skip intro
-      </button>
     </main>
   );
 }
@@ -595,6 +596,72 @@ function Player({
   const [ended, setEnded] = useState(forcedPlayerState === 'up-next');
   const [controlsVisible, setControlsVisible] = useState(true);
 
+  useEffect(() => {
+    const element = videoRef.current;
+    const source = video.playbackUrl;
+    if (!element || !source || !availability.playable || error) return;
+
+    let disposed = false;
+    let hls: HlsInstance | null = null;
+    let networkRecoveryAttempted = false;
+    let mediaRecoveryAttempted = false;
+    const failPlayback = () => {
+      if (disposed) return;
+      setPlaying(false);
+      setError(true);
+    };
+
+    async function attachSource(playbackElement: HTMLVideoElement, playbackSource: string) {
+      if (video.playbackProvider !== 'cloudflare-stream') {
+        playbackElement.src = playbackSource;
+        return;
+      }
+      if (playbackElement.canPlayType('application/vnd.apple.mpegurl')) {
+        playbackElement.src = playbackSource;
+        return;
+      }
+
+      const { default: Hls } = await import('hls.js');
+      if (disposed) return;
+      if (!Hls.isSupported()) {
+        failPlayback();
+        return;
+      }
+
+      hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        backBufferLength: 30,
+      });
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !networkRecoveryAttempted) {
+          networkRecoveryAttempted = true;
+          hls?.startLoad();
+          return;
+        }
+        if (data.type === Hls.ErrorTypes.MEDIA_ERROR && !mediaRecoveryAttempted) {
+          mediaRecoveryAttempted = true;
+          hls?.recoverMediaError();
+          return;
+        }
+        failPlayback();
+      });
+      hls.loadSource(playbackSource);
+      hls.attachMedia(playbackElement);
+    }
+
+    void attachSource(element, source).catch(failPlayback);
+
+    return () => {
+      disposed = true;
+      hls?.destroy();
+      element.pause();
+      element.removeAttribute('src');
+      element.load();
+    };
+  }, [availability.playable, error, video.playbackProvider, video.playbackUrl]);
+
   const persistAt = useCallback(
     (seconds: number, completed = shouldMarkComplete(seconds, video.durationSeconds)) => {
       if (!getStored('remember-progress', true)) return;
@@ -749,7 +816,6 @@ function Player({
       {!error && availability.playable && (
         <video
           ref={videoRef}
-          src={video.playbackUrl ?? undefined}
           muted={muted}
           playsInline
           onLoadedMetadata={(event) => {
@@ -824,7 +890,7 @@ function Player({
               <h1>{nextVideo.title}</h1>
               <div className="metadata">
                 <span>{nextVideo.year ?? 'Date unknown'}</span>
-                <span>{Math.round(nextVideo.durationSeconds / 60)} min</span>
+                <span>{durationLabel(nextVideo)}</span>
                 <span>{nextVideo.aspectRatio}</span>
               </div>
               <div className="hero-actions">

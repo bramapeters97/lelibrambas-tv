@@ -10,7 +10,6 @@ export default [
       '**/dist-electron/**',
       '**/release/**',
       '**/build/**',
-      '**/android/**',
       '**/ios/**',
       '**/coverage/**',
       '**/node_modules/**',

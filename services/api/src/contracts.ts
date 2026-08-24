@@ -23,7 +23,7 @@ export const ProgressRequestSchema = z.object({
 
 export const PairingRequestSchema = z.object({
   name: z.string().trim().min(1).max(80),
-  platform: z.enum(['android-tv', 'tvos', 'windows', 'web', 'unknown']),
+  platform: z.enum(['tvos', 'windows', 'web', 'unknown']),
 });
 
 export const PairingApprovalSchema = z.object({

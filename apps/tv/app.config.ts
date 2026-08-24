@@ -8,10 +8,6 @@ export default {
     orientation: isTv ? 'landscape' : 'default',
     userInterfaceStyle: 'dark',
     newArchEnabled: true,
-    android: {
-      package: 'studios.lelibrambas.plus',
-      versionCode: 1,
-    },
     ios: {
       bundleIdentifier: 'studios.lelibrambas.plus',
       buildNumber: '1',
@@ -23,7 +19,6 @@ export default {
         {
           isTV: isTv,
           tvosDeploymentTarget: '17.0',
-          removeFlipperOnAndroid: true,
         },
       ],
       'expo-video',

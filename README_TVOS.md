@@ -6,11 +6,14 @@ The source tree and web preview can be tested on Windows, but a real tvOS build,
 
 `apps/tv/app.config.ts` declares bundle identifier `studios.lelibrambas.plus`, the New Architecture,
 tvOS deployment target `17.0`, and the `expo-video` config plugin. It derives the plugin target and
-orientation from `EXPO_TV`: `1`/`true` selects TV and landscape; other values select phone and the
+orientation from `EXPO_TV`: `1`/`true` selects tvOS and landscape; other values select iPhone and the
 default orientation.
 
+The `react-native-tvos` fork and `@react-native-tvos/config-tv` plugin are retained solely for this
+tvOS target.
+
 `apps/tv/App.tsx` dispatches on `Platform.isTV`. A tvOS build renders its focused
-profile/home/player TV shell, plays a bundled synthetic MP4, and uses React Native TV focus/remote
+profile/home/player tvOS shell, plays a bundled synthetic MP4, and uses React Native TV focus/remote
 primitives. A phone build instead renders `apps/tv/mobile/MobileApp.tsx`, whose flows are profile,
 Home, Search, Collections, Saved, catalogue details, and the demo player. Neither branch is the
 complete React DOM viewer, and no parity between these surfaces is claimed.
@@ -38,7 +41,7 @@ The last command runs `expo run:ios` with `EXPO_TV=1`, compiles, and targets the
 
 The root `tv:prebuild` script and the workspace `prebuild:tv`/`tvos` scripts explicitly select
 `EXPO_TV=1`. This prevents the default phone configuration from being mistaken for a tvOS project.
-Switching back from `mobile:prebuild` requires a clean TV prebuild.
+Switching back from `mobile:prebuild` requires a clean tvOS prebuild.
 
 The Windows development workspace does not contain a generated `apps/tv/ios` project. Until the macOS command exits successfully and an identified simulator/device is exercised, report **configured for tvOS; build and runtime unverified**.
 

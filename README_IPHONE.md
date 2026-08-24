@@ -1,6 +1,6 @@
 # iPhone preview and native development
 
-The Expo entry in `apps/tv/App.tsx` selects the TV shell when `Platform.isTV` is true and the
+The Expo entry in `apps/tv/App.tsx` selects the tvOS shell when `Platform.isTV` is true and the
 phone UI in `apps/tv/mobile/MobileApp.tsx` otherwise. The phone UI currently covers profile
 selection, Home, Search, Collections, Saved, catalogue details, and the bundled demo player.
 
@@ -36,7 +36,7 @@ Expo Go.
 Use Safari to review touch targets, responsive layout, navigation, search, session-only Saved
 behavior, and basic bundled-video playback. A Safari pass is React Native Web evidence only: it
 does not validate native `expo-video`, iOS safe areas, fullscreen transitions, lifecycle behavior,
-performance, device installation, or signing, and it does not establish parity with the TV or rich
+performance, device installation, or signing, and it does not establish parity with the tvOS or rich
 web viewers.
 
 ## Build a native app on a Mac with Xcode
@@ -52,16 +52,16 @@ corepack yarn mobile:prebuild
 corepack yarn workspace @lelibrambas/tv ios:mobile
 ```
 
-`mobile:prebuild` cleanly regenerates the ignored native projects with `EXPO_TV=0`. The workspace
+`mobile:prebuild` cleanly regenerates the ignored iOS project with `EXPO_TV=0`. The workspace
 command also sets `EXPO_TV=0`, then asks Expo/Xcode to build for a connected device. If Xcode asks
 for signing, select an intentional development team and review the bundle identifier before
 continuing. Enable iOS Developer Mode only when prompted for this local build; see Expo's
 [iOS Developer Mode guide](https://docs.expo.dev/guides/ios-developer-mode/).
 
-The generated `apps/tv/ios/` and `apps/tv/android/` directories are disposable CNG output and must
-not be committed as source of truth. Running the TV prebuild later regenerates them for the TV
-target. Record the Mac, Xcode and iOS versions, command exit status, selected device, and exercised
-flows before describing the native app as verified.
+The generated `apps/tv/ios/` directory is disposable CNG output and must not be committed as source
+of truth. Running the tvOS prebuild later regenerates it for the tvOS target. Record the Mac, Xcode
+and iOS versions, command exit status, selected device, and exercised flows before describing the
+native app as verified.
 
 ## Native iPhone build from Windows with EAS
 
@@ -93,5 +93,6 @@ build is authorized by this guide.
 - Test portrait and landscape, small and large iPhone sizes, VoiceOver labels, text input, back and
   fullscreen behavior, audio, interruption/background-resume, and memory pressure in the eventual
   native build.
-- Native iPhone, Android TV, tvOS, Electron, and React DOM results are separate evidence. Passing
+- Native iPhone, tvOS, Electron, and React DOM results are separate evidence. Passing
   one surface never establishes parity or release readiness for another.
+- The shared React Native TV dependency is retained solely for the separate tvOS target.

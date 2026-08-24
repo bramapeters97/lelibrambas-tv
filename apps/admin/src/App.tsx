@@ -362,10 +362,10 @@ export default function App() {
             </div>
           </div>
           <button type="button" onClick={() => navigate('settings')}>
-            <span className="avatar avatar--bram">BP</span>
+            <span className="avatar avatar--owner">DO</span>
             <span>
-              <strong>Bram</strong>
-              <small>Archive owner</small>
+              <strong>Demo Owner</strong>
+              <small>Fictional profile</small>
             </span>
             <Icon name="more" />
           </button>

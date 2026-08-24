@@ -16,11 +16,13 @@ Run from the project root in PowerShell:
 | `corepack yarn build:admin`                                   | Admin typecheck and Vite production bundle.                           |
 | `corepack yarn validate`                                      | The six checks above, sequentially.                                   |
 | `corepack yarn test:e2e`                                      | Playwright against a Vite preview on `127.0.0.1:4173`.                |
+| `corepack yarn test:stream`                                   | Opt-in real Stream HLS/CORS smoke using ignored public viewer config. |
+| `corepack yarn test:stream:electron`                          | Opt-in packaged custom-origin Stream/CSP playback smoke.              |
 | `corepack yarn workspace @lelibrambas/desktop smoke`          | Compiled Electron policy/path/input tests.                            |
 | `corepack yarn workspace @lelibrambas/desktop smoke:electron` | Hidden Electron window loads packaged renderer and expected title.    |
 | `corepack yarn workspace @lelibrambas/api build`              | Wrangler bundle dry-run; does not deploy.                             |
 
-The Expo entry in `apps/tv/App.tsx` dispatches between the smaller TV shell and the phone branch.
+The Expo entry in `apps/tv/App.tsx` dispatches between the smaller tvOS shell and the phone branch.
 The phone branch covers profile selection, Home, Search, Collections, Saved, catalogue details,
 and the bundled demo player. These target commands are outside `validate`:
 
@@ -30,11 +32,11 @@ and the bundled demo player. These target commands are outside `validate`:
 | `corepack yarn mobile:prebuild` | Clean ignored native generation with `EXPO_TV=0`; not a successful build. |
 | `corepack yarn ios:mobile`      | `EXPO_TV=0` local Xcode/device build; requires a Mac and signing.         |
 | `corepack yarn tv:prebuild`     | Clean ignored native generation with `EXPO_TV=1`; not a successful build. |
-| `corepack yarn android:tv`      | `EXPO_TV=1` Android TV build/install through the workspace script.        |
 
-`app.config.ts` uses `EXPO_TV` to switch plugin target and orientation. The root TV scripts set it
-explicitly through their workspace scripts. Regenerate cleanly when switching mobile and TV
-targets; do not treat a previously generated native folder as evidence for the other target.
+`app.config.ts` uses `EXPO_TV` to switch between tvOS and iPhone plugin targets and orientation. The
+root tvOS prebuild script sets it explicitly through its workspace script. Regenerate cleanly when switching iPhone and tvOS
+targets; do not treat a previously generated native folder as evidence for the other target. The
+native configuration and commands cover iPhone and tvOS only.
 
 Wrangler type generation and its dry-run bundle are platform-blocked on the current Windows Arm64 host because the bundled `workerd` binary is unsupported there. Re-run them on a supported host; the fallback binding snapshot is not generated-build evidence.
 
@@ -62,7 +64,6 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
   flow.
 - iPhone Safari touch/layout/video QA or a native iOS build, device install, signing, safe areas,
   lifecycle, fullscreen, and `expo-video` behavior.
-- Android TV Gradle build, emulator/physical D-pad, codecs, and launcher assets.
 - tvOS/Xcode build, Siri Remote, Apple TV hardware, signing, or App Store metadata.
 - Deployed Cloudflare bindings, authentication under load, rate limiting, migration against remote D1, Stream upload/transcode/playback, or R2 lifecycle.
 - Performance, long-duration playback, network interruption, accessibility audit, and private-data review.
@@ -78,13 +79,12 @@ Before calling a surface ready, record date, revision, device/OS, exact command,
 4. Native iPhone: current supported Mac/Xcode and physical iPhone; signing/install, safe areas,
    native video/fullscreen/audio, VoiceOver, interruption, background/foreground, and memory
    pressure.
-5. Android TV: API 36 x86_64 TV emulator plus a physical target device; cold launch, D-pad/back/play-pause, 4:3/16:9, suspend/resume.
-6. tvOS: current supported Xcode/tvOS simulator plus physical Apple TV before distribution.
-7. Importer: a copied non-critical sample set, a dry-run review, interrupted/resumed conversion, checksum verify, and visual/audio spot checks. Never use the only copy of an archive as a test fixture.
+5. tvOS: current supported Xcode/tvOS simulator plus physical Apple TV before distribution.
+6. Importer: a copied non-critical sample set, a dry-run review, interrupted/resumed conversion, checksum verify, and visual/audio spot checks. Never use the only copy of an archive as a test fixture.
 
 Safari exercises the React Native Web rendering of the phone branch. It is not native iOS evidence,
-and neither Safari nor a native phone pass establishes parity with the React DOM viewer or either
-TV target. See [iPhone preview and native development](README_IPHONE.md) for the LAN and Xcode
+and neither Safari nor a native phone pass establishes parity with the React DOM viewer or the
+tvOS shell. See [iPhone preview and native development](README_IPHONE.md) for the LAN and Xcode
 routes.
 
 ## Screenshots and artifacts
@@ -93,6 +93,6 @@ routes.
 corepack yarn screenshots
 ```
 
-This captures synthetic web/admin states, not native Android/tvOS UI. See [`docs/screenshots/README.md`](docs/screenshots/README.md). Playwright traces/reports, native folders, Electron releases, and importer state are ignored by Git.
+This captures synthetic web/admin states, not native tvOS UI. See [`docs/screenshots/README.md`](docs/screenshots/README.md). Playwright traces/reports, generated iOS content, Electron releases, and importer state are ignored by Git.
 
 Open every final WebP at full size and reject captures with browser chrome, loading states, clipped focus, scrollbars, personal paths, real media, weak contrast, or stretched 4:3 content. File presence alone is not visual approval.

@@ -1,10 +1,11 @@
 # Clean Windows setup
 
-This is the supported setup for the web viewer, Library Manager, Electron shell, importer, and Android TV emulator. tvOS compilation still requires a Mac.
+This is the supported setup for the web viewer, Library Manager, Electron shell, and importer.
+Native iPhone and tvOS compilation require a Mac.
 
 ## 1. Install the base tools
 
-Install [Git for Windows](https://git-scm.com/download/win), [Node.js 24 LTS](https://nodejs.org/en/download), and optionally [Android Studio](https://developer.android.com/studio/install.html), [FFmpeg](https://ffmpeg.org/download.html#build-windows), and [HandBrakeCLI](https://handbrake.fr/downloads2.php) for the workflows that need them.
+Install [Git for Windows](https://git-scm.com/download/win), [Node.js 24 LTS](https://nodejs.org/en/download), and optionally [FFmpeg](https://ffmpeg.org/download.html#build-windows) and [HandBrakeCLI](https://handbrake.fr/downloads2.php) for the workflows that need them.
 
 Open a fresh 64-bit PowerShell window:
 
@@ -20,10 +21,9 @@ corepack yarn --version
 
 ## 2. Install the workspace
 
-From the repository root:
+Clone the repository, then open PowerShell in its root directory (the directory containing `package.json`):
 
 ```powershell
-Set-Location .\projects\lelibrambas-plus
 corepack yarn setup
 ```
 
@@ -97,67 +97,19 @@ Outputs under `apps/desktop/release/` are `LeliBramBasPlus-1.0.0-x64-portable.ex
 
 The Electron process consumes only unmodified `F`; the remaining keys pass to the renderer. Hover and a pointer are never required.
 
-## 7. Android Studio, TV AVD, run, and APK
-
-Install Android Studio on a supported Windows x64 host and complete its Setup Wizard. In **More Actions > SDK Manager**, install:
-
-- Android 16 / SDK Platform API 36
-- Build-Tools 36.x
-- Platform-Tools and Command-line Tools
-- Android Emulator
-- an Android TV or Google TV x86_64 system image (Expo supports TV images API 31 or later)
-
-In **More Actions > Virtual Device Manager**, choose **Create Virtual Device**, select a Television/Google TV hardware profile, choose that image, finish, and start the AVD. Google's current Android Studio Windows requirements do not support Windows Arm hosts; move emulator/native-build validation to a supported x64 Windows, macOS, or Linux machine rather than reporting a web preview as native evidence.
-
-Expose the default SDK tools to the current PowerShell session if Android Studio did not do so:
-
-```powershell
-$leliAndroidSdk = Join-Path $env:LOCALAPPDATA 'Android\Sdk'
-$env:ANDROID_HOME = $leliAndroidSdk
-$env:Path = "$(Join-Path $leliAndroidSdk 'platform-tools');$(Join-Path $leliAndroidSdk 'emulator');$env:Path"
-adb --version
-adb devices
-```
-
-With the TV launcher fully booted:
-
-```powershell
-corepack yarn tv:prebuild
-corepack yarn android:tv
-```
-
-Build the debug APK explicitly after prebuild:
-
-```powershell
-Push-Location .\apps\tv\android
-.\gradlew.bat assembleDebug
-Pop-Location
-```
-
-Expected artifact:
-
-```text
-apps\tv\android\app\build\outputs\apk\debug\app-debug.apk
-```
-
-The generated release block currently uses debug signing. The APK is local prototype output, not a Play Store release. Full setup and native-status boundaries are in [README_ANDROID_TV.md](README_ANDROID_TV.md).
-
-## 8. Common failures
+## 7. Common failures
 
 - **Wrong Yarn or duplicate `PATH`/`Path`:** prefer root `corepack yarn ...` commands; root scripts invoke CLI files through the selected Node process.
 - **Port in use:** stop the process using `5173`, `4173`, or `4174`; Vite uses strict ports.
 - **Playwright browser missing:** run `corepack yarn playwright install chromium` before `corepack yarn test:e2e`.
 - **OneDrive file cannot be probed:** hydrate it and run `prepare` again; do not reuse a manifest that marks it unavailable.
-- **Android SDK not found:** follow [Android TV setup](README_ANDROID_TV.md) and restart PowerShell after defining `ANDROID_HOME`.
-- **Android emulator unavailable on Windows Arm:** this is an unsupported host limitation. Use the web/Electron previews locally and move native validation to a supported host.
-- **Gradle cannot find Java:** launch the generated project once in Android Studio or configure its compatible bundled JDK, then confirm `java -version` before retrying.
 
-## 9. Full local validation
+## 8. Full local validation
 
 ```powershell
 corepack yarn validate
 ```
 
-This runs type checking, lint, formatting validation, automated tests, and both web production builds. Electron packaging, Android runtime/build, tvOS, and Cloudflare remain separate evidence tracks; see [TESTING.md](TESTING.md).
+This runs type checking, lint, formatting validation, automated tests, and both web production builds. Electron packaging, native iPhone/tvOS builds, and Cloudflare remain separate evidence tracks; see [TESTING.md](TESTING.md).
 
-Official references: [Expo SDK compatibility](https://docs.expo.dev/versions/latest/), [Expo Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/), and [Android Studio installation](https://developer.android.com/studio/install.html).
+Official reference: [Expo SDK compatibility](https://docs.expo.dev/versions/latest/).

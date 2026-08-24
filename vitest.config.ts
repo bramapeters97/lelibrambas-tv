@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   test: {
     include: ['**/*.test.ts', '**/*.test.tsx'],
-    exclude: ['**/node_modules/**', '**/dist/**', '**/android/**', '**/ios/**'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/ios/**'],
     coverage: { reporter: ['text', 'html'] },
   },
 });

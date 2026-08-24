@@ -13,11 +13,23 @@ import {
   WINDOW_DEFAULTS,
 } from './policy.js';
 
-const smokeMode = process.argv.includes('--smoke-test');
+const streamSmokeMode = process.argv.includes('--stream-smoke-test');
+const smokeMode = process.argv.includes('--smoke-test') || streamSmokeMode;
 const developmentMode = !app.isPackaged && !smokeMode && process.env.NODE_ENV !== 'production';
 const rendererEntryUrl = developmentMode
   ? parseLoopbackDevServerUrl(process.env.LELIBRAMBAS_TV_DEV_URL)
-  : PRODUCTION_RENDERER_URL;
+  : streamSmokeMode
+    ? `${PRODUCTION_RENDERER_URL}?screen=details&capture=1&video=folder-placeholder-01`
+    : PRODUCTION_RENDERER_URL;
+
+if (smokeMode) {
+  const smokeDataRoot = process.env.LELIBRAMBAS_ELECTRON_SMOKE_DATA_ROOT;
+  if (!smokeDataRoot) {
+    throw new Error('Electron smoke mode must be launched through scripts/run-smoke.mjs.');
+  }
+  app.setPath('userData', smokeDataRoot);
+  app.setPath('sessionData', join(smokeDataRoot, 'session'));
+}
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -101,21 +113,80 @@ function installWindowRestrictions(window: BrowserWindow): void {
   });
 }
 
+async function verifyPackagedStreamPlayback(window: BrowserWindow): Promise<void> {
+  const state = (await window.webContents.executeJavaScript(`
+    (async () => {
+      const waitFor = async (probe, timeoutMs = 20000) => {
+        const startedAt = Date.now();
+        while (Date.now() - startedAt < timeoutMs) {
+          const value = probe();
+          if (value) return value;
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+        throw new Error('Timed out waiting for packaged playback.');
+      };
+
+      const detailPlay = await waitFor(() =>
+        document.querySelector('[data-focus-id="detail-play"]'),
+      );
+      detailPlay.click();
+      const video = await waitFor(() => document.querySelector('video'));
+      const play = await waitFor(() => document.querySelector('[data-focus-id="play-pause"]'));
+      play.click();
+      await waitFor(() => video.error || video.currentTime > 0.5);
+      return {
+        currentTime: video.currentTime,
+        duration: video.duration,
+        errorCode: video.error?.code ?? null,
+      };
+    })()
+  `)) as { currentTime: number; duration: number; errorCode: number | null };
+
+  if (state.errorCode !== null || state.currentTime <= 0.5 || !Number.isFinite(state.duration)) {
+    throw new Error('Packaged Stream playback did not advance without a media error.');
+  }
+  console.log(
+    `[desktop-stream-smoke] OK: playback advanced to ${state.currentTime.toFixed(1)}s of ${state.duration.toFixed(1)}s.`,
+  );
+}
+
 function installSmokeProbe(window: BrowserWindow): void {
-  const timeout = setTimeout(() => {
-    console.error('[desktop-smoke] Timed out while loading the packaged TV renderer.');
-    app.exit(1);
-  }, 15_000);
+  const timeout = setTimeout(
+    () => {
+      console.error(
+        streamSmokeMode
+          ? '[desktop-stream-smoke] Timed out while testing packaged playback.'
+          : '[desktop-smoke] Timed out while loading the packaged TV renderer.',
+      );
+      app.exit(1);
+    },
+    streamSmokeMode ? 30_000 : 15_000,
+  );
 
   window.webContents.once('did-finish-load', () => {
-    clearTimeout(timeout);
     const title = window.webContents.getTitle();
     if (title !== 'LeliBramBas+') {
+      clearTimeout(timeout);
       console.error(`[desktop-smoke] Unexpected renderer title: ${JSON.stringify(title)}`);
       app.exit(1);
       return;
     }
 
+    if (streamSmokeMode) {
+      void verifyPackagedStreamPlayback(window)
+        .then(() => {
+          clearTimeout(timeout);
+          app.exit(0);
+        })
+        .catch(() => {
+          clearTimeout(timeout);
+          console.error('[desktop-stream-smoke] Packaged Stream playback failed.');
+          app.exit(1);
+        });
+      return;
+    }
+
+    clearTimeout(timeout);
     console.log(`[desktop-smoke] OK ${window.webContents.getURL()} ${title}`);
     app.exit(0);
   });

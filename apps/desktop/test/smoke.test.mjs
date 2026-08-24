@@ -30,6 +30,10 @@ test('security-sensitive BrowserWindow defaults stay locked down', () => {
   assert.equal(WINDOW_DEFAULTS.width / WINDOW_DEFAULTS.height, 16 / 9);
   assert.equal(PRODUCTION_CSP.includes("script-src 'self'"), true);
   assert.equal(PRODUCTION_CSP.includes("'unsafe-eval'"), false);
+  assert.equal(PRODUCTION_CSP.includes("frame-src 'none'"), true);
+  assert.equal(PRODUCTION_CSP.includes('https://*.cloudflarestream.com'), true);
+  assert.equal(PRODUCTION_CSP.includes('http:'), false);
+  assert.equal(PRODUCTION_CSP.includes('ws:'), false);
 });
 
 test('only HTTP loopback origins can become development renderers', () => {
@@ -108,12 +112,15 @@ test('manifest pins the runtime and portable Windows x64 packaging contract', as
   assert.equal(manifest.devDependencies.electron, '43.4.0');
   assert.equal(manifest.devDependencies['electron-builder'], '26.15.7');
   assert.equal(manifest.main, 'dist-electron/main.js');
+  assert.match(manifest.scripts['smoke:electron'], /scripts\/run-smoke\.mjs$/);
+  assert.match(manifest.scripts['smoke:stream'], /scripts\/run-smoke\.mjs --stream$/);
   assert.deepEqual(manifest.build.win.target, [{ target: 'portable', arch: ['x64'] }]);
   assert.equal(manifest.build.extraResources[0].from, '../tv/dist');
   assert.equal(typeof manifest.build.nsis.artifactName, 'string');
 
   const compiledMain = await readFile(resolve(desktopDirectory, manifest.main), 'utf8');
   assert.doesNotMatch(compiledMain, /\bipcMain\b/);
+  assert.doesNotMatch(compiledMain, /no-sandbox|disable-gpu|disableHardwareAcceleration/);
 });
 
 test('installed Electron package is the pinned runtime', async () => {

@@ -29,7 +29,12 @@ for (const suite of suites) {
   const localVitest = resolve(suiteRoot, 'node_modules', 'vitest', 'vitest.mjs');
   const suiteVitest = existsSync(localVitest) ? localVitest : vitest;
   const configArgs = suite.config ? ['--config', resolve(suiteRoot, suite.config)] : [];
-  run(suite.path, process.execPath, [suiteVitest, 'run', ...configArgs], suiteRoot);
+  run(
+    suite.path,
+    process.execPath,
+    [suiteVitest, 'run', '--configLoader', 'runner', ...configArgs],
+    suiteRoot,
+  );
 }
 
 run('apps/desktop build', process.execPath, [

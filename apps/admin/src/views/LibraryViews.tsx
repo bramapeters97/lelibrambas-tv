@@ -156,7 +156,7 @@ export function RailsView({ rails, videos, onUpdate, onMove }: RailsViewProps) {
           <div className="viewer-preview__screen">
             <div className="viewer-preview__hero">
               <span>LeliBramBas+</span>
-              <strong>Eline Maria Peters (Part 1)</strong>
+              <strong>{videos[0]?.title ?? 'Synthetic catalogue'}</strong>
               <small>JEUGDFILMS - Catalogue only</small>
             </div>
             {rails
