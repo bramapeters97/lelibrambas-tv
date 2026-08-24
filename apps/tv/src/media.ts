@@ -34,7 +34,10 @@ function isCloudflareStreamHost(hostname: string): boolean {
   );
 }
 
-export function resolvePlaybackSource(value?: string): PlaybackSource {
+export function resolvePlaybackSource(
+  value?: string,
+  options: { autoplay?: boolean } = {},
+): PlaybackSource {
   const originalUrl = value?.trim() ?? '';
   let parsed: URL;
   try {
@@ -67,8 +70,10 @@ export function resolvePlaybackSource(value?: string): PlaybackSource {
     iframe.pathname = `/${identifier}/iframe`;
     iframe.search = '';
     iframe.hash = '';
+    if (options.autoplay) iframe.searchParams.set('autoplay', 'true');
     const manifest = new URL(iframe.toString());
     manifest.pathname = `/${identifier}/manifest/video.m3u8`;
+    manifest.search = '';
     return {
       kind: 'iframe',
       url: iframe.toString(),

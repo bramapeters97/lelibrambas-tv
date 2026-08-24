@@ -57,6 +57,10 @@ describe('runtime catalogue loading and media resolution', () => {
     expect(source.originalUrl).toBe(generatedCatalog[0]?.stream_video_id);
     expect(source.url).toMatch(/\/iframe$/);
     expect(source.tvosCompatible).toBe(false);
+    const autoplaySource = resolvePlaybackSource(generatedCatalog[0]?.stream_video_id, {
+      autoplay: true,
+    });
+    expect(autoplaySource.url).toMatch(/\/iframe\?autoplay=true$/);
     const nativeSource = resolveNativePlaybackSource(generatedCatalog[0]?.stream_video_id);
     expect(nativeSource.kind).toBe('hls');
     expect(nativeSource.url).toMatch(/\/manifest\/video\.m3u8$/);

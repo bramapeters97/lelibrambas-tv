@@ -5,6 +5,13 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sourceArtwork = resolve(repositoryRoot, 'artwork');
 const sourceCatalog = resolve(repositoryRoot, 'data', 'media_catalog.json');
+const sourceShareImage = resolve(
+  repositoryRoot,
+  'apps',
+  'tv',
+  'assets',
+  'lelibrambas-studios.png',
+);
 
 function assertInsideRepository(path, label) {
   const relativePath = relative(repositoryRoot, resolve(path));
@@ -38,18 +45,27 @@ export async function syncArtworkAndCatalog() {
   const publicDirectory = await detectWebPublicDirectory();
   const artworkDestination = resolve(publicDirectory, 'artwork');
   const catalogDestination = resolve(publicDirectory, 'data', 'media_catalog.json');
+  const shareImageDestination = resolve(publicDirectory, 'lelibrambas-share.png');
   assertInsideRepository(artworkDestination, 'artwork destination');
   assertInsideRepository(catalogDestination, 'catalogue destination');
+  assertInsideRepository(shareImageDestination, 'share image destination');
 
   await rm(artworkDestination, { recursive: true, force: true });
   await mkdir(artworkDestination, { recursive: true });
   await cp(sourceArtwork, artworkDestination, { recursive: true, force: true });
   await mkdir(dirname(catalogDestination), { recursive: true });
   await copyFile(sourceCatalog, catalogDestination);
+  await copyFile(sourceShareImage, shareImageDestination);
 
   const copiedFiles = await readdir(artworkDestination, { recursive: true, withFileTypes: true });
   const artworkCount = copiedFiles.filter((entry) => entry.isFile()).length;
-  return { publicDirectory, artworkDestination, catalogDestination, artworkCount };
+  return {
+    publicDirectory,
+    artworkDestination,
+    catalogDestination,
+    shareImageDestination,
+    artworkCount,
+  };
 }
 
 function printSyncReport(report) {
@@ -57,6 +73,7 @@ function printSyncReport(report) {
     `Synced ${report.artworkCount} artwork files to ${relative(repositoryRoot, report.artworkDestination)}.`,
   );
   console.log(`Synced catalogue to ${relative(repositoryRoot, report.catalogDestination)}.`);
+  console.log(`Synced share image to ${relative(repositoryRoot, report.shareImageDestination)}.`);
 }
 
 const invokedPath = process.argv[1] ? pathToFileURL(resolve(process.argv[1])).href : '';

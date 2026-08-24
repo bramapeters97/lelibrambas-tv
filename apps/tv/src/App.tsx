@@ -18,6 +18,8 @@ import {
   type LoadedCatalogue,
 } from './catalogue';
 import {
+  ArtCard,
+  CinemaIcon,
   CollectionsScreen,
   HubsScreen,
   NavigationRail,
@@ -191,8 +193,7 @@ function StudioIdent({ onDone }: { onDone: () => void }) {
         ))}
       </div>
       <div className="ident-mark" aria-hidden="true">
-        <b>L</b>
-        <b>B</b>
+        <CinemaIcon />
       </div>
       <div className="ident-copy">
         <h1>LELIBRAMBAS+</h1>
@@ -280,6 +281,7 @@ function Home({
   onDetails,
   onPlay,
   onNavigate,
+  onOpenCollection,
   onReplayIntro,
   onProfile,
 }: {
@@ -289,13 +291,18 @@ function Home({
   onDetails: (video: CatalogueVideoRecord) => void;
   onPlay: (video: CatalogueVideoRecord) => void;
   onNavigate: (screen: BrowseScreenId) => void;
+  onOpenCollection: (collectionId: string) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
-  const hero = catalogue.find((item) => item.featured) ?? catalogue[0]!;
+  const hero = catalogue.find((item) => item.title === 'Lelibrambas+ Trailer') ?? catalogue[0]!;
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
+  const trendingIds = [22, 23, 7, 40];
+  const trending = trendingIds
+    .map((id) => catalogue.find((item) => item.catalogueId === id))
+    .filter((item): item is CatalogueVideoRecord => Boolean(item));
   return (
     <main className="tv-shell">
       <NavigationRail
@@ -307,13 +314,7 @@ function Home({
       />
       <section className="home-content">
         <div className="hero" style={paletteStyle(hero)}>
-          <div className="hero-art" aria-hidden="true">
-            <img
-              src={resolvePosterUrl(hero.posterUrl)}
-              alt=""
-              onError={(event) => applyPosterFallback(event.currentTarget)}
-            />
-          </div>
+          <div className="hero-art" aria-hidden="true" />
           <div className="hero-scrim" />
           <div className="hero-copy">
             <p className="studio-line">{hero.categories[0]}</p>
@@ -335,12 +336,7 @@ function Home({
                 disabled={!heroAvailability.playable}
                 onClick={() => onPlay(hero)}
               >
-                Play -{' '}
-                {heroAvailability.playable
-                  ? resumeSeconds > 0
-                    ? 'Resume'
-                    : 'Play'
-                  : 'Unavailable'}
+                {heroAvailability.playable ? 'Play Trailer' : 'Trailer unavailable'}
               </ActionButton>
               <ActionButton id="hero-info" tone="secondary" onClick={() => onDetails(hero)}>
                 More information
@@ -363,8 +359,8 @@ function Home({
               <button
                 key={collection.id}
                 data-focusable
-                data-focus-id={`home-hub-${index}`}
-                onClick={() => onNavigate('hubs')}
+                data-focus-id={`home-hub-${collection.id}`}
+                onClick={() => onOpenCollection(collection.id)}
               >
                 <i>{String(index + 1).padStart(2, '0')}</i>
                 <span>
@@ -375,6 +371,44 @@ function Home({
             ))}
           </div>
         </section>
+        <section className="rail-section home-multi-rail" data-home-rail="currently-trending">
+          <div className="rail-heading">
+            <h2>Currently Trending</h2>
+            <span>{trending.length} titles</span>
+          </div>
+          <div className="card-rail">
+            {trending.map((item, index) => (
+              <ArtCard key={item.catalogueId} video={item} index={index} onSelect={onDetails} />
+            ))}
+          </div>
+        </section>
+        {collections.map((collection) => {
+          const videos = collection.videoIds
+            .map((id) => catalogue.find((item) => item.id === id))
+            .filter((item): item is CatalogueVideoRecord => Boolean(item));
+          return (
+            <section
+              key={collection.id}
+              className="rail-section home-multi-rail"
+              data-home-rail={collection.id}
+            >
+              <div className="rail-heading">
+                <h2>{collection.title}</h2>
+                <span>{videos.length} titles</span>
+              </div>
+              <div className="card-rail">
+                {videos.map((item, index) => (
+                  <ArtCard
+                    key={item.catalogueId}
+                    video={item}
+                    index={index}
+                    onSelect={onDetails}
+                  />
+                ))}
+              </div>
+            </section>
+          );
+        })}
       </section>
     </main>
   );
@@ -447,12 +481,11 @@ function Details({
         <div className="hero-actions">
           <ActionButton
             id="detail-play"
-            disabled={!availability.playable}
-            onClick={() => onPlay(video)}
-          >
-            Play -{' '}
+          disabled={!availability.playable}
+          onClick={() => onPlay(video)}
+        >
             {availability.playable ? (resumeSeconds > 0 ? 'Resume' : 'Play') : availability.title}
-          </ActionButton>
+        </ActionButton>
           <ActionButton
             id="detail-restart"
             disabled={!availability.playable}
@@ -535,7 +568,10 @@ function Player({
   const initialSeconds = saved.completed ? 0 : saved.seconds;
   const currentRef = useRef(initialSeconds);
   const availability = playbackAvailability(video);
-  const playbackSource = useMemo(() => resolvePlaybackSource(video.streamVideoId), [video]);
+  const playbackSource = useMemo(
+    () => resolvePlaybackSource(video.streamVideoId, { autoplay: true }),
+    [video.streamVideoId],
+  );
   const nextVideo = useMemo(() => nextPlayableVideo(video, catalogue), [catalogue, video]);
   const forcedPlayerState = new URLSearchParams(location.search).get('playerState');
   const [playing, setPlaying] = useState(false);
@@ -783,6 +819,7 @@ function Player({
             data-catalogue-id={video.catalogueId}
             data-stream-video-id={playbackSource.originalUrl}
             data-playback-url={playbackSource.url}
+            autoPlay
             muted={muted}
             playsInline
             onLoadedMetadata={(event) => {
@@ -828,7 +865,7 @@ function Player({
             className="stream-iframe"
             src={playbackSource.url}
             title={`${video.title} player`}
-            allow="accelerometer; gyroscope; encrypted-media; picture-in-picture; fullscreen"
+            allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
             allowFullScreen
             referrerPolicy="no-referrer"
             data-catalogue-id={video.catalogueId}
@@ -841,7 +878,7 @@ function Player({
             onClick={leave}
             aria-label="Back to details"
           >
-            â†
+            &larr;
           </button>
         </div>
       )}
@@ -925,7 +962,7 @@ function Player({
                 onClick={leave}
                 aria-label="Back to details"
               >
-                ←
+                &larr;
               </button>
               <div>
                 <p>{video.title}</p>
@@ -995,6 +1032,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
       catalogue.find((item) => item.id === requested || item.slug === requested) ?? catalogue[0]!
     );
   });
+  const [selectedCollectionId, setSelectedCollectionId] = useState(collections[0]!.id);
   const screenRef = useRef<Screen>(initial);
   const history = useRef<Array<{ screen: Screen; focusId: string | null }>>([]);
   const pendingFocusId = useRef<string | null>(null);
@@ -1184,6 +1222,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
       <CollectionsScreen
         catalogue={catalogue}
         collections={collections}
+        initialCollectionId={selectedCollectionId}
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
@@ -1197,6 +1236,10 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
       collections={collections}
       profile={profile}
       onNavigate={onNavigate}
+      onOpenCollection={(collectionId) => {
+        setSelectedCollectionId(collectionId);
+        go('collections');
+      }}
       onDetails={onDetails}
       onReplayIntro={replayIntro}
       onProfile={openProfiles}

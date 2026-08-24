@@ -17,6 +17,9 @@ describe('generated media catalogue', () => {
     expect(catalogue.map((video) => video.title)).toEqual(
       generatedCatalog.map((record) => record.title),
     );
+    expect(catalogue.map((video) => video.description)).toEqual(
+      generatedCatalog.map((record) => record.description),
+    );
   });
 
   it('uses the four generated category labels and counts', () => {

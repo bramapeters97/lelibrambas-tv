@@ -67,7 +67,7 @@ const navItems: Array<{ id: PrimaryNavScreenId; icon: NavIconId; label: string }
   { id: 'collections', icon: 'collections', label: 'Collections' },
 ];
 
-function CinemaIcon() {
+export function CinemaIcon() {
   return (
     <svg className="nav-wordmark__icon" aria-hidden="true" viewBox="0 0 24 24">
       <path d="M4 8.5h16v9.8c0 1-.8 1.7-1.8 1.7H5.8c-1 0-1.8-.7-1.8-1.7Z" />
@@ -165,7 +165,7 @@ export function NavigationRail({
   );
 }
 
-function ArtCard({
+export function ArtCard({
   video,
   onSelect,
   index = 0,
@@ -497,6 +497,7 @@ export function SearchScreen({
 export function CollectionsScreen({
   catalogue,
   collections,
+  initialCollectionId,
   profile,
   onNavigate,
   onDetails,
@@ -505,14 +506,21 @@ export function CollectionsScreen({
 }: {
   catalogue: readonly CatalogueVideoRecord[];
   collections: readonly Collection[];
+  initialCollectionId?: string;
   profile: Profile;
   onNavigate: (screen: BrowseScreenId) => void;
   onDetails: (video: CatalogueVideoRecord) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
-  const [selected, setSelected] = useState(collections[0]!.id);
+  const [selected, setSelected] = useState(
+    () => collections.find((item) => item.id === initialCollectionId)?.id ?? collections[0]!.id,
+  );
   const collection = collections.find((item) => item.id === selected) ?? collections[0]!;
+  const orderedCollections = [
+    collection,
+    ...collections.filter((item) => item.id !== collection.id),
+  ];
   const videos = collection.videoIds
     .map((id) => catalogue.find((video) => video.id === id))
     .filter(Boolean) as CatalogueVideoRecord[];
@@ -527,21 +535,26 @@ export function CollectionsScreen({
       onProfile={onProfile}
     >
       <section className="collection-grid">
-        {collections.map((item, index) => (
-          <button
-            key={item.id}
-            data-focusable
-            data-focus-id={`collection-${item.id}`}
-            className={selected === item.id ? 'active' : ''}
-            onClick={() => setSelected(item.id)}
-          >
-            <span>{String(index + 1).padStart(2, '0')}</span>
-            <small>{item.kind}</small>
-            <strong>{item.title}</strong>
-            <p>{item.description}</p>
-            <em>{item.videoIds.length} catalogue records</em>
-          </button>
-        ))}
+        {orderedCollections.map((item) => {
+          const isSelected = selected === item.id;
+          const directoryIndex = collections.findIndex((candidate) => candidate.id === item.id);
+          return (
+            <button
+              key={item.id}
+              data-focusable
+              data-focus-id={`collection-${item.id}`}
+              className={isSelected ? 'active' : ''}
+              aria-current={isSelected ? 'true' : undefined}
+              onClick={() => setSelected(item.id)}
+            >
+              <span>{String(directoryIndex + 1).padStart(2, '0')}</span>
+              <small>{item.kind}</small>
+              <strong>{item.title}</strong>
+              <p>{item.description}</p>
+              <em>{item.videoIds.length} catalogue records</em>
+            </button>
+          );
+        })}
       </section>
       <section className="result-block">
         <div className="result-title">
@@ -551,30 +564,9 @@ export function CollectionsScreen({
           </div>
           <span>Directory order</span>
         </div>
-        <div className="episode-list">
+        <div className="collection-video-grid">
           {videos.map((video, index) => (
-            <button
-              key={video.catalogueId}
-              data-focusable
-              data-focus-id={`episode-${video.id}`}
-              data-catalogue-id={video.catalogueId}
-              onClick={() => onDetails(video)}
-            >
-              <b>{String(index + 1).padStart(2, '0')}</b>
-              <img
-                src={resolvePosterUrl(video.posterUrl)}
-                alt=""
-                loading="lazy"
-                onError={(event) => applyPosterFallback(event.currentTarget)}
-              />
-              <span>
-                <strong>{video.title}</strong>
-                <small>
-                  {video.year ?? 'Year unknown'} - {video.location}
-                </small>
-              </span>
-              <em>&gt;</em>
-            </button>
+            <ArtCard key={video.catalogueId} video={video} index={index} onSelect={onDetails} />
           ))}
         </div>
       </section>
