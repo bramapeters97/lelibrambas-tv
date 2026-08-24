@@ -11,11 +11,48 @@ needed, and starts the viewer at `http://127.0.0.1:5173` plus the local Library 
 `http://127.0.0.1:4174`. Stop both with `Ctrl+C`, or press `q` and Enter in terminals that do
 not translate `Ctrl+C` into a Windows console signal.
 
-The checked-in catalogue contains 35 fictional placeholders. To enable the same intentionally
-public Cloudflare Stream test video for every item, copy the two
-`VITE_STREAM_PLACEHOLDER_*` examples from `.env.example` to an ignored
-`apps/tv/.env.local`, replace both placeholders, and restart. Never put a secret or private signed
-URL in a `VITE_` variable.
+## Local media catalogue
+
+The viewer catalogue is generated, never maintained as a React array:
+
+```text
+media_catalog_populated.xlsx
+        ↓
+corepack yarn catalog:generate
+        ↓
+data/media_catalog.json
+```
+
+`media_catalog_populated.xlsx` remains the editable source and is never loaded by the browser.
+The generator reads its first worksheet, validates all seven columns and field types, normalizes
+the owner-approved `OTHER` category spelling to `OTHERS`, sorts records by numeric `id`, resolves
+poster filenames against the repository-root `artwork/` directory, and writes deterministic JSON.
+Commit `data/media_catalog.json` after regenerating it.
+
+The repository-root `artwork/` directory is the artwork source of truth. Local JSON poster values
+use the platform-neutral `artwork/<filename>.png` contract. A missing or ambiguously absent poster
+uses `artwork/generic_cinema_2.png`. The browser maps those values to
+`/artwork/<filename>.png`; it never uses `../artwork` or a local filesystem path.
+
+Run either command after editing the workbook or artwork:
+
+```powershell
+corepack yarn content:prepare
+# or separately
+corepack yarn catalog:generate
+corepack yarn artwork:sync
+```
+
+`artwork:sync` copies root artwork and the generated catalogue into the Vite public directory.
+The generated runtime copies are ignored; the root artwork and `data/media_catalog.json` remain
+canonical. `content:prepare` runs automatically before the root and TV workspace development and
+production-build commands.
+
+Start both local interfaces with `corepack yarn start`, or only the React DOM viewer with:
+
+```powershell
+corepack yarn dev:tv-web
+```
 
 Run the complete local verification suite with:
 
@@ -48,9 +85,9 @@ Do not select `apps/tv` as the build root directory. This is a Yarn workspace, s
 installation, the build, and Wrangler must start at the repository root. Cloudflare serves the generated
 `apps/tv/dist/index.html`; the Library Manager and native apps are not part of this deployment.
 
-With the public test asset configured and network access available, verify the real HLS path with
-`corepack yarn test:stream`. On Windows, `corepack yarn test:stream:electron` verifies the same
-asset through the packaged Electron protocol and content-security policy.
+With network access available, `corepack yarn test:stream` verifies the first generated movie's
+secure Cloudflare Stream player. On Windows, `corepack yarn test:stream:electron` verifies that
+the packaged Electron protocol passes the same selected catalogue row to its Stream iframe.
 
 For the phone UI and the quickest iPhone test route, see
 [iPhone preview and native development](README_IPHONE.md).

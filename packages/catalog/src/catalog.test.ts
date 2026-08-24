@@ -1,68 +1,51 @@
 import { describe, expect, it } from 'vitest';
+import generatedCatalog from '../../../data/media_catalog.json';
 import {
-  archivePlaceholderCategories,
-  archivePlaceholders,
   catalogue,
+  catalogueCategories,
   collections,
-  profiles,
+  createCatalogue,
+  parseMediaCatalog,
 } from './index';
 
-describe('privacy-safe folder placeholder catalogue', () => {
-  it('matches the private manifest structure without copying its labels', () => {
-    expect(catalogue).toHaveLength(35);
+describe('generated media catalogue', () => {
+  it('contains exactly one viewer record per generated JSON item in numeric id order', () => {
+    expect(catalogue).toHaveLength(generatedCatalog.length);
+    expect(catalogue.map((video) => video.catalogueId)).toEqual(
+      generatedCatalog.map((record) => record.id),
+    );
     expect(catalogue.map((video) => video.title)).toEqual(
-      archivePlaceholders.map((placeholder) => placeholder.title),
-    );
-    expect(catalogue.map((video) => video.categories[0])).toEqual(
-      archivePlaceholders.map((placeholder) => placeholder.category),
+      generatedCatalog.map((record) => record.title),
     );
   });
 
-  it('contains the four source categories in their source-derived order and counts', () => {
-    expect(collections.map((collection) => collection.title)).toEqual(
-      archivePlaceholderCategories.map((category) => category.name),
-    );
-    expect(collections.map((collection) => collection.videoIds.length)).toEqual([3, 17, 8, 7]);
-  });
-
-  it('uses only fictional ordered titles and does not invent part records', () => {
-    expect(archivePlaceholderCategories.map((category) => category.movies)).toEqual([
-      ['Jeugdfilm 01', 'Jeugdfilm 02', 'Jeugdfilm 03'],
-      Array.from(
-        { length: 17 },
-        (_, index) => `Vakantiefilm ${String(index + 1).padStart(2, '0')}`,
-      ),
-      Array.from(
-        { length: 8 },
-        (_, index) => `Evenementfilm ${String(index + 1).padStart(2, '0')}`,
-      ),
-      Array.from({ length: 7 }, (_, index) => `Overige film ${String(index + 1).padStart(2, '0')}`),
+  it('uses the four generated category labels and counts', () => {
+    expect(collections.map((collection) => collection.title)).toEqual([
+      'JEUGDFILMS',
+      'VAKANTIEFILMS',
+      'EVENTS',
+      'OTHERS',
     ]);
-    expect(archivePlaceholders.every((placeholder) => placeholder.group === null)).toBe(true);
-    expect(archivePlaceholders.every((placeholder) => !placeholder.title.includes('(Part'))).toBe(
-      true,
+    expect(collections.map((collection) => collection.videoIds.length)).toEqual([3, 18, 9, 9]);
+    expect(catalogueCategories.flatMap((category) => category.movies)).toHaveLength(
+      generatedCatalog.length,
     );
   });
 
-  it('does not expose source data or claim playback is available', () => {
-    expect(new Set(catalogue.map((video) => video.id)).size).toBe(catalogue.length);
-    expect(
-      catalogue.every(
-        (video) =>
-          video.processingStatus === 'unavailable' &&
-          video.playbackUrl === null &&
-          video.playbackAssetId === null &&
-          video.sourcePath === undefined &&
-          video.people.every((person) => person.startsWith('Synthetic')) &&
-          video.location === 'Synthetic archive' &&
-          video.description.includes('fictional catalogue-only record'),
-      ),
-    ).toBe(true);
-    expect(profiles.every((profile) => profile.pin === undefined)).toBe(true);
-    expect(profiles.map((profile) => profile.name)).toEqual([
-      'Bart & Astrid',
-      'Bram & Edvin',
-      'Eline & Luca',
-    ]);
+  it('preserves every exact stream URL on the selected catalogue record', () => {
+    for (const [index, video] of catalogue.entries()) {
+      expect(video.streamVideoId).toBe(generatedCatalog[index]?.stream_video_id);
+      expect(video.playbackUrl).toBe(video.streamVideoId);
+    }
+  });
+
+  it('rejects malformed or duplicate JSON instead of substituting mock movies', () => {
+    expect(() => parseMediaCatalog({})).toThrow(/JSON array/);
+    expect(() =>
+      createCatalogue([
+        generatedCatalog[0],
+        { ...generatedCatalog[1], id: generatedCatalog[0]?.id },
+      ]),
+    ).toThrow(/repeats id/);
   });
 });

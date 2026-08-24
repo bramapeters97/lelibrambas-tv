@@ -29,6 +29,12 @@ function run(label, entry, args, cwd) {
 
 if (!electronOnly) {
   run(
+    'Catalogue and artwork preparation',
+    resolve(projectDirectory, 'scripts/prepare-content.mjs'),
+    [],
+    projectDirectory,
+  );
+  run(
     'TV typecheck',
     resolve(nodeModules, 'typescript/bin/tsc'),
     ['-p', resolve(tvDirectory, 'tsconfig.json'), '--noEmit'],

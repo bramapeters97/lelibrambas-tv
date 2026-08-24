@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { archivePlaceholderCategories, catalogue, profiles } from '@lelibrambas/catalog';
+import { catalogue, catalogueCategories, profiles } from '@lelibrambas/catalog';
 import { midnightArchive } from '@lelibrambas/design-system';
 import type { Profile, VideoRecord } from '@lelibrambas/types';
 
@@ -186,7 +186,7 @@ function PaletteArtwork({
       <Text style={[styles.paletteCategory, { color: accent }]} numberOfLines={1}>
         {video.categories[0]}
       </Text>
-      <Text style={styles.paletteNumber}>{video.id.replace('folder-placeholder-', '')}</Text>
+      <Text style={styles.paletteNumber}>{video.id}</Text>
     </View>
   );
 }
@@ -260,16 +260,13 @@ function HomeScreen({
         Browse the synthetic catalogue, inspect archive status, and try the bundled video player.
       </Text>
 
-      <SectionHeading
-        title="Archive rooms"
-        detail={`${archivePlaceholderCategories.length} collections`}
-      />
+      <SectionHeading title="Archive rooms" detail={`${catalogueCategories.length} collections`} />
       <ScrollView
         horizontal
         contentContainerStyle={styles.horizontalList}
         showsHorizontalScrollIndicator={false}
       >
-        {archivePlaceholderCategories.map((category, index) => {
+        {catalogueCategories.map((category, index) => {
           const colors = [
             midnightArchive.aurora,
             midnightArchive.indigo,
@@ -375,7 +372,7 @@ function SearchScreen({ onOpenVideo }: { onOpenVideo: (video: VideoRecord) => vo
         keyboardShouldPersistTaps="handled"
         showsHorizontalScrollIndicator={false}
       >
-        {archivePlaceholderCategories.map((category) => (
+        {catalogueCategories.map((category) => (
           <Pressable
             accessibilityRole="button"
             key={category.name}
@@ -438,7 +435,7 @@ function CollectionsScreen({
   onOpenVideo: (video: VideoRecord) => void;
   onSelectCollection: (name: string) => void;
 }) {
-  const category = archivePlaceholderCategories.find((item) => item.name === selectedCollection);
+  const category = catalogueCategories.find((item) => item.name === selectedCollection);
   const videos = category
     ? catalogue.filter((video) => video.categories.includes(category.name))
     : [];
@@ -458,22 +455,8 @@ function CollectionsScreen({
         <Text style={styles.screenEyebrow}>ARCHIVE ROOM</Text>
         <Text style={styles.screenTitle}>{category.name}</Text>
         <Text style={styles.screenDescription}>
-          {category.movies.length} catalogue-only placeholders. Their media and technical metadata
-          have not been inspected.
+          {category.movies.length} films from the generated local catalogue.
         </Text>
-        {category.groups?.length ? (
-          <View style={styles.mobileGroupList}>
-            {category.groups.map((group, index) => (
-              <View style={styles.mobileGroupCard} key={group.name}>
-                <Text style={styles.mobileGroupIndex}>{String(index + 1).padStart(2, '0')}</Text>
-                <View style={styles.mobileGroupCopy}>
-                  <Text style={styles.mobileGroupTitle}>{group.name}</Text>
-                  <Text style={styles.mobileGroupMeta}>{group.movies.length} records</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        ) : null}
         <View style={styles.resultList}>
           {videos.map((video, index) => (
             <Pressable
@@ -503,10 +486,10 @@ function CollectionsScreen({
       <Text style={styles.screenEyebrow}>BROWSE TOGETHER</Text>
       <Text style={styles.screenTitle}>Collections</Text>
       <Text style={styles.screenDescription}>
-        The mobile view keeps the same four synthetic archive rooms as the TV prototype.
+        The mobile view keeps the same four generated catalogue collections as the TV viewer.
       </Text>
       <View style={styles.collectionList}>
-        {archivePlaceholderCategories.map((item, index) => {
+        {catalogueCategories.map((item, index) => {
           const accents = [
             midnightArchive.aurora,
             midnightArchive.indigo,
@@ -532,9 +515,7 @@ function CollectionsScreen({
                 <Text style={[styles.collectionMonogram, { color: `${accent}42` }]}>LB</Text>
               </View>
               <Text style={styles.collectionTitle}>{item.name}</Text>
-              <Text style={styles.collectionText}>
-                {item.movies.length} synthetic catalogue records
-              </Text>
+              <Text style={styles.collectionText}>{item.movies.length} catalogue records</Text>
               <Text style={styles.collectionAction}>Open collection →</Text>
             </Pressable>
           );
@@ -555,7 +536,7 @@ function SavedScreen({
 }) {
   const savedVideos = savedIds
     .map((id) => catalogue.find((video) => video.id === id))
-    .filter((video): video is VideoRecord => Boolean(video));
+    .filter((video): video is (typeof catalogue)[number] => Boolean(video));
 
   return (
     <ScrollView contentContainerStyle={styles.screenContent} showsVerticalScrollIndicator={false}>

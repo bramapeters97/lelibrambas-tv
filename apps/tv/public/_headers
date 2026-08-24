@@ -1,5 +1,5 @@
 /*
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; media-src 'self' data: blob: https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; connect-src 'self' https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; media-src 'self' data: blob: https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; connect-src 'self' https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; frame-src https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
   Cross-Origin-Opener-Policy: same-origin
   Referrer-Policy: no-referrer
   X-Content-Type-Options: nosniff

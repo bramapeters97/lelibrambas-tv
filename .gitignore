@@ -12,6 +12,8 @@ coverage/
 playwright-report/
 test-results/
 apps/tv/ios/
+apps/tv/public/artwork/
+apps/tv/public/data/media_catalog.json
 apps/desktop/release/
 apps/desktop/dist-electron/
 tools/video-importer/.state/

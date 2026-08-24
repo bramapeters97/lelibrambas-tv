@@ -15,6 +15,7 @@ Run from the project root in PowerShell:
 | `corepack yarn build:web`                                     | TV React DOM typecheck and Vite production bundle.                    |
 | `corepack yarn build:admin`                                   | Admin typecheck and Vite production bundle.                           |
 | `corepack yarn validate`                                      | The six checks above, sequentially.                                   |
+| `corepack yarn catalog:test`                                  | Excel/JSON row, schema, poster, category, and determinism checks.     |
 | `corepack yarn test:e2e`                                      | Playwright against a Vite preview on `127.0.0.1:4173`.                |
 | `corepack yarn test:stream`                                   | Opt-in real Stream HLS/CORS smoke using ignored public viewer config. |
 | `corepack yarn test:stream:electron`                          | Opt-in packaged custom-origin Stream/CSP playback smoke.              |
@@ -49,9 +50,17 @@ corepack yarn test:e2e
 
 ## Current coverage
 
-Vitest covers catalogue validation and Surprise Me filtering; type schemas; player/progress/pairing helpers; geometry-based focus; TV watchlist tombstones and playback-state mapping; Library Manager navigation/local metadata/CSV/JSON behavior; media-provider contracts; API authentication, pairing approval/denial, token rotation/revocation, D1-backed pairing rate limits, private uploads/playback, and webhook idempotency; R2 key traversal; D1 migrations/constraints; and importer scanning, path safety, manifests, dry-run/retry/partial promotion/checksums.
+The catalogue validation script checks Excel/JSON row parity, all seven keys and types, unique
+integer IDs, four categories, safe resolvable poster paths, fallback existence, deterministic output,
+and removal of the old viewer placeholder fixtures. Vitest also covers JSON loading failures, poster
+fallback behavior, Cloudflare web/native playback resolution, selected-row URL preservation,
+player/progress/pairing helpers, geometry-based focus, and TV watchlist state. The remaining suites
+cover the Library Manager, provider contracts, API, D1, importer, and Electron policies.
 
-Playwright covers profile-to-home-to-details-to-player/back progress, visible arrow focus, search/watchlist/Surprise Me, and exclusion of unavailable/failed media. Tests reset local storage and use deterministic capture routes.
+Playwright covers profile-to-home-to-details-to-player selection, exact selected-row Stream URL
+handoff, visible arrow focus, search/watchlist, all four collections, poster-backed hero rendering,
+and rendered catalogue ID/count parity with the generated JSON. Tests reset local storage and use
+deterministic capture routes.
 
 Importer conversion tests use a fake process runner and temporary fixtures. They prove orchestration/safety, not that a particular installed FFmpeg build correctly decodes every family codec or damaged disc.
 

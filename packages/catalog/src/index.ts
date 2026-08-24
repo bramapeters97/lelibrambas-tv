@@ -1,16 +1,39 @@
-import {
-  validateCatalogue,
-  type Collection,
-  type HomeRail,
-  type Person,
-  type Place,
-  type Profile,
-  type VideoRecord,
-} from '@lelibrambas/types';
-import { archivePlaceholderCategories, archivePlaceholders } from './archive-placeholders';
+import type { Collection, HomeRail, Person, Place, Profile, VideoRecord } from '@lelibrambas/types';
+import generatedCatalog from '../../../data/media_catalog.json';
 
-export { archivePlaceholderCategories, archivePlaceholders } from './archive-placeholders';
+export interface MediaCatalogItem {
+  id: number;
+  title: string;
+  year: number | null;
+  description: string;
+  category: string;
+  poster_url: string;
+  stream_video_id: string;
+}
 
+export interface CatalogueVideoRecord extends VideoRecord {
+  catalogueId: number;
+  posterUrl: string;
+  streamVideoId: string;
+}
+
+export interface CatalogueCategory {
+  name: string;
+  description: string;
+  movies: string[];
+}
+
+const requiredKeys = [
+  'id',
+  'title',
+  'year',
+  'description',
+  'category',
+  'poster_url',
+  'stream_video_id',
+] as const;
+
+const categoryOrder = ['JEUGDFILMS', 'VAKANTIEFILMS', 'EVENTS', 'OTHERS'];
 const palettes: Array<[string, string, string]> = [
   ['#241A22', '#6E4A3E', '#E9C778'],
   ['#10213D', '#25718A', '#D7B16A'],
@@ -32,70 +55,155 @@ function slugify(value: string): string {
     .replace(/^-|-$/g, '');
 }
 
-function yearFromFolderName(title: string): number | null {
-  const match = /\((\d{4})(?:\s*-\s*\d{4})?\)$/.exec(title);
-  return match?.[1] ? Number(match[1]) : null;
+function assertString(record: Record<string, unknown>, key: string, index: number): string {
+  const value = record[key];
+  if (typeof value !== 'string') {
+    throw new Error(`Catalogue item ${index + 1} has a non-string ${key}.`);
+  }
+  return value;
 }
 
-const rawCatalogue: VideoRecord[] = archivePlaceholders.map((placeholder, index) => {
-  const id = `folder-placeholder-${String(index + 1).padStart(2, '0')}`;
-  const year = yearFromFolderName(placeholder.title);
-  const collectionId = slugify(placeholder.category);
-  const palette = palettes[index % palettes.length] ?? palettes[0]!;
+export function parseMediaCatalog(input: unknown): MediaCatalogItem[] {
+  if (!Array.isArray(input)) throw new Error('Catalogue payload must be a JSON array.');
+  const ids = new Set<number>();
+  const records = input.map((value, index) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error(`Catalogue item ${index + 1} must be an object.`);
+    }
+    const record = value as Record<string, unknown>;
+    for (const key of requiredKeys) {
+      if (!(key in record)) throw new Error(`Catalogue item ${index + 1} is missing ${key}.`);
+    }
+    if (!Number.isInteger(record.id)) {
+      throw new Error(`Catalogue item ${index + 1} has an invalid integer id.`);
+    }
+    const id = record.id as number;
+    if (ids.has(id)) throw new Error(`Catalogue item ${index + 1} repeats id ${id}.`);
+    ids.add(id);
 
-  return {
-    id,
-    slug: slugify(placeholder.title),
-    title: placeholder.title,
-    subtitle: `${placeholder.category} - fictional catalogue placeholder`,
-    description:
-      'This fictional catalogue-only record preserves the private archive structure without exposing family names, places, filenames or source media.',
-    originalFilename: `synthetic-folder-entry-${String(index + 1).padStart(2, '0')}.placeholder`,
-    sourceType: 'synthetic',
-    recordingDate: year ? `${year}-01-01` : null,
-    dateApproximate: true,
-    year,
-    durationSeconds: 1,
-    aspectRatio: 'unknown',
-    resolution: 'Not inspected',
-    frameRate: 25,
-    interlaced: false,
-    people: ['Synthetic family'],
-    location: 'Synthetic archive',
-    country: null,
-    tags: [placeholder.category, 'Synthetic placeholder', 'Media not inspected'],
-    categories: [placeholder.category],
-    collectionId,
-    seasonNumber: null,
-    episodeNumber: placeholder.itemIndex + 1,
-    artwork: {
-      thumbnail: `/artwork/${id}-thumb.webp`,
-      landscape: `/artwork/${id}-landscape.webp`,
-      portrait: `/artwork/${id}-portrait.webp`,
-      backdrop: `/artwork/${id}-backdrop.webp`,
-      palette,
-    },
-    previewStartSeconds: 0,
-    featured: archivePlaceholderCategories.some(
-      (category) => category.movies[0] === placeholder.title,
-    ),
-    visibility: 'family',
-    processingStatus: 'unavailable',
-    playbackProvider: 'local',
-    playbackAssetId: null,
-    playbackUrl: null,
-    progressSeconds: 0,
-    lastWatched: null,
-    addedDate: '2026-08-17T12:00:00.000Z',
-    restorationNotes:
-      'Fictional demo placeholder only. No original media, private metadata or source files have been inspected or bundled.',
-    legacyFormat: null,
-    chapterMarkers: [],
-    playCount: 0,
-  };
-});
+    const title = assertString(record, 'title', index).trim();
+    const description = assertString(record, 'description', index).trim();
+    const category = assertString(record, 'category', index).trim();
+    const posterUrl = assertString(record, 'poster_url', index).trim();
+    const streamVideoId = assertString(record, 'stream_video_id', index).trim();
+    if (!title || !category || !streamVideoId) {
+      throw new Error(`Catalogue item ${index + 1} has an empty required string field.`);
+    }
+    if (record.year !== null && !Number.isInteger(record.year)) {
+      throw new Error(`Catalogue item ${index + 1} has an invalid year.`);
+    }
+    return {
+      id,
+      title,
+      year: record.year as number | null,
+      description,
+      category,
+      poster_url: posterUrl,
+      stream_video_id: streamVideoId,
+    };
+  });
+  return records.sort((left, right) => left.id - right.id);
+}
 
-export const catalogue = validateCatalogue(rawCatalogue);
+export function createCatalogue(input: unknown): CatalogueVideoRecord[] {
+  return parseMediaCatalog(input).map((item, index) => {
+    const id = String(item.id);
+    const palette = palettes[index % palettes.length] ?? palettes[0]!;
+    let playbackAssetId: string | null = null;
+    try {
+      const pathSegments = new URL(item.stream_video_id).pathname.split('/').filter(Boolean);
+      playbackAssetId = pathSegments[0] ?? null;
+    } catch {
+      playbackAssetId = null;
+    }
+    return {
+      catalogueId: item.id,
+      posterUrl: item.poster_url,
+      streamVideoId: item.stream_video_id,
+      id,
+      slug: `${slugify(item.title) || 'movie'}-${item.id}`,
+      title: item.title,
+      subtitle: [item.category, item.year].filter((value) => value !== null).join(' - '),
+      description: item.description,
+      originalFilename: `catalogue-record-${item.id}`,
+      sourceType: 'mp4',
+      recordingDate: item.year === null ? null : `${item.year}-01-01`,
+      dateApproximate: true,
+      year: item.year,
+      durationSeconds: 3600,
+      aspectRatio: '16:9',
+      resolution: 'Adaptive Stream',
+      frameRate: 25,
+      interlaced: false,
+      people: [],
+      location: item.category,
+      country: null,
+      tags: [item.category],
+      categories: [item.category],
+      collectionId: slugify(item.category),
+      seasonNumber: null,
+      episodeNumber: index + 1,
+      artwork: {
+        thumbnail: item.poster_url,
+        landscape: item.poster_url,
+        portrait: item.poster_url,
+        backdrop: item.poster_url,
+        palette,
+      },
+      previewStartSeconds: 0,
+      featured: index === 0,
+      visibility: 'family',
+      processingStatus: 'ready',
+      playbackProvider: 'cloudflare-stream',
+      playbackAssetId,
+      playbackUrl: item.stream_video_id,
+      progressSeconds: 0,
+      lastWatched: null,
+      addedDate: '2026-08-24T00:00:00.000Z',
+      restorationNotes: null,
+      legacyFormat: null,
+      chapterMarkers: [],
+      playCount: 0,
+    };
+  });
+}
+
+function orderedCategoryNames(records: readonly CatalogueVideoRecord[]): string[] {
+  const firstAppearance = [...new Set(records.map((video) => video.categories[0]!))];
+  return [
+    ...categoryOrder.filter((category) => firstAppearance.includes(category)),
+    ...firstAppearance.filter((category) => !categoryOrder.includes(category)),
+  ];
+}
+
+export function createCollections(records: readonly CatalogueVideoRecord[]): Collection[] {
+  return orderedCategoryNames(records).map((category) => ({
+    id: slugify(category),
+    title: category,
+    kind: category === 'VAKANTIEFILMS' ? 'holiday' : 'curated',
+    description: `${records.filter((video) => video.categories.includes(category)).length} films in ${category}.`,
+    videoIds: records
+      .filter((video) => video.categories.includes(category))
+      .sort((left, right) => left.catalogueId - right.catalogueId)
+      .map((video) => video.id),
+  }));
+}
+
+export function createCatalogueCategories(
+  records: readonly CatalogueVideoRecord[],
+): CatalogueCategory[] {
+  return createCollections(records).map((collection) => ({
+    name: collection.title,
+    description: collection.description,
+    movies: collection.videoIds
+      .map((id) => records.find((video) => video.id === id)?.title)
+      .filter((title): title is string => Boolean(title)),
+  }));
+}
+
+export const catalogue = createCatalogue(generatedCatalog);
+export const collections = createCollections(catalogue);
+export const catalogueCategories = createCatalogueCategories(catalogue);
 
 export const profiles: Profile[] = [
   {
@@ -103,7 +211,7 @@ export const profiles: Profile[] = [
     name: 'Bart & Astrid',
     initials: 'BA',
     accent: '#70D8FF',
-    watchlist: ['folder-placeholder-01', 'folder-placeholder-03'],
+    watchlist: ['1', '3'],
     recentlyDiscovered: ['JEUGDFILMS', 'VAKANTIEFILMS'],
   },
   {
@@ -111,78 +219,34 @@ export const profiles: Profile[] = [
     name: 'Bram & Edvin',
     initials: 'BE',
     accent: '#8275FF',
-    watchlist: ['folder-placeholder-11'],
-    recentlyDiscovered: ['OVERIGE'],
+    watchlist: ['11'],
+    recentlyDiscovered: ['OTHERS'],
   },
   {
     id: 'eline-luca',
     name: 'Eline & Luca',
     initials: 'EL',
     accent: '#E9C778',
-    watchlist: ['folder-placeholder-02', 'folder-placeholder-18'],
-    recentlyDiscovered: ['JEUGDFILMS', 'EVENTS', 'OVERIGE', 'VAKANTIEFILMS'],
+    watchlist: ['2', '18'],
+    recentlyDiscovered: ['JEUGDFILMS', 'EVENTS', 'OTHERS', 'VAKANTIEFILMS'],
   },
 ];
 
-export const people: Person[] = [
-  {
-    id: 'synthetic-family',
-    name: 'Synthetic Family',
-    initials: 'SF',
-    accent: '#E9C778',
-    description:
-      'Synthetic placeholder metadata only; people in the media have not been identified.',
-  },
-];
+export const people: Person[] = [];
+export const places: Place[] = [];
 
-export const places: Place[] = [
-  {
-    id: 'synthetic-archive',
-    name: 'Synthetic Archive',
-    country: 'Fictional collection',
-    description: 'Fictional placeholders only. Media locations have not been inspected.',
-    palette: ['#241A22', '#6E4A3E', '#E9C778'],
-  },
-];
-
-const idsForCategory = (category: string) =>
-  catalogue.filter((video) => video.categories.includes(category)).map((video) => video.id);
-
-const idsForTitles = (titles: readonly string[]) =>
-  catalogue.filter((video) => titles.includes(video.title)).map((video) => video.id);
-
-export const collections: Collection[] = archivePlaceholderCategories.map((category) => ({
-  id: slugify(category.name),
-  title: category.name,
-  kind: category.name === 'VAKANTIEFILMS' ? 'holiday' : 'curated',
-  description: category.description,
-  videoIds: idsForCategory(category.name),
+export const homeRails: HomeRail[] = collections.map((collection, index) => ({
+  id: collection.id,
+  title: collection.title,
+  order: index + 1,
+  visible: true,
+  videoIds: collection.videoIds,
 }));
 
-export const homeRails: HomeRail[] = [
-  ...archivePlaceholderCategories.map((category, index) => ({
-    id: slugify(category.name),
-    title: category.name,
-    order: index + 1,
-    visible: true,
-    videoIds: idsForCategory(category.name),
-  })),
-  ...archivePlaceholderCategories.flatMap(
-    (category, categoryIndex) =>
-      category.groups?.map((group, groupIndex) => ({
-        id: `${slugify(category.name)}-${slugify(group.name)}`,
-        title: `${category.name} / ${group.name}`,
-        order: archivePlaceholderCategories.length + categoryIndex * 10 + groupIndex + 1,
-        visible: true,
-        videoIds: idsForTitles(group.movies),
-      })) ?? [],
-  ),
-];
-
-export function getVideo(idOrSlug: string): VideoRecord | undefined {
+export function getVideo(idOrSlug: string): CatalogueVideoRecord | undefined {
   return catalogue.find((video) => video.id === idOrSlug || video.slug === idOrSlug);
 }
 
-export function surpriseMe(): VideoRecord {
+export function surpriseMe(): CatalogueVideoRecord {
   return catalogue[0]!;
 }

@@ -10,8 +10,13 @@ import {
   shouldMarkComplete,
   writeProgress,
 } from '@lelibrambas/shared';
-import type { Profile, VideoRecord } from '@lelibrambas/types';
-import { catalogue, collections, profiles } from './catalogue';
+import type { Collection, Profile } from '@lelibrambas/types';
+import {
+  loadCatalogue,
+  profiles,
+  type CatalogueVideoRecord,
+  type LoadedCatalogue,
+} from './catalogue';
 import {
   CollectionsScreen,
   HubsScreen,
@@ -19,6 +24,7 @@ import {
   SearchScreen,
   type BrowseScreenId,
 } from './Discovery';
+import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
 
 type Screen = 'ident' | 'profiles' | 'details' | 'player' | BrowseScreenId;
@@ -34,7 +40,7 @@ export type PlaybackAvailability = {
   description: string;
 };
 
-export function playbackAvailability(video: VideoRecord): PlaybackAvailability {
+export function playbackAvailability(video: CatalogueVideoRecord): PlaybackAvailability {
   if (video.processingStatus === 'processing') {
     return {
       playable: false,
@@ -61,13 +67,14 @@ export function playbackAvailability(video: VideoRecord): PlaybackAvailability {
         'Its catalogue entry is preserved, but the private viewing copy is not available right now.',
     };
   }
-  if (!video.playbackUrl) {
+  if (resolvePlaybackSource(video.streamVideoId).kind === 'unsupported') {
     return {
       playable: false,
       eyebrow: 'PLAYBACK SOURCE UNAVAILABLE',
       title: 'We could not find the viewing copy.',
-      description:
-        'The archive record is intact. Check the local media source in the Library Manager.',
+      description: import.meta.env.DEV
+        ? `Unrecognized playback URL for ${video.title} (catalogue ID ${video.catalogueId}).`
+        : 'The archive record is intact. Check the local media source in the Library Manager.',
     };
   }
   return {
@@ -102,10 +109,10 @@ export function presentationSecondsForMedia(
 }
 
 export function nextPlayableVideo(
-  current: VideoRecord,
-  records: readonly VideoRecord[] = catalogue,
-): VideoRecord | null {
-  const playable = (candidate: VideoRecord) =>
+  current: CatalogueVideoRecord,
+  records: readonly CatalogueVideoRecord[],
+): CatalogueVideoRecord | null {
+  const playable = (candidate: CatalogueVideoRecord) =>
     candidate.id !== current.id &&
     playbackAvailability(candidate).playable &&
     candidate.visibility !== 'hidden';
@@ -125,7 +132,7 @@ export function nextPlayableVideo(
   );
 }
 
-function progressFor(profile: Profile, video: VideoRecord) {
+function progressFor(profile: Profile, video: CatalogueVideoRecord) {
   const stored = readProgress(profile.id, video.id, video.durationSeconds);
   const isStored = Date.parse(stored.updatedAt) > 0;
   if (isStored) return stored;
@@ -133,15 +140,12 @@ function progressFor(profile: Profile, video: VideoRecord) {
   return { ...stored, seconds, completed: seconds >= video.durationSeconds * 0.94 };
 }
 
-function paletteStyle(video: VideoRecord): React.CSSProperties {
+function paletteStyle(video: CatalogueVideoRecord): React.CSSProperties {
   const [a, b, c] = video.artwork.palette;
   return { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
 }
 
-function durationLabel(video: VideoRecord): string {
-  if (video.sourceType === 'synthetic' && video.processingStatus === 'unavailable') {
-    return 'Length unknown';
-  }
+function durationLabel(video: CatalogueVideoRecord): string {
   if (video.durationSeconds < 60) return `${Math.round(video.durationSeconds)} sec`;
   return `${Math.round(video.durationSeconds / 60)} min`;
 }
@@ -153,8 +157,6 @@ function Wordmark({ compact = false }: { compact?: boolean }) {
     </div>
   );
 }
-
-const openingHeaderVideo = catalogue.find((item) => item.featured) ?? catalogue[0]!;
 
 function StudioIdent({ onDone }: { onDone: () => void }) {
   const capture = new URLSearchParams(location.search).get('capture') === '1';
@@ -228,7 +230,7 @@ function ProfilePicker({ onSelect }: { onSelect: (profile: Profile) => void }) {
           </button>
         ))}
       </div>
-      <footer>A private LELIBRAMBAS+ prototype with synthetic demo media</footer>
+      <footer>A private LELIBRAMBAS+ local media library</footer>
     </main>
   );
 }
@@ -272,6 +274,8 @@ function ProgressBar({ progress, duration }: { progress: number; duration: numbe
 }
 
 function Home({
+  catalogue,
+  collections,
   profile,
   onDetails,
   onPlay,
@@ -279,14 +283,16 @@ function Home({
   onReplayIntro,
   onProfile,
 }: {
+  catalogue: readonly CatalogueVideoRecord[];
+  collections: readonly Collection[];
   profile: Profile;
-  onDetails: (video: VideoRecord) => void;
-  onPlay: (video: VideoRecord) => void;
+  onDetails: (video: CatalogueVideoRecord) => void;
+  onPlay: (video: CatalogueVideoRecord) => void;
   onNavigate: (screen: BrowseScreenId) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
-  const hero = openingHeaderVideo;
+  const hero = catalogue.find((item) => item.featured) ?? catalogue[0]!;
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
@@ -301,10 +307,16 @@ function Home({
       />
       <section className="home-content">
         <div className="hero" style={paletteStyle(hero)}>
-          <div className="hero-art" aria-hidden="true" />
+          <div className="hero-art" aria-hidden="true">
+            <img
+              src={resolvePosterUrl(hero.posterUrl)}
+              alt=""
+              onError={(event) => applyPosterFallback(event.currentTarget)}
+            />
+          </div>
           <div className="hero-scrim" />
           <div className="hero-copy">
-            <p className="studio-line">Synthetic directory placeholder</p>
+            <p className="studio-line">{hero.categories[0]}</p>
             <h1>{hero.title}</h1>
             <div className="metadata">
               <span>{hero.year ?? 'Year unknown'}</span>
@@ -374,10 +386,10 @@ function Details({
   onBack,
   onPlay,
 }: {
-  video: VideoRecord;
+  video: CatalogueVideoRecord;
   profile: Profile;
   onBack: () => void;
-  onPlay: (video: VideoRecord) => void;
+  onPlay: (video: CatalogueVideoRecord) => void;
 }) {
   const [saved, setSaved] = useState(() => progressFor(profile, video));
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
@@ -398,6 +410,11 @@ function Details({
   return (
     <main className="details-screen" style={paletteStyle(video)}>
       <div className="details-art" aria-hidden="true">
+        <img
+          src={resolvePosterUrl(video.posterUrl)}
+          alt=""
+          onError={(event) => applyPosterFallback(event.currentTarget)}
+        />
         <span>{video.location}</span>
       </div>
       <div className="details-scrim" />
@@ -411,7 +428,7 @@ function Details({
         ←
       </button>
       <section className="details-copy">
-        <p className="studio-line">LELIBRAMBAS+ catalogue placeholder</p>
+        <p className="studio-line">LELIBRAMBAS+ catalogue</p>
         <h1>{video.title}</h1>
         <p className="subtitle">{video.subtitle}</p>
         <div className="metadata">
@@ -499,15 +516,17 @@ function Details({
 }
 
 function Player({
+  catalogue,
   video,
   profile,
   onBack,
   onPlayNext,
 }: {
-  video: VideoRecord;
+  catalogue: readonly CatalogueVideoRecord[];
+  video: CatalogueVideoRecord;
   profile: Profile;
   onBack: () => void;
-  onPlayNext: (video: VideoRecord) => void;
+  onPlayNext: (video: CatalogueVideoRecord) => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const persistenceTimer = useRef<number | null>(null);
@@ -516,7 +535,8 @@ function Player({
   const initialSeconds = saved.completed ? 0 : saved.seconds;
   const currentRef = useRef(initialSeconds);
   const availability = playbackAvailability(video);
-  const nextVideo = useMemo(() => nextPlayableVideo(video), [video]);
+  const playbackSource = useMemo(() => resolvePlaybackSource(video.streamVideoId), [video]);
+  const nextVideo = useMemo(() => nextPlayableVideo(video, catalogue), [catalogue, video]);
   const forcedPlayerState = new URLSearchParams(location.search).get('playerState');
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(initialSeconds);
@@ -527,8 +547,15 @@ function Player({
 
   useEffect(() => {
     const element = videoRef.current;
-    const source = video.playbackUrl;
-    if (!element || !source || !availability.playable || error) return;
+    const source = playbackSource.url;
+    if (
+      !element ||
+      !source ||
+      !['hls', 'mp4'].includes(playbackSource.kind) ||
+      !availability.playable ||
+      error
+    )
+      return;
 
     let disposed = false;
     let hls: HlsInstance | null = null;
@@ -540,13 +567,13 @@ function Player({
       setError(true);
     };
 
-    async function attachSource(playbackElement: HTMLVideoElement, playbackSource: string) {
-      if (video.playbackProvider !== 'cloudflare-stream') {
-        playbackElement.src = playbackSource;
+    async function attachSource(playbackElement: HTMLVideoElement, sourceUrl: string) {
+      if (playbackSource.kind === 'mp4') {
+        playbackElement.src = sourceUrl;
         return;
       }
       if (playbackElement.canPlayType('application/vnd.apple.mpegurl')) {
-        playbackElement.src = playbackSource;
+        playbackElement.src = sourceUrl;
         return;
       }
 
@@ -576,7 +603,7 @@ function Player({
         }
         failPlayback();
       });
-      hls.loadSource(playbackSource);
+      hls.loadSource(sourceUrl);
       hls.attachMedia(playbackElement);
     }
 
@@ -589,7 +616,7 @@ function Player({
       element.removeAttribute('src');
       element.load();
     };
-  }, [availability.playable, error, video.playbackProvider, video.playbackUrl]);
+  }, [availability.playable, error, playbackSource]);
 
   const persistAt = useCallback(
     (seconds: number, completed = shouldMarkComplete(seconds, video.durationSeconds)) => {
@@ -732,57 +759,91 @@ function Player({
     ? {
         eyebrow: 'PLAYBACK INTERRUPTED',
         title: 'We couldn’t play this memory.',
-        description:
-          'The original is safe. Retry the local viewing copy, or return to its details.',
+        description: import.meta.env.DEV
+          ? `Playback failed for ${video.title} (catalogue ID ${video.catalogueId}).`
+          : 'The original is safe. Retry the viewing copy, or return to its details.',
       }
-    : availability;
+    : playbackSource.kind === 'unsupported' && import.meta.env.DEV
+      ? {
+          ...availability,
+          description: `Unrecognized playback URL for ${video.title} (catalogue ID ${video.catalogueId}).`,
+        }
+      : availability;
 
   return (
     <main
       className={`player-screen ${video.aspectRatio === '4:3' ? 'archive-43' : ''}`}
       style={paletteStyle(video)}
     >
-      {!error && availability.playable && (
-        <video
-          ref={videoRef}
-          muted={muted}
-          playsInline
-          onLoadedMetadata={(event) => {
-            if (initialSeconds > 0)
-              event.currentTarget.currentTime = mediaSecondsForPresentation(
-                initialSeconds,
-                video.durationSeconds,
+      {!error &&
+        availability.playable &&
+        (playbackSource.kind === 'hls' || playbackSource.kind === 'mp4') && (
+          <video
+            ref={videoRef}
+            data-catalogue-id={video.catalogueId}
+            data-stream-video-id={playbackSource.originalUrl}
+            data-playback-url={playbackSource.url}
+            muted={muted}
+            playsInline
+            onLoadedMetadata={(event) => {
+              if (initialSeconds > 0)
+                event.currentTarget.currentTime = mediaSecondsForPresentation(
+                  initialSeconds,
+                  video.durationSeconds,
+                  event.currentTarget.duration,
+                );
+            }}
+            onPlay={() => setPlaying(true)}
+            onPause={() => {
+              setPlaying(false);
+              flushProgress();
+            }}
+            onTimeUpdate={(event) => {
+              const seconds = presentationSecondsForMedia(
+                event.currentTarget.currentTime,
                 event.currentTarget.duration,
+                video.durationSeconds,
               );
-          }}
-          onPlay={() => setPlaying(true)}
-          onPause={() => {
-            setPlaying(false);
-            flushProgress();
-          }}
-          onTimeUpdate={(event) => {
-            const seconds = presentationSecondsForMedia(
-              event.currentTarget.currentTime,
-              event.currentTarget.duration,
-              video.durationSeconds,
-            );
-            setPresentationTime(seconds);
-            dirty.current = true;
-            scheduleProgress();
-          }}
-          onEnded={() => {
-            setPlaying(false);
-            setEnded(true);
-            setPresentationTime(video.durationSeconds);
-            dirty.current = true;
-            flushProgress(true);
-          }}
-          onError={() => {
-            setPlaying(false);
-            setError(true);
-            flushProgress();
-          }}
-        />
+              setPresentationTime(seconds);
+              dirty.current = true;
+              scheduleProgress();
+            }}
+            onEnded={() => {
+              setPlaying(false);
+              setEnded(true);
+              setPresentationTime(video.durationSeconds);
+              dirty.current = true;
+              flushProgress(true);
+            }}
+            onError={() => {
+              setPlaying(false);
+              setError(true);
+              flushProgress();
+            }}
+          />
+        )}
+      {!error && availability.playable && playbackSource.kind === 'iframe' && (
+        <div className="stream-iframe-shell">
+          <iframe
+            className="stream-iframe"
+            src={playbackSource.url}
+            title={`${video.title} player`}
+            allow="accelerometer; gyroscope; encrypted-media; picture-in-picture; fullscreen"
+            allowFullScreen
+            referrerPolicy="no-referrer"
+            data-catalogue-id={video.catalogueId}
+            data-stream-video-id={playbackSource.originalUrl}
+          />
+          <button
+            className="stream-iframe-back"
+            data-focusable
+            data-focus-id="player-back"
+            onClick={leave}
+            aria-label="Back to details"
+          >
+            â†
+          </button>
+        </div>
       )}
       <div className="player-ambient" aria-hidden="true" />
       <div className="player-vignette" />
@@ -813,7 +874,11 @@ function Player({
           {nextVideo ? (
             <>
               <div className="up-next-art" style={paletteStyle(nextVideo)}>
-                <i />
+                <img
+                  src={resolvePosterUrl(nextVideo.posterUrl)}
+                  alt=""
+                  onError={(event) => applyPosterFallback(event.currentTarget)}
+                />
                 <span>{nextVideo.location ?? 'The family archive'}</span>
               </div>
               <h1>{nextVideo.title}</h1>
@@ -848,72 +913,75 @@ function Player({
           )}
         </section>
       )}
-      {!error && availability.playable && !ended && (
-        <div className={`player-overlay ${controlsVisible ? 'visible' : 'hidden'}`}>
-          <div className="player-top">
-            <button
-              data-focusable
-              data-focus-id="player-back"
-              onClick={leave}
-              aria-label="Back to details"
-            >
-              ←
-            </button>
-            <div>
-              <p>{video.title}</p>
-              <span>{video.collectionId ? 'Episode presentation' : 'Family archive'}</span>
+      {!error &&
+        availability.playable &&
+        !ended &&
+        (playbackSource.kind === 'hls' || playbackSource.kind === 'mp4') && (
+          <div className={`player-overlay ${controlsVisible ? 'visible' : 'hidden'}`}>
+            <div className="player-top">
+              <button
+                data-focusable
+                data-focus-id="player-back"
+                onClick={leave}
+                aria-label="Back to details"
+              >
+                ←
+              </button>
+              <div>
+                <p>{video.title}</p>
+                <span>{video.collectionId ? 'Episode presentation' : 'Family archive'}</span>
+              </div>
+              <span className="quality">AUTO · {video.resolution}</span>
             </div>
-            <span className="quality">AUTO · {video.resolution}</span>
+            <div className="player-bottom">
+              <div className="timeline">
+                <i style={{ width: `${progressPercent}%` }} />
+                <b style={{ left: `${progressPercent}%` }} />
+              </div>
+              <div className="player-times">
+                <span>{format(current)}</span>
+                <span>−{format(Math.max(0, video.durationSeconds - current))}</span>
+              </div>
+              <div className="player-controls">
+                <button
+                  data-focusable
+                  data-focus-id="rewind"
+                  onClick={() => seek(currentRef.current - 10)}
+                  aria-label="Rewind ten seconds"
+                >
+                  ↶<small>10</small>
+                </button>
+                <button
+                  data-focusable
+                  data-focus-id="play-pause"
+                  autoFocus
+                  className="play-toggle"
+                  onClick={() => void toggle()}
+                  aria-label={playing ? 'Pause' : 'Play'}
+                >
+                  {playing ? 'Ⅱ' : '▶'}
+                </button>
+                <button
+                  data-focusable
+                  data-focus-id="forward"
+                  onClick={() => seek(currentRef.current + 10)}
+                  aria-label="Forward ten seconds"
+                >
+                  ↷<small>10</small>
+                </button>
+                <span>
+                  {video.aspectRatio === '4:3' ? 'Original 4:3 · Pillarboxed' : 'Original aspect'} ·
+                  Subtitles off · {muted ? 'Audio muted' : 'Audio original'}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="player-bottom">
-            <div className="timeline">
-              <i style={{ width: `${progressPercent}%` }} />
-              <b style={{ left: `${progressPercent}%` }} />
-            </div>
-            <div className="player-times">
-              <span>{format(current)}</span>
-              <span>−{format(Math.max(0, video.durationSeconds - current))}</span>
-            </div>
-            <div className="player-controls">
-              <button
-                data-focusable
-                data-focus-id="rewind"
-                onClick={() => seek(currentRef.current - 10)}
-                aria-label="Rewind ten seconds"
-              >
-                ↶<small>10</small>
-              </button>
-              <button
-                data-focusable
-                data-focus-id="play-pause"
-                autoFocus
-                className="play-toggle"
-                onClick={() => void toggle()}
-                aria-label={playing ? 'Pause' : 'Play'}
-              >
-                {playing ? 'Ⅱ' : '▶'}
-              </button>
-              <button
-                data-focusable
-                data-focus-id="forward"
-                onClick={() => seek(currentRef.current + 10)}
-                aria-label="Forward ten seconds"
-              >
-                ↷<small>10</small>
-              </button>
-              <span>
-                {video.aspectRatio === '4:3' ? 'Original 4:3 · Pillarboxed' : 'Original aspect'} ·
-                Subtitles off · {muted ? 'Audio muted' : 'Audio original'}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
     </main>
   );
 }
 
-export default function App() {
+function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
   const params = useMemo(() => new URLSearchParams(location.search), []);
   const forced = params.get('screen') as Screen | null;
   const initial: Screen = forced ?? 'ident';
@@ -921,7 +989,7 @@ export default function App() {
   const [profile, setProfile] = useState<Profile>(
     () => profiles.find((item) => item.id === getStored('profile-id', 'family')) ?? profiles[2]!,
   );
-  const [video, setVideo] = useState<VideoRecord>(() => {
+  const [video, setVideo] = useState<CatalogueVideoRecord>(() => {
     const requested = params.get('video');
     return (
       catalogue.find((item) => item.id === requested || item.slug === requested) ?? catalogue[0]!
@@ -944,21 +1012,27 @@ export default function App() {
     void transitionDocument.startViewTransition(update).finished.catch(() => undefined);
   }, []);
 
-  const replaceScreen = useCallback((next: Screen) => {
-    screenRef.current = next;
-    pendingFocusId.current = null;
-    transitionToScreen(next);
-  }, [transitionToScreen]);
+  const replaceScreen = useCallback(
+    (next: Screen) => {
+      screenRef.current = next;
+      pendingFocusId.current = null;
+      transitionToScreen(next);
+    },
+    [transitionToScreen],
+  );
 
-  const go = useCallback((next: Screen) => {
-    const currentScreen = screenRef.current;
-    if (next === currentScreen) return;
-    const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    history.current.push({ screen: currentScreen, focusId: active?.dataset.focusId ?? null });
-    screenRef.current = next;
-    pendingFocusId.current = null;
-    transitionToScreen(next);
-  }, [transitionToScreen]);
+  const go = useCallback(
+    (next: Screen) => {
+      const currentScreen = screenRef.current;
+      if (next === currentScreen) return;
+      const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      history.current.push({ screen: currentScreen, focusId: active?.dataset.focusId ?? null });
+      screenRef.current = next;
+      pendingFocusId.current = null;
+      transitionToScreen(next);
+    },
+    [transitionToScreen],
+  );
 
   const back = useCallback(() => {
     const previous = history.current.pop();
@@ -1069,16 +1143,23 @@ export default function App() {
     );
   if (screen === 'player')
     return renderScreen(
-      <Player video={video} profile={profile} onBack={back} onPlayNext={setVideo} />,
+      <Player
+        catalogue={catalogue}
+        video={video}
+        profile={profile}
+        onBack={back}
+        onPlayNext={setVideo}
+      />,
     );
   const onNavigate = (next: BrowseScreenId) => go(next);
-  const onDetails = (next: VideoRecord) => {
+  const onDetails = (next: CatalogueVideoRecord) => {
     setVideo(next);
     go('details');
   };
   if (screen === 'search')
     return renderScreen(
       <SearchScreen
+        catalogue={catalogue}
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
@@ -1089,6 +1170,8 @@ export default function App() {
   if (screen === 'hubs')
     return renderScreen(
       <HubsScreen
+        catalogue={catalogue}
+        collections={collections}
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
@@ -1099,6 +1182,8 @@ export default function App() {
   if (screen === 'collections')
     return renderScreen(
       <CollectionsScreen
+        catalogue={catalogue}
+        collections={collections}
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
@@ -1108,6 +1193,8 @@ export default function App() {
     );
   return renderScreen(
     <Home
+      catalogue={catalogue}
+      collections={collections}
       profile={profile}
       onNavigate={onNavigate}
       onDetails={onDetails}
@@ -1119,4 +1206,42 @@ export default function App() {
       }}
     />,
   );
+}
+
+function CatalogueState({ error }: { error?: string }) {
+  return (
+    <main className="catalogue-state" role={error ? 'alert' : 'status'}>
+      <Wordmark />
+      <p>{error ? 'CATALOGUE UNAVAILABLE' : 'OPENING THE ARCHIVE'}</p>
+      <h1>{error ? 'The media library could not be loaded.' : 'Preparing your libraryâ€¦'}</h1>
+      <span>
+        {error
+          ? `${error} Regenerate the catalogue and restart the local viewer.`
+          : 'Loading the generated local catalogue and artwork.'}
+      </span>
+    </main>
+  );
+}
+
+export default function App() {
+  const [loaded, setLoaded] = useState<LoadedCatalogue | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void loadCatalogue()
+      .then((catalogue) => {
+        if (active) setLoaded(catalogue);
+      })
+      .catch((error: unknown) => {
+        if (active) setLoadError(error instanceof Error ? error.message : String(error));
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  if (loadError) return <CatalogueState error={loadError} />;
+  if (!loaded) return <CatalogueState />;
+  return <ViewerApp {...loaded} />;
 }

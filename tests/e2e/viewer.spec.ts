@@ -1,4 +1,17 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+interface GeneratedMovie {
+  id: number;
+  title: string;
+  stream_video_id: string;
+}
+
+const generatedCatalog = JSON.parse(
+  readFileSync(new URL('../../data/media_catalog.json', import.meta.url), 'utf8'),
+) as GeneratedMovie[];
+
+const byId = new Map(generatedCatalog.map((movie) => [movie.id, movie]));
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/?screen=profiles&capture=1');
@@ -6,22 +19,22 @@ test.beforeEach(async ({ page }) => {
   await page.reload();
 });
 
-test('profile to home to details to playback and back persists progress', async ({ page }) => {
+test('profile to home to details passes the selected row exact stream URL to playback', async ({
+  page,
+}) => {
+  const movie = generatedCatalog[0]!;
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
-  await expect(page.getByRole('heading', { name: 'Jeugdfilm 01' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: movie.title })).toBeVisible();
   await page.getByRole('button', { name: /More information/i }).click();
   await expect(page.locator('.details-screen')).toBeVisible();
   await page.locator('[data-focus-id="detail-play"]').click();
   await expect(page.locator('.player-screen')).toBeVisible();
-  const video = page.locator('video');
-  await expect(video).toHaveCount(1);
-  await page.getByRole('button', { name: 'Play' }).click();
-  await expect.poll(() => video.evaluate((element) => element.currentTime)).toBeGreaterThan(0.25);
-  expect(await video.evaluate((element) => element.error?.code ?? null)).toBeNull();
-  await page.locator('[data-focus-id="forward"]').click();
+  const player = page.locator('video, iframe.stream-iframe');
+  await expect(player).toHaveCount(1);
+  await expect(player).toHaveAttribute('data-catalogue-id', String(movie.id));
+  await expect(player).toHaveAttribute('data-stream-video-id', movie.stream_video_id);
   await page.locator('[data-focus-id="player-back"]').click();
   await expect(page.locator('.details-screen')).toBeVisible();
-  await expect(page.getByText(/Resume at/i)).toBeVisible();
 });
 
 test('arrow navigation exposes a visible deterministic focus state', async ({ page }) => {
@@ -34,24 +47,25 @@ test('arrow navigation exposes a visible deterministic focus state', async ({ pa
   await expect(page.locator(':focus')).toBeVisible();
 });
 
-test('search, watched state and collections are functional', async ({ page }) => {
+test('search, watched state, and generated collections are functional', async ({ page }) => {
+  const movie = byId.get(7)!;
   await page.getByRole('button', { name: /Eline & Luca/i }).click();
   await page.keyboard.press('s');
   await expect(page.getByRole('heading', { name: /Search the archive/i })).toBeVisible();
-  await page.getByLabel(/Which folder should we open/i).fill('Vakantiefilm 01');
-  await page
-    .getByRole('button', { name: /Vakantiefilm 01/i })
-    .first()
-    .click();
+  await page.getByLabel(/Which folder should we open/i).fill(movie.title);
+  await page.getByRole('button', { name: movie.title }).first().click();
   await page.getByRole('button', { name: 'Mark watched' }).click();
   await expect(page.getByRole('button', { name: 'Watched' })).toBeVisible();
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Collections' }).click();
   await expect(page.getByRole('heading', { name: 'Collections' })).toBeVisible();
   await expect(page.getByRole('button', { name: /VAKANTIEFILMS/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /OTHERS/i })).toBeVisible();
 });
 
-test('intro, profiles and the blended cinema hero match the viewer contract', async ({ page }) => {
+test('intro, profiles, and poster-backed cinema hero preserve the viewer contract', async ({
+  page,
+}) => {
   await page.goto('/?screen=ident&capture=1');
   await expect(page.getByRole('button', { name: /skip intro/i })).toHaveCount(0);
 
@@ -62,7 +76,10 @@ test('intro, profiles and the blended cinema hero match the viewer contract', as
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
 
   await expect(page.locator('.nav-wordmark__icon')).toBeVisible();
-  await expect(page.locator('.nav-wordmark__letters')).toHaveCount(0);
+  await expect(page.locator('.hero-art img')).toHaveAttribute(
+    'src',
+    '/artwork/eline_maria_peters.png',
+  );
   const heroArtwork = await page.locator('.hero-art').evaluate((element) => {
     const art = element.getBoundingClientRect();
     const hero = element.parentElement?.getBoundingClientRect();
@@ -74,20 +91,34 @@ test('intro, profiles and the blended cinema hero match the viewer contract', as
   expect(heroArtwork.mask).toContain('radial-gradient');
 });
 
-test('all four directory groups receive playable test records in E2E mode', async ({ page }) => {
-  const representativeIds = [
-    'folder-placeholder-01',
-    'folder-placeholder-04',
-    'folder-placeholder-21',
-    'folder-placeholder-29',
-  ];
+test('rendered collection movie count and ids equal the generated JSON', async ({ page }) => {
+  await page.getByRole('button', { name: /Bart & Astrid/i }).click();
+  await page.getByRole('button', { name: 'Collections' }).click();
 
-  for (const id of representativeIds) {
-    await page.goto(`/?screen=details&capture=1&video=${id}`);
-    await expect(page.locator('.details-screen')).toBeVisible();
-    await expect(page.locator('[data-focus-id="detail-play"]')).toBeEnabled();
-    await expect(
-      page.locator('.availability-banner.status-unavailable, .availability-banner.status-failed'),
-    ).toHaveCount(0);
+  const renderedIds: number[] = [];
+  for (const category of ['JEUGDFILMS', 'VAKANTIEFILMS', 'EVENTS', 'OTHERS']) {
+    await page.locator(`[data-focus-id="collection-${category.toLowerCase()}"]`).click();
+    const ids = await page
+      .locator('.episode-list [data-catalogue-id]')
+      .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
+    renderedIds.push(...ids);
+  }
+
+  expect(renderedIds).toHaveLength(generatedCatalog.length);
+  expect(renderedIds.sort((left, right) => left - right)).toEqual(
+    generatedCatalog.map((movie) => movie.id),
+  );
+});
+
+test('every generated movie selects its own playback row', async ({ page }) => {
+  test.setTimeout(120_000);
+
+  for (const movie of generatedCatalog) {
+    await page.goto(`/?screen=details&capture=1&video=${movie.id}`);
+    await expect(page.getByRole('heading', { name: movie.title })).toBeVisible();
+    await page.locator('[data-focus-id="detail-play"]').click();
+    const player = page.locator('video, iframe.stream-iframe');
+    await expect(player).toHaveAttribute('data-catalogue-id', String(movie.id));
+    await expect(player).toHaveAttribute('data-stream-video-id', movie.stream_video_id);
   }
 });

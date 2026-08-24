@@ -8,7 +8,7 @@ import {
 } from './App';
 
 describe('viewer playback state', () => {
-  it('maps synthetic demo time to catalogue time without losing resume position', () => {
+  it('maps media time to catalogue presentation time without losing resume position', () => {
     const mediaTime = mediaSecondsForPresentation(900, 3600, 12);
     expect(mediaTime).toBe(3);
     expect(presentationSecondsForMedia(mediaTime, 12, 3600)).toBe(900);
@@ -28,8 +28,9 @@ describe('viewer playback state', () => {
     }
   });
 
-  it('does not offer an unavailable folder placeholder as Up Next', () => {
+  it('offers the next JSON record by numeric catalogue order', () => {
     const next = nextPlayableVideo(catalogue[0]!, catalogue);
-    expect(next).toBeNull();
+    expect(next?.catalogueId).toBe(catalogue[1]?.catalogueId);
+    expect(next?.streamVideoId).toBe(catalogue[1]?.streamVideoId);
   });
 });

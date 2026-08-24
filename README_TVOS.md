@@ -13,8 +13,8 @@ The `react-native-tvos` fork and `@react-native-tvos/config-tv` plugin are retai
 tvOS target.
 
 `apps/tv/App.tsx` dispatches on `Platform.isTV`. A tvOS build renders its focused
-profile/home/player tvOS shell, plays a bundled synthetic MP4, and uses React Native TV focus/remote
-primitives. A phone build instead renders `apps/tv/mobile/MobileApp.tsx`, whose flows are profile,
+profile/home/player tvOS shell, reads the generated catalogue, derives a direct HLS source for its
+featured Stream movie, and uses React Native TV focus/remote primitives. A phone build instead renders `apps/tv/mobile/MobileApp.tsx`, whose flows are profile,
 Home, Search, Collections, Saved, catalogue details, and the demo player. Neither branch is the
 complete React DOM viewer, and no parity between these surfaces is claimed.
 
@@ -44,6 +44,10 @@ The root `tv:prebuild` script and the workspace `prebuild:tv`/`tvos` scripts exp
 Switching back from `mobile:prebuild` requires a clean tvOS prebuild.
 
 The Windows development workspace does not contain a generated `apps/tv/ios` project. Until the macOS command exits successfully and an identified simulator/device is exercised, report **configured for tvOS; build and runtime unverified**.
+
+The shared poster and playback path rules are documented in
+[`docs/media-asset-contract.md`](docs/media-asset-contract.md). A future committed Xcode target must
+bundle the generated JSON and root artwork and resolve `artwork/<filename>.png` from `Bundle.main`.
 
 ## Required native QA
 

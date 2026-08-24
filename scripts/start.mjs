@@ -11,4 +11,11 @@ const setup = spawnSync(process.execPath, [join(root, 'scripts', 'setup.mjs')], 
 if (setup.error) throw setup.error;
 if (setup.status !== 0) process.exit(setup.status ?? 1);
 
+const content = spawnSync(process.execPath, [join(root, 'scripts', 'prepare-content.mjs')], {
+  cwd: root,
+  stdio: 'inherit',
+});
+if (content.error) throw content.error;
+if (content.status !== 0) process.exit(content.status ?? 1);
+
 await import('./dev.mjs');

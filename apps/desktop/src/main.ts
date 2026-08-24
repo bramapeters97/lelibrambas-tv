@@ -10,6 +10,7 @@ import {
   resolveRendererFile,
   SECURE_WEB_PREFERENCES,
   isAllowedNavigation,
+  isAllowedStreamFrame,
   WINDOW_DEFAULTS,
 } from './policy.js';
 
@@ -19,7 +20,7 @@ const developmentMode = !app.isPackaged && !smokeMode && process.env.NODE_ENV !=
 const rendererEntryUrl = developmentMode
   ? parseLoopbackDevServerUrl(process.env.LELIBRAMBAS_TV_DEV_URL)
   : streamSmokeMode
-    ? `${PRODUCTION_RENDERER_URL}?screen=details&capture=1&video=folder-placeholder-01`
+    ? `${PRODUCTION_RENDERER_URL}?screen=details&capture=1&video=1`
     : PRODUCTION_RENDERER_URL;
 
 if (smokeMode) {
@@ -97,7 +98,8 @@ function installWindowRestrictions(window: BrowserWindow): void {
     if (!isAllowedNavigation(details.url, rendererEntryUrl)) details.preventDefault();
   });
   contents.on('will-frame-navigate', (details) => {
-    if (!isAllowedNavigation(details.url, rendererEntryUrl)) details.preventDefault();
+    if (!isAllowedNavigation(details.url, rendererEntryUrl) && !isAllowedStreamFrame(details.url))
+      details.preventDefault();
   });
   contents.on('will-redirect', (details) => {
     if (!isAllowedNavigation(details.url, rendererEntryUrl)) details.preventDefault();
@@ -126,27 +128,27 @@ async function verifyPackagedStreamPlayback(window: BrowserWindow): Promise<void
         throw new Error('Timed out waiting for packaged playback.');
       };
 
-      const detailPlay = await waitFor(() =>
-        document.querySelector('[data-focus-id="detail-play"]'),
-      );
+      const detailPlay = await waitFor(() => document.querySelector('[data-focus-id="detail-play"]'));
       detailPlay.click();
-      const video = await waitFor(() => document.querySelector('video'));
-      const play = await waitFor(() => document.querySelector('[data-focus-id="play-pause"]'));
-      play.click();
-      await waitFor(() => video.error || video.currentTime > 0.5);
+      const frame = await waitFor(() => document.querySelector('iframe.stream-iframe'));
       return {
-        currentTime: video.currentTime,
-        duration: video.duration,
-        errorCode: video.error?.code ?? null,
+        src: frame.src,
+        catalogueId: frame.dataset.catalogueId,
+        streamVideoId: frame.dataset.streamVideoId,
       };
     })()
-  `)) as { currentTime: number; duration: number; errorCode: number | null };
+  `)) as { src: string; catalogueId: string; streamVideoId: string };
 
-  if (state.errorCode !== null || state.currentTime <= 0.5 || !Number.isFinite(state.duration)) {
-    throw new Error('Packaged Stream playback did not advance without a media error.');
+  if (
+    state.catalogueId !== '1' ||
+    !state.streamVideoId.includes('.cloudflarestream.com/') ||
+    !state.src.startsWith('https://') ||
+    !state.src.endsWith('/iframe')
+  ) {
+    throw new Error('Packaged Stream player did not receive the selected catalogue row.');
   }
   console.log(
-    `[desktop-stream-smoke] OK: playback advanced to ${state.currentTime.toFixed(1)}s of ${state.duration.toFixed(1)}s.`,
+    `[desktop-stream-smoke] OK: catalogue ${state.catalogueId} opened its Stream iframe.`,
   );
 }
 

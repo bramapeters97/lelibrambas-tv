@@ -24,6 +24,10 @@ function run(label, command, args, cwd = root) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
+run('generated media catalogue', process.execPath, [
+  resolve(root, 'scripts/validate-media-catalog.mjs'),
+]);
+
 for (const suite of suites) {
   const suiteRoot = resolve(root, suite.path);
   const localVitest = resolve(suiteRoot, 'node_modules', 'vitest', 'vitest.mjs');

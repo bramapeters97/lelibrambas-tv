@@ -37,7 +37,7 @@ export const PRODUCTION_CSP = [
   "font-src 'self' data:",
   "worker-src 'self' blob:",
   "object-src 'none'",
-  "frame-src 'none'",
+  'frame-src https://*.cloudflarestream.com https://videodelivery.net https://*.videodelivery.net',
   "base-uri 'none'",
   "form-action 'none'",
   "frame-ancestors 'none'",
@@ -110,6 +110,26 @@ export function isAllowedNavigation(targetUrl: string, rendererEntryUrl: string)
     }
 
     return target.origin === rendererEntry.origin;
+  } catch {
+    return false;
+  }
+}
+
+export function isAllowedStreamFrame(targetUrl: string): boolean {
+  try {
+    const target = new URL(targetUrl);
+    const hostname = target.hostname.toLowerCase();
+    const isStreamHost =
+      hostname === 'videodelivery.net' ||
+      hostname.endsWith('.videodelivery.net') ||
+      hostname.endsWith('.cloudflarestream.com');
+    return (
+      target.protocol === 'https:' &&
+      target.username === '' &&
+      target.password === '' &&
+      target.port === '' &&
+      isStreamHost
+    );
   } catch {
     return false;
   }

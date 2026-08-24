@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   DEFAULT_DEV_SERVER_URL,
   isAllowedNavigation,
+  isAllowedStreamFrame,
   parseLoopbackDevServerUrl,
   PRODUCTION_CSP,
   PRODUCTION_RENDERER_URL,
@@ -30,7 +31,7 @@ test('security-sensitive BrowserWindow defaults stay locked down', () => {
   assert.equal(WINDOW_DEFAULTS.width / WINDOW_DEFAULTS.height, 16 / 9);
   assert.equal(PRODUCTION_CSP.includes("script-src 'self'"), true);
   assert.equal(PRODUCTION_CSP.includes("'unsafe-eval'"), false);
-  assert.equal(PRODUCTION_CSP.includes("frame-src 'none'"), true);
+  assert.equal(PRODUCTION_CSP.includes('frame-src https://*.cloudflarestream.com'), true);
   assert.equal(PRODUCTION_CSP.includes('https://*.cloudflarestream.com'), true);
   assert.equal(PRODUCTION_CSP.includes('http:'), false);
   assert.equal(PRODUCTION_CSP.includes('ws:'), false);
@@ -59,6 +60,20 @@ test('navigation remains inside the selected renderer origin', () => {
     isAllowedNavigation('file:///C:/Windows/System32/calc.exe', PRODUCTION_RENDERER_URL),
     false,
   );
+});
+
+test('only secure Cloudflare Stream hosts are allowed in playback frames', () => {
+  assert.equal(
+    isAllowedStreamFrame(
+      'https://customer-example.cloudflarestream.com/0123456789abcdef0123456789abcdef/iframe',
+    ),
+    true,
+  );
+  assert.equal(
+    isAllowedStreamFrame('http://customer-example.cloudflarestream.com/id/iframe'),
+    false,
+  );
+  assert.equal(isAllowedStreamFrame('https://example.com/id/iframe'), false);
 });
 
 test('custom protocol mapping cannot escape the packaged renderer root', () => {

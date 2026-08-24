@@ -2,7 +2,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
-import { build, loadEnv, preview } from 'vite';
+import { build, preview } from 'vite';
+
+await import('./prepare-content.mjs');
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const tvRoot = join(projectRoot, 'apps', 'tv');
@@ -10,15 +12,18 @@ const configFile = join(tvRoot, 'vite.config.ts');
 const edge = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe';
 const chrome = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const executablePath = [edge, chrome].find(existsSync);
-const publicStream = loadEnv('production', tvRoot, 'VITE_STREAM_PLACEHOLDER_');
-const assetId = publicStream.VITE_STREAM_PLACEHOLDER_ASSET_ID?.trim();
-const playbackUrl = publicStream.VITE_STREAM_PLACEHOLDER_HLS_URL?.trim();
+const catalog = JSON.parse(readFileSync(join(projectRoot, 'data', 'media_catalog.json'), 'utf8'));
+const movie = catalog[0];
+if (!movie) throw new Error('Stream smoke requires at least one generated catalogue movie.');
 
-if (!assetId || !playbackUrl) {
+const source = new URL(movie.stream_video_id);
+const identifier = source.pathname.split('/').filter(Boolean)[0];
+if (!identifier || !source.hostname.endsWith('.cloudflarestream.com')) {
   throw new Error(
-    'Stream smoke requires both public VITE_STREAM_PLACEHOLDER_* values in apps/tv/.env.local.',
+    `First catalogue movie is not a supported Cloudflare Stream URL: ${movie.stream_video_id}`,
   );
 }
+const iframeUrl = `https://${source.hostname}/${identifier}/iframe`;
 
 const staticHeaders = readFileSync(join(tvRoot, 'public', '_headers'), 'utf8');
 for (const requiredPolicy of [
@@ -26,19 +31,14 @@ for (const requiredPolicy of [
   'https://*.cloudflarestream.com',
   'https://videodelivery.net',
   'https://*.videodelivery.net',
-  "frame-src 'none'",
+  'frame-src https://*.cloudflarestream.com',
 ]) {
   if (!staticHeaders.includes(requiredPolicy)) {
     throw new Error(`Static hosting headers are missing the required policy: ${requiredPolicy}`);
   }
 }
 
-await build({
-  root: tvRoot,
-  configFile,
-  configLoader: 'runner',
-  mode: 'production',
-});
+await build({ root: tvRoot, configFile, configLoader: 'runner', mode: 'production' });
 if (readFileSync(join(tvRoot, 'dist', '_headers'), 'utf8') !== staticHeaders) {
   throw new Error('The production build did not preserve the reviewed static hosting headers.');
 }
@@ -47,49 +47,33 @@ const server = await preview({
   root: tvRoot,
   configFile,
   configLoader: 'runner',
-  preview: {
-    host: '127.0.0.1',
-    port: 4173,
-    strictPort: true,
-  },
+  preview: { host: '127.0.0.1', port: 4173, strictPort: true },
 });
 let browser;
 
 try {
   browser = await chromium.launch(executablePath ? { executablePath } : undefined);
   const page = await browser.newPage();
-  let manifestLoaded = false;
-  page.on('response', (response) => {
-    if (response.url() === playbackUrl && response.ok()) manifestLoaded = true;
-  });
 
-  await page.goto('http://127.0.0.1:4173/?screen=profiles&capture=1');
-  await page.getByRole('button', { name: /Bart & Astrid/i }).click();
-  await page.getByRole('button', { name: /^Play/ }).click();
-  const video = page.locator('video');
-  await video.waitFor({ state: 'visible' });
-  await page.getByRole('button', { name: 'Play', exact: true }).click();
-  await page.waitForFunction(
-    () => {
-      const media = document.querySelector('video');
-      return media instanceof HTMLVideoElement && media.currentTime > 0.5 && media.error === null;
-    },
-    undefined,
+  await page.goto(`http://127.0.0.1:4173/?screen=details&capture=1&video=${movie.id}`);
+  const iframeResponsePromise = page.waitForResponse(
+    (response) => response.url().startsWith(iframeUrl),
     { timeout: 20_000 },
   );
-
-  const state = await video.evaluate((media) => ({
-    currentTime: media.currentTime,
-    duration: media.duration,
-    errorCode: media.error?.code ?? null,
-  }));
-  if (!manifestLoaded || state.errorCode !== null || state.currentTime <= 0.5) {
-    throw new Error('The configured Stream asset did not reach advancing, error-free playback.');
+  await page.locator('[data-focus-id="detail-play"]').click();
+  const iframe = page.locator('iframe.stream-iframe');
+  await iframe.waitFor({ state: 'visible' });
+  if ((await iframe.getAttribute('data-stream-video-id')) !== movie.stream_video_id) {
+    throw new Error('Viewer did not pass the selected catalogue row exact Stream URL to playback.');
+  }
+  const iframeResponse = await iframeResponsePromise;
+  if (!iframeResponse.ok()) {
+    throw new Error(
+      `Cloudflare Stream iframe returned HTTP ${iframeResponse.status()}: ${iframeUrl}`,
+    );
   }
 
-  console.log(
-    `[stream-smoke] OK: playback advanced to ${state.currentTime.toFixed(1)}s of ${state.duration.toFixed(1)}s.`,
-  );
+  console.log(`[stream-smoke] OK: catalogue ${movie.id} loaded its secure Stream iframe.`);
 } finally {
   await browser?.close();
   await server.close();

@@ -7,6 +7,8 @@ const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const tvRoot = resolve(projectRoot, 'apps/tv');
 const configFile = resolve(tvRoot, 'vite.config.ts');
 
+await import('./prepare-content.mjs');
+
 await build({
   root: tvRoot,
   configFile,

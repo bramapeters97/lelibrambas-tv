@@ -7,9 +7,10 @@ flowchart LR
   Source["Local archive / hydrated OneDrive folder"] --> CLI["Importer CLI"]
   CLI --> Copies["Separate viewing copies"]
   CLI --> Manifest["Private local manifest + job state"]
-  Seed["Validated fictional catalogue"] --> Web["React DOM TV viewer"]
-  Seed --> Native["Expo native tvOS / iPhone entry"]
-  Seed --> Admin["Local Library Manager prototype"]
+  Workbook["Root Excel catalogue"] --> Json["Generated data/media_catalog.json"]
+  Json --> Web["React DOM TV viewer"]
+  Json --> Native["Expo native tvOS / iPhone entry"]
+  Seed["Synthetic admin snapshot"] --> Admin["Local Library Manager prototype"]
   Copies -. "future local service" .-> Provider["Provider-neutral media contract"]
   Provider -. "future integration" .-> Web
   Web --> Electron["Hardened Electron shell"]
@@ -24,7 +25,7 @@ Solid lines describe current runtime relationships. Dashed lines are implemented
 
 ## Two viewer implementations
 
-`apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles, home rails, discovery views, search, details, local watchlists/progress, player states, synthetic playback, deterministic capture routes, keyboard spatial navigation, and the renderer packaged by Electron.
+`apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles, generated catalogue rails, discovery views, search, details, local watchlists/progress, Stream/direct-media player states, deterministic capture routes, keyboard spatial navigation, and the renderer packaged by Electron.
 
 `apps/tv/App.tsx` is the Expo/React Native entry for two Apple targets. It dispatches on
 `Platform.isTV`: tvOS builds render the smaller profile/home/player shell with
@@ -49,17 +50,17 @@ are retained only for tvOS, and native application targets are limited to iPhone
 
 ## Application and package boundaries
 
-| Area                     | Responsibility                                               | Persistence/network now                    |
-| ------------------------ | ------------------------------------------------------------ | ------------------------------------------ |
-| `packages/types`         | Zod-backed catalogue models                                  | None                                       |
-| `packages/catalog`       | Deterministic 35-title seed, profiles, rails, people, places | None                                       |
-| `packages/shared`        | Progress/player/pairing helpers                              | Renderer callers persist locally           |
-| `packages/navigation`    | Geometry-based web focus selection                           | DOM only                                   |
-| `packages/design-system` | Semantic colour, motion, and TV-safe-area constants          | Renderers currently mirror values manually |
-| `packages/media`         | Mock, local, and Cloudflare Stream provider contracts        | Adapters only                              |
-| `apps/admin`             | Catalogue/import/device/settings management UI prototype     | Browser `localStorage`; no CLI/cloud calls |
-| `tools/video-importer`   | Real filesystem scan, manifest, conversion, resume, verify   | Local files only                           |
-| `services/api`           | Authenticated Worker routes and Cloudflare bindings          | Tested/dry-run only; not deployed          |
+| Area                     | Responsibility                                             | Persistence/network now                    |
+| ------------------------ | ---------------------------------------------------------- | ------------------------------------------ |
+| `packages/types`         | Zod-backed catalogue models                                | None                                       |
+| `packages/catalog`       | Generated JSON validation/adaptation, profiles, rails      | Reads the committed generated JSON         |
+| `packages/shared`        | Progress/player/pairing helpers                            | Renderer callers persist locally           |
+| `packages/navigation`    | Geometry-based web focus selection                         | DOM only                                   |
+| `packages/design-system` | Semantic colour, motion, and TV-safe-area constants        | Renderers currently mirror values manually |
+| `packages/media`         | Mock, local, and Cloudflare Stream provider contracts      | Adapters only                              |
+| `apps/admin`             | Catalogue/import/device/settings management UI prototype   | Browser `localStorage`; no CLI/cloud calls |
+| `tools/video-importer`   | Real filesystem scan, manifest, conversion, resume, verify | Local files only                           |
+| `services/api`           | Authenticated Worker routes and Cloudflare bindings        | Tested/dry-run only; not deployed          |
 
 ## Data and trust boundaries
 

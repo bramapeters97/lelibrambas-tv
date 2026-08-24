@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react';
 import { getStored, setStored } from '@lelibrambas/shared';
-import type { Profile, VideoRecord } from '@lelibrambas/types';
-import { archivePlaceholderCategories, catalogue, collections } from './catalogue';
+import type { Collection, Profile } from '@lelibrambas/types';
+import type { CatalogueVideoRecord } from './catalogue';
+import { applyPosterFallback, resolvePosterUrl } from './media';
 
 export type BrowseScreenId = 'home' | 'search' | 'hubs' | 'collections';
 
@@ -50,7 +51,7 @@ export function toggleProfileWatchlist(
   return { ids, saved };
 }
 
-const processingLabels: Record<VideoRecord['processingStatus'], string> = {
+const processingLabels: Record<CatalogueVideoRecord['processingStatus'], string> = {
   ready: 'Ready',
   processing: 'Preparing viewing copy',
   failed: 'Needs review',
@@ -107,10 +108,7 @@ function NavIcon({ name }: { name: NavIconId }) {
   );
 }
 
-function durationLabel(video: VideoRecord): string {
-  if (video.sourceType === 'synthetic' && video.processingStatus === 'unavailable') {
-    return 'Catalogue only';
-  }
+function durationLabel(video: CatalogueVideoRecord): string {
   if (video.durationSeconds < 60) return `${Math.round(video.durationSeconds)} sec`;
   return `${Math.round(video.durationSeconds / 60)} min`;
 }
@@ -172,8 +170,8 @@ function ArtCard({
   onSelect,
   index = 0,
 }: {
-  video: VideoRecord;
-  onSelect: (video: VideoRecord) => void;
+  video: CatalogueVideoRecord;
+  onSelect: (video: CatalogueVideoRecord) => void;
   index?: number;
 }) {
   const [a, b, c] = video.artwork.palette;
@@ -182,12 +180,18 @@ function ArtCard({
     <button
       data-focusable
       data-focus-id={`browse-${video.id}`}
+      data-catalogue-id={video.catalogueId}
       className="browse-card"
       style={style}
       onClick={() => onSelect(video)}
     >
       <span className="browse-art">
-        <i />
+        <img
+          src={resolvePosterUrl(video.posterUrl)}
+          alt=""
+          loading="lazy"
+          onError={(event) => applyPosterFallback(event.currentTarget)}
+        />
         <b>{String(index + 1).padStart(2, '0')}</b>
         {video.processingStatus !== 'ready' && (
           <em className={`status-${video.processingStatus}`}>
@@ -245,9 +249,7 @@ function BrowseChrome({
           {action}
         </header>
         {children}
-        <footer className="browse-footer">
-          LELIBRAMBAS+ - Private family archive prototype - Synthetic demo media
-        </footer>
+        <footer className="browse-footer">LELIBRAMBAS+ - Private family archive</footer>
       </section>
     </main>
   );
@@ -260,31 +262,38 @@ const hubPalettes = [
   ['#132B2B', '#417C6A', '#D5BE7C'],
 ] as const;
 
-const hubData = collections.map((collection, index) => ({
-  ...collection,
-  code: String(index + 1).padStart(2, '0'),
-  line: `${collection.videoIds.length} synthetic directory records.`,
-  palette: hubPalettes[index % hubPalettes.length] ?? hubPalettes[0],
-}));
-
 export function HubsScreen({
+  catalogue,
+  collections,
   profile,
   onNavigate,
   onDetails,
   onReplayIntro,
   onProfile,
 }: {
+  catalogue: readonly CatalogueVideoRecord[];
+  collections: readonly Collection[];
   profile: Profile;
   onNavigate: (screen: BrowseScreenId) => void;
-  onDetails: (video: VideoRecord) => void;
+  onDetails: (video: CatalogueVideoRecord) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
+  const hubData = useMemo(
+    () =>
+      collections.map((collection, index) => ({
+        ...collection,
+        code: String(index + 1).padStart(2, '0'),
+        line: `${collection.videoIds.length} catalogue records.`,
+        palette: hubPalettes[index % hubPalettes.length] ?? hubPalettes[0],
+      })),
+    [collections],
+  );
   const [selected, setSelected] = useState(0);
   const hub = hubData[selected] ?? hubData[0]!;
   const matches = hub.videoIds
     .map((id) => catalogue.find((video) => video.id === id))
-    .filter((video): video is VideoRecord => Boolean(video));
+    .filter((video): video is CatalogueVideoRecord => Boolean(video));
   return (
     <BrowseChrome
       active="collections"
@@ -329,7 +338,7 @@ export function HubsScreen({
         </div>
         <div className="browse-rail">
           {matches.map((video, index) => (
-            <ArtCard key={video.id} video={video} index={index} onSelect={onDetails} />
+            <ArtCard key={video.catalogueId} video={video} index={index} onSelect={onDetails} />
           ))}
         </div>
       </section>
@@ -340,15 +349,17 @@ export function HubsScreen({
 const keyboard = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
 
 export function SearchScreen({
+  catalogue,
   profile,
   onNavigate,
   onDetails,
   onReplayIntro,
   onProfile,
 }: {
+  catalogue: readonly CatalogueVideoRecord[];
   profile: Profile;
   onNavigate: (screen: BrowseScreenId) => void;
-  onDetails: (video: VideoRecord) => void;
+  onDetails: (video: CatalogueVideoRecord) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
@@ -370,7 +381,11 @@ export function SearchScreen({
             ].some((value) => value?.toLowerCase().includes(normalized)),
           )
         : catalogue.slice(0, 8),
-    [normalized],
+    [catalogue, normalized],
+  );
+  const suggestions = useMemo(
+    () => [...new Set(catalogue.map((video) => video.categories[0]!))].slice(0, 3),
+    [catalogue],
   );
   const add = (letter: string) => setQuery((value) => value + letter);
   return (
@@ -400,7 +415,7 @@ export function SearchScreen({
               autoFocus
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try JEUGDFILMS, Vakantiefilm or 01"
+              placeholder="Try a title, year or category"
             />
             <button
               data-focusable
@@ -413,7 +428,7 @@ export function SearchScreen({
           </div>
           <div className="recent-searches">
             <span>Recent</span>
-            {['JEUGDFILMS', 'Vakantiefilm', '01'].map((item) => (
+            {suggestions.map((item) => (
               <button
                 key={item}
                 data-focusable
@@ -464,13 +479,13 @@ export function SearchScreen({
           {results.length ? (
             <div className="search-grid">
               {results.slice(0, 12).map((video, index) => (
-                <ArtCard key={video.id} video={video} index={index} onSelect={onDetails} />
+                <ArtCard key={video.catalogueId} video={video} index={index} onSelect={onDetails} />
               ))}
             </div>
           ) : (
             <div className="empty-state">
-              <b>No placeholder found.</b>
-              <p>Try a top-level folder, subfolder, year or title.</p>
+              <b>No movie found.</b>
+              <p>Try a category, year or another title.</p>
             </div>
           )}
         </section>
@@ -480,24 +495,27 @@ export function SearchScreen({
 }
 
 export function CollectionsScreen({
+  catalogue,
+  collections,
   profile,
   onNavigate,
   onDetails,
   onReplayIntro,
   onProfile,
 }: {
+  catalogue: readonly CatalogueVideoRecord[];
+  collections: readonly Collection[];
   profile: Profile;
   onNavigate: (screen: BrowseScreenId) => void;
-  onDetails: (video: VideoRecord) => void;
+  onDetails: (video: CatalogueVideoRecord) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
   const [selected, setSelected] = useState(collections[0]!.id);
   const collection = collections.find((item) => item.id === selected) ?? collections[0]!;
-  const categoryTree = archivePlaceholderCategories.find((item) => item.name === collection.title);
   const videos = collection.videoIds
     .map((id) => catalogue.find((video) => video.id === id))
-    .filter(Boolean) as VideoRecord[];
+    .filter(Boolean) as CatalogueVideoRecord[];
   return (
     <BrowseChrome
       active="collections"
@@ -533,38 +551,27 @@ export function CollectionsScreen({
           </div>
           <span>Directory order</span>
         </div>
-        {categoryTree?.groups?.length ? (
-          <div className="collection-group-strip" aria-label={`${collection.title} subfolders`}>
-            {categoryTree.groups.map((group, groupIndex) => (
-              <div className="collection-group-card" key={group.name}>
-                <small>{String(groupIndex + 1).padStart(2, '0')} subfolder</small>
-                <strong>{group.name}</strong>
-                <span>{group.movies.length} records</span>
-              </div>
-            ))}
-          </div>
-        ) : null}
         <div className="episode-list">
           {videos.map((video, index) => (
             <button
-              key={video.id}
+              key={video.catalogueId}
               data-focusable
               data-focus-id={`episode-${video.id}`}
+              data-catalogue-id={video.catalogueId}
               onClick={() => onDetails(video)}
             >
               <b>{String(index + 1).padStart(2, '0')}</b>
-              <i
-                style={
-                  {
-                    '--art-a': video.artwork.palette[0],
-                    '--art-b': video.artwork.palette[1],
-                    '--art-c': video.artwork.palette[2],
-                  } as React.CSSProperties
-                }
+              <img
+                src={resolvePosterUrl(video.posterUrl)}
+                alt=""
+                loading="lazy"
+                onError={(event) => applyPosterFallback(event.currentTarget)}
               />
               <span>
                 <strong>{video.title}</strong>
-                <small>Catalogue only - {video.location}</small>
+                <small>
+                  {video.year ?? 'Year unknown'} - {video.location}
+                </small>
               </span>
               <em>&gt;</em>
             </button>

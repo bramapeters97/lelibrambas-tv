@@ -9,13 +9,15 @@ import {
   useTVEventHandler,
 } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
+import { catalogue } from '@lelibrambas/catalog';
 import MobileApp from './mobile/MobileApp';
-
-const demoSource = require('./assets/archive-demo.mp4');
+import { resolveNativePlaybackSource } from './src/media';
 
 function NativeTvApp() {
   const [screen, setScreen] = useState<'profile' | 'home' | 'player'>('profile');
-  const player = useVideoPlayer(demoSource, (instance) => {
+  const featuredMovie = catalogue[0]!;
+  const playback = resolveNativePlaybackSource(featuredMovie.streamVideoId);
+  const player = useVideoPlayer(playback.url, (instance) => {
     instance.loop = false;
   });
   const onTvEvent = useCallback(
@@ -80,11 +82,8 @@ function NativeTvApp() {
   return (
     <View style={styles.root}>
       <Text style={styles.eyebrow}>A LELIBRAMBAS STUDIOS™ PRESENTATION</Text>
-      <Text style={styles.hero}>Stockholm Summer</Text>
-      <Text style={styles.copy}>
-        Long light, familiar ferries, and the small moments that made a northern chapter worth
-        keeping.
-      </Text>
+      <Text style={styles.hero}>{featuredMovie.title}</Text>
+      <Text style={styles.copy}>{featuredMovie.description}</Text>
       <TVFocusGuideView style={styles.row} autoFocus>
         <Pressable
           hasTVPreferredFocus
