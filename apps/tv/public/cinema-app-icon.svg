@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">LELIBRAMBAS+ cinema icon</title>
+  <defs>
+    <linearGradient id="silver" x1="72" y1="36" x2="440" y2="486" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f4f7fa" />
+      <stop offset="0.36" stop-color="#cbd2da" />
+      <stop offset="0.72" stop-color="#939da9" />
+      <stop offset="1" stop-color="#65717f" />
+    </linearGradient>
+    <radialGradient id="sheen" cx="0" cy="0" r="1" gradientTransform="translate(150 112) rotate(48) scale(350)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff" stop-opacity="0.7" />
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow" x="80" y="84" width="352" height="356" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="13" stdDeviation="13" flood-color="#06101f" flood-opacity="0.28" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" fill="url(#silver)" />
+  <rect width="512" height="512" fill="url(#sheen)" />
+  <g fill="none" stroke="#07111f" stroke-width="22" stroke-linecap="round" stroke-linejoin="round" filter="url(#shadow)">
+    <path d="M126 219h260v151c0 16-13 29-29 29H155c-16 0-29-13-29-29Z" />
+    <path d="m137 219 33-86h215l-31 86" />
+    <path d="m216 133-34 86M304 133l-34 86" />
+    <path d="m229 274 79 43-79 43Z" fill="#07111f" />
+  </g>
+</svg>

@@ -36,6 +36,13 @@ must include the root artwork files and `data/media_catalog.json`. Its artwork r
 
 The JSON does not need to be rewritten for that native mapping.
 
+## Duration metadata
+
+The seven-column workbook and generated JSON do not currently contain authoritative runtimes.
+Catalogue records therefore expose `durationSeconds` as `null` until playback or provider metadata
+supplies a finite positive duration. The viewer must label that state as unknown or omit the runtime;
+it must not substitute a universal estimate.
+
 ## Playback URLs
 
 The JSON preserves each spreadsheet `stream_video_id` exactly. The web resolver supports direct

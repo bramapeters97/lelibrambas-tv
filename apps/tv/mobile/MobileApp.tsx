@@ -610,7 +610,6 @@ function DetailsScreen({
         <View style={styles.metadataRow}>
           <Text style={styles.metadataPill}>{video.year ?? 'Year unknown'}</Text>
           <Text style={styles.metadataPill}>{video.categories[0]}</Text>
-          <Text style={styles.metadataPill}>Format unknown</Text>
         </View>
         <Text style={styles.detailDescription}>{video.description}</Text>
 

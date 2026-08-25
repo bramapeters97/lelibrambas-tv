@@ -10,7 +10,7 @@ import {
   shouldMarkComplete,
   writeProgress,
 } from '@lelibrambas/shared';
-import type { Collection, Profile } from '@lelibrambas/types';
+import type { Collection, PlaybackProgress, Profile } from '@lelibrambas/types';
 import {
   loadCatalogue,
   profiles,
@@ -29,7 +29,10 @@ import {
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
 
-type Screen = 'ident' | 'profiles' | 'details' | 'player' | BrowseScreenId;
+type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseScreenId;
+
+export const PROFILE_LOADING_DELAY_MS = 3000;
+export const HERO_IDLE_DELAY_MS = 5000;
 
 type TransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { finished: Promise<void> };
@@ -134,12 +137,53 @@ export function nextPlayableVideo(
   );
 }
 
-function progressFor(profile: Profile, video: CatalogueVideoRecord) {
-  const stored = readProgress(profile.id, video.id, video.durationSeconds);
+export function knownDuration(video: CatalogueVideoRecord): number | null {
+  return typeof video.durationSeconds === 'number' &&
+    Number.isFinite(video.durationSeconds) &&
+    video.durationSeconds > 0
+    ? video.durationSeconds
+    : null;
+}
+
+function progressFallbackDuration(video: CatalogueVideoRecord): number {
+  return knownDuration(video) ?? Math.max(1, video.progressSeconds);
+}
+
+function progressFor(profile: Profile, video: CatalogueVideoRecord): PlaybackProgress {
+  const duration = knownDuration(video);
+  const stored = readProgress(profile.id, video.id, duration ?? progressFallbackDuration(video));
   const isStored = Date.parse(stored.updatedAt) > 0;
   if (isStored) return stored;
-  const seconds = Math.min(video.durationSeconds, video.progressSeconds);
-  return { ...stored, seconds, completed: seconds >= video.durationSeconds * 0.94 };
+  const seconds = duration
+    ? Math.min(duration, video.progressSeconds)
+    : Math.max(0, video.progressSeconds);
+  return {
+    ...stored,
+    seconds,
+    durationSeconds: duration ?? progressFallbackDuration(video),
+    completed: duration !== null && seconds >= duration * 0.94,
+  };
+}
+
+export type RecentlyWatchedItem = {
+  video: CatalogueVideoRecord;
+  progress: PlaybackProgress;
+};
+
+export function recentlyWatchedFor(
+  profile: Profile,
+  catalogue: readonly CatalogueVideoRecord[],
+): RecentlyWatchedItem[] {
+  if (!getStored('remember-progress', true)) return [];
+  return catalogue
+    .map((video) => ({ video, progress: progressFor(profile, video) }))
+    .filter(
+      ({ progress }) => progress.seconds > 0 && Number.isFinite(Date.parse(progress.updatedAt)),
+    )
+    .sort(
+      (left, right) =>
+        Date.parse(right.progress.updatedAt) - Date.parse(left.progress.updatedAt),
+    );
 }
 
 function paletteStyle(video: CatalogueVideoRecord): React.CSSProperties {
@@ -147,9 +191,11 @@ function paletteStyle(video: CatalogueVideoRecord): React.CSSProperties {
   return { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
 }
 
-function durationLabel(video: CatalogueVideoRecord): string {
-  if (video.durationSeconds < 60) return `${Math.round(video.durationSeconds)} sec`;
-  return `${Math.round(video.durationSeconds / 60)} min`;
+function durationLabel(video: CatalogueVideoRecord): string | null {
+  const duration = knownDuration(video);
+  if (duration === null) return null;
+  if (duration < 60) return `${Math.round(duration)} sec`;
+  return `${Math.round(duration / 60)} min`;
 }
 
 function Wordmark({ compact = false }: { compact?: boolean }) {
@@ -236,6 +282,32 @@ function ProfilePicker({ onSelect }: { onSelect: (profile: Profile) => void }) {
   );
 }
 
+function ProfileLoading({
+  profile,
+  onDone,
+  holdForCapture = false,
+}: {
+  profile: Profile;
+  onDone: () => void;
+  holdForCapture?: boolean;
+}) {
+  useEffect(() => {
+    if (holdForCapture) return;
+    const timer = window.setTimeout(onDone, PROFILE_LOADING_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [holdForCapture, onDone]);
+
+  return (
+    <main className="profile-loading-screen" role="status" aria-live="polite">
+      <Wordmark />
+      <span className="profile-loading-spinner" aria-hidden="true">
+        <CinemaIcon />
+      </span>
+      <p>Opening {profile.name}&apos;s archive&hellip;</p>
+    </main>
+  );
+}
+
 function ActionButton({
   children,
   tone = 'primary',
@@ -265,12 +337,124 @@ function ActionButton({
   );
 }
 
-function ProgressBar({ progress, duration }: { progress: number; duration: number }) {
+function ProgressBar({ progress, duration }: { progress: number; duration: number | null }) {
+  if (duration === null || !Number.isFinite(duration) || duration <= 0) return null;
   const percent = Math.min(100, (progress / duration) * 100);
   return (
     <span className="progress-track" aria-label={`${Math.round(percent)} percent watched`}>
       <i style={{ width: `${percent}%` }} />
     </span>
+  );
+}
+
+function HeroTrailer({
+  video,
+  onPlaying,
+  onUnavailable,
+  onEnded,
+}: {
+  video: CatalogueVideoRecord;
+  onPlaying: () => void;
+  onUnavailable: () => void;
+  onEnded: () => void;
+}) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const source = useMemo(() => {
+    const resolved = resolvePlaybackSource(video.streamVideoId, { autoplay: true });
+    if (resolved.kind === 'iframe') {
+      return {
+        kind: 'hls' as const,
+        url: resolved.directHlsUrl,
+        originalUrl: resolved.originalUrl,
+      };
+    }
+    return resolved.kind === 'hls' || resolved.kind === 'mp4'
+      ? { kind: resolved.kind, url: resolved.url, originalUrl: resolved.originalUrl }
+      : null;
+  }, [video.streamVideoId]);
+
+  useEffect(() => {
+    const element = videoRef.current;
+    if (!element || !source) {
+      onUnavailable();
+      return;
+    }
+
+    let disposed = false;
+    let attempted = false;
+    let hls: HlsInstance | null = null;
+    const fail = () => {
+      if (!disposed) onUnavailable();
+    };
+    const attemptPlayback = () => {
+      if (attempted || disposed) return;
+      attempted = true;
+      element.muted = false;
+      element.volume = 1;
+      void element
+        .play()
+        .then(() => {
+          if (!disposed) onPlaying();
+        })
+        .catch(fail);
+    };
+    const reportPlaying = () => {
+      if (!disposed) onPlaying();
+    };
+
+    element.addEventListener('canplay', attemptPlayback, { once: true });
+    element.addEventListener('playing', reportPlaying);
+    element.addEventListener('error', fail, { once: true });
+
+    async function attachSource() {
+      if (source.kind === 'mp4' || element.canPlayType('application/vnd.apple.mpegurl')) {
+        element.src = source.url;
+        element.load();
+        return;
+      }
+
+      const { default: Hls } = await import('hls.js');
+      if (disposed) return;
+      if (!Hls.isSupported()) {
+        fail();
+        return;
+      }
+      hls = new Hls({ enableWorker: true, lowLatencyMode: false, backBufferLength: 15 });
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (data.fatal) fail();
+      });
+      hls.loadSource(source.url);
+      hls.attachMedia(element);
+    }
+
+    void attachSource().catch(fail);
+    return () => {
+      disposed = true;
+      hls?.destroy();
+      element.removeEventListener('canplay', attemptPlayback);
+      element.removeEventListener('playing', reportPlaying);
+      element.removeEventListener('error', fail);
+      element.pause();
+      element.removeAttribute('src');
+      element.load();
+    };
+  }, [onPlaying, onUnavailable, source]);
+
+  if (!source) return null;
+  return (
+    <video
+      ref={videoRef}
+      className="hero-trailer"
+      data-hero-media="trailer"
+      data-stream-video-id={source.originalUrl}
+      autoPlay
+      controls={false}
+      playsInline
+      preload="auto"
+      tabIndex={-1}
+      aria-hidden="true"
+      onEnded={onEnded}
+    />
   );
 }
 
@@ -299,10 +483,85 @@ function Home({
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
+  const captureMode = new URLSearchParams(location.search).get('capture') === '1';
+  const [trailerRequested, setTrailerRequested] = useState(false);
+  const [trailerPlaying, setTrailerPlaying] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
   const trendingIds = [22, 23, 7, 40];
   const trending = trendingIds
     .map((id) => catalogue.find((item) => item.catalogueId === id))
     .filter((item): item is CatalogueVideoRecord => Boolean(item));
+  const recentlyWatched = useMemo(
+    () => recentlyWatchedFor(profile, catalogue),
+    [catalogue, profile],
+  );
+
+  const stopTrailer = useCallback(() => {
+    setTrailerRequested(false);
+    setTrailerPlaying(false);
+  }, []);
+  const rejectTrailer = useCallback(() => {
+    setAutoplayBlocked(true);
+    stopTrailer();
+  }, [stopTrailer]);
+
+  useEffect(() => {
+    if (captureMode || autoplayBlocked || !heroAvailability.playable) return;
+    let timer: number | null = null;
+    const clearTimer = () => {
+      if (timer !== null) window.clearTimeout(timer);
+      timer = null;
+    };
+    const schedule = () => {
+      clearTimer();
+      if (
+        trailerRequested ||
+        document.visibilityState !== 'visible' ||
+        window.scrollY > 48
+      )
+        return;
+      timer = window.setTimeout(() => setTrailerRequested(true), HERO_IDLE_DELAY_MS);
+    };
+    const noteActivity = () => {
+      if (!trailerRequested) schedule();
+    };
+    const handleScroll = () => {
+      if (window.scrollY > 48) {
+        clearTimer();
+        stopTrailer();
+      } else if (!trailerRequested) schedule();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        clearTimer();
+        stopTrailer();
+      } else {
+        schedule();
+      }
+    };
+
+    schedule();
+    window.addEventListener('pointerdown', noteActivity);
+    window.addEventListener('keydown', noteActivity);
+    window.addEventListener('touchstart', noteActivity, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      clearTimer();
+      window.removeEventListener('pointerdown', noteActivity);
+      window.removeEventListener('keydown', noteActivity);
+      window.removeEventListener('touchstart', noteActivity);
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [
+    autoplayBlocked,
+    captureMode,
+    heroAvailability.playable,
+    stopTrailer,
+    trailerRequested,
+  ]);
+
   return (
     <main className="tv-shell">
       <NavigationRail
@@ -1021,6 +1280,7 @@ function Player({
 function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
   const params = useMemo(() => new URLSearchParams(location.search), []);
   const forced = params.get('screen') as Screen | null;
+  const captureMode = params.get('capture') === '1';
   const initial: Screen = forced ?? 'ident';
   const [screen, setScreen] = useState<Screen>(initial);
   const [profile, setProfile] = useState<Profile>(
@@ -1163,8 +1423,17 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
         onSelect={(next) => {
           setProfile(next);
           setStored('profile-id', next.id);
-          replaceScreen('home');
+          if (captureMode && forced !== 'loading') replaceScreen('home');
+          else replaceScreen('loading');
         }}
+      />,
+    );
+  if (screen === 'loading')
+    return renderScreen(
+      <ProfileLoading
+        profile={profile}
+        holdForCapture={captureMode && forced === 'loading'}
+        onDone={() => replaceScreen('home')}
       />,
     );
   if (screen === 'details')

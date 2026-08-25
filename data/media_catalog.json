@@ -3,7 +3,7 @@
     "id": 1,
     "title": "Eline Maria Peters",
     "year": 1995,
-    "description": "Before the family archive had sequels, there was Eline. A tiny leading lady makes her 1995 debut, with a supporting cast already completely wrapped around her finger.",
+    "description": "Eline Maria Peters (1995)",
     "category": "JEUGDFILMS",
     "poster_url": "artwork/eline_maria_peters.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/4b62183a08dc2db7c90eccbb4db5ab35/watch"
@@ -12,7 +12,7 @@
     "id": 2,
     "title": "Bram Albertus Peters",
     "year": 1997,
-    "description": "Two years after Eline, a new character enters the Peters universe: Bram Albertus Peters. Small in stature, suspiciously high in screen presence, and only just getting started.",
+    "description": "Bram Albertus Peters (1997)",
     "category": "JEUGDFILMS",
     "poster_url": "artwork/bram_albertus_peters.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/53e348c1cc577f57e567fb9b3c64538a/watch"
@@ -21,7 +21,7 @@
     "id": 3,
     "title": "Zomervakanties",
     "year": 2001,
-    "description": "Four summers, countless ice creams and the wonderfully uncomplicated adventures of childhood. A sun-soaked time capsule of the Peters family holidays between 2001 and 2004.",
+    "description": "Zomervakanties (2001-2004)",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/generic_cinema_2.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/48c393b59bdd7e8208ad2e6b1133a593/watch"
@@ -30,7 +30,7 @@
     "id": 4,
     "title": "The United States of America (2013)",
     "year": 2013,
-    "description": "Join the Peters family on their first journey across the United States, from the East Coast and New York City, through the Midwest, all the way to Los Angeles. A trip memorable enough to earn not one, but two sequels.",
+    "description": "The United States of America (2013)",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/usa_1.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/6a1e22a1a374adf08dcd5c023cf835fc/watch"
@@ -39,7 +39,7 @@
     "id": 5,
     "title": "The United States of America (2014)",
     "year": 2014,
-    "description": "The Peters family returns to America for round two: new places, new adventures and another rental car with a lot of ground to cover. The difficult second album turns out to be anything but difficult.",
+    "description": "The United States of America (2014)",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/usa_2.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c3b42807d8a63634b831c411175de176/watch"
@@ -48,7 +48,7 @@
     "id": 6,
     "title": "The United States of America (2015)",
     "year": 2015,
-    "description": "Third time's the charm as the Peters family heads back across the Atlantic for the final chapter of their American trilogy. Bigger memories, familiar chaos and one last dose of the open road.",
+    "description": "The United States of America (2015)",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/usa_3.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/8e538a7e4b4e612952dece0a5696e6d9/watch"
@@ -57,7 +57,7 @@
     "id": 7,
     "title": "South Africa",
     "year": 2019,
-    "description": "Trade the familiar for the spectacular as the journey heads south to South Africa. Sweeping landscapes, wild encounters and a family adventure that feels very far from home in the best possible way.",
+    "description": "South Africa",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/south_africa.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c424922ed72081dd5f29926ff6518a9c/watch"
@@ -66,7 +66,7 @@
     "id": 8,
     "title": "Baltic Capitals",
     "year": 2016,
-    "description": "Three capitals, one trip and an impressive amount of cobblestone. Follow the Peters family through the Baltic states for a city-hopping adventure filled with old streets, new discoveries and northern charm.",
+    "description": "Baltic Capitals",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/baltic_capitals.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/0c57f5e6ab2d37e254a62db19f2dd486/watch"
@@ -75,7 +75,7 @@
     "id": 9,
     "title": "Alanya, Turkey",
     "year": 2007,
-    "description": "Sun, sea and the kind of heat that makes every cold drink feel life-changing. Alanya serves up a proper 2007 summer holiday, complete with family adventures and Turkish sunshine.",
+    "description": "Alanya, Turkey",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/alanya_turkey.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/3b7867eb13811681402fa0edbd261ea0/watch"
@@ -84,16 +84,16 @@
     "id": 10,
     "title": "Mas Patoxas, Spain",
     "year": 2006,
-    "description": "Somewhere between campsite routines, Spanish sunshine and absolutely no need to know what day it is, Mas Patoxas became home for a little while. This is summer 2006 exactly as it should be remembered.",
+    "description": "Mas Patoxas, Spain",
     "category": "VAKANTIEFILMS",
-    "poster_url": "artwork/mas_patoxas,spain.png",
+    "poster_url": "artwork/mas_patoxas_spain.png",
     "stream_video_id": "http://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/e01c167f8edda1cb540db2771ee1a6f5/watch"
   },
   {
     "id": 11,
     "title": "Corfu, Greece",
     "year": 2006,
-    "description": "Blue water, green hills and enough Greek sunshine to make the camera work overtime. Corfu in 2006 is a postcard brought to life, with the Peters family firmly in the middle of it.",
+    "description": "Corfu, Greece",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/corfu_greece.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/2072a79a4c6c853c0ad58cb752b50121/watch"
@@ -102,7 +102,7 @@
     "id": 12,
     "title": "Frejus, France",
     "year": 2002,
-    "description": "The French Riviera, but through the wonderfully unfiltered lens of a family holiday in 2002. Fréjus brings sunshine, day trips and the kind of memories that somehow get better with age.",
+    "description": "Frejus, France",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/frejus_france.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c079d2db32f70719dcd5f05db86f1d38/watch"
@@ -111,7 +111,7 @@
     "id": 13,
     "title": "Argeles, France",
     "year": 2001,
-    "description": "Before smartphones, endless photo dumps and location sharing, there was Argeles 2001. A classic French summer of sunshine, family time and the simple thrill of being somewhere else.",
+    "description": "Argeles, France",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/argeles_france.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/57db246d74e876d9c89fa9714a203bce/watch"
@@ -120,7 +120,7 @@
     "id": 14,
     "title": "Val Thorens, France",
     "year": 2007,
-    "description": "Swap swimwear for ski gear: Val Thorens takes the family archive high into the French Alps. Snow, speed and just enough confidence to make pointing a camera downhill seem like a perfectly sensible idea.",
+    "description": "Val Thorens, France",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/val_thorens_france.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/3418b6888d1256a94c8f8820c8e400a6/watch"
@@ -129,7 +129,7 @@
     "id": 15,
     "title": "Grimaud, France",
     "year": 2005,
-    "description": "Welcome to Grimaud, where southern France delivers medieval charm, Mediterranean sunshine and peak summer-holiday energy. The Peters family settles in for another chapter under the Côte d'Azur sun.",
+    "description": "Grimaud, France",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/grimaud_france.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/eb9f7a0f135e267bbd086fc6f323e0aa/watch"
@@ -138,7 +138,7 @@
     "id": 16,
     "title": "Marbella, Spain",
     "year": 2002,
-    "description": "Marbella in 2002: palm trees, Spanish sunshine and a family holiday with serious early-2000s energy. Long before Instagram needed to know about it, the Peters family was already living the Costa del Sol life.",
+    "description": "Marbella, Spain",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/marbella_spain.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/bb8606d2ed37c53c1a392295c2632ea5/watch"
@@ -147,7 +147,7 @@
     "id": 17,
     "title": "Gardameer, 2004",
     "year": 2004,
-    "description": "In 2004, the Peters family discovers a dangerous formula: Italian sunshine, beautiful water and holidays at Lake Garda. Unsurprisingly, this will not be their last visit.",
+    "description": "Gardameer, 2004",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/gardameer_2004.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c5b8875e0ea63ad25b4f1db4d5560f48/watch"
@@ -156,7 +156,7 @@
     "id": 18,
     "title": "Gardameer, 2007",
     "year": 2007,
-    "description": "Three years later, Lake Garda calls again—and apparently the Peters family answers. Familiar scenery meets a fresh summer in the sequel nobody needed convincing to make.",
+    "description": "Gardameer, 2007",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/gardameer_2007.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/e28199b4e475aea24dba0af309bea2d0/watch"
@@ -165,7 +165,7 @@
     "id": 19,
     "title": "Gardameer, 2008",
     "year": 2008,
-    "description": "Because twice at Lake Garda clearly wasn't enough, the family returns once more in 2008. The trilogy closes with Italian sunshine, familiar places and the comfortable feeling of coming back somewhere you love.",
+    "description": "Gardameer, 2008",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/gardameer_2008.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/9a2627c6dfdd85e3bdc287e64f46ad90/watch"
@@ -174,7 +174,7 @@
     "id": 20,
     "title": "Six Flags Holland, 2001",
     "year": 2001,
-    "description": "Rollercoasters, screaming and the brave confidence of people who have not yet seen the on-ride photo. Six Flags Holland in 2001 turns an ordinary day out into a tiny family blockbuster.",
+    "description": "Six Flags Holland, 2001",
     "category": "VAKANTIEFILMS",
     "poster_url": "artwork/six_flags_holland.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/ad9f9ccb9605ca8516e5b50ccb2b9f41/watch"
@@ -183,7 +183,7 @@
     "id": 21,
     "title": "Huwelijk Bart & Astrid",
     "year": 1994,
-    "description": "Before Eline, before Bram and before most of this archive existed, there was Bart and Astrid saying yes. A wedding, a promise and the unofficial origin story of everything that followed.",
+    "description": "Huwelijk Bart & Astrid",
     "category": "EVENTS",
     "poster_url": "artwork/huwelijk_bart_astrid.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/ef26d17e0ffc4fc995a69f8622d5f48c/watch"
@@ -192,7 +192,7 @@
     "id": 22,
     "title": "Jubileum J. Meijer B.V.",
     "year": 2025,
-    "description": "A milestone deserves more than cake and a polite round of applause. J. Meijer B.V. celebrates its jubilee with colleagues, memories and a company story worth putting on film.",
+    "description": "Jubileum J. Meijer B.V.",
     "category": "EVENTS",
     "poster_url": "artwork/jubileum_jmeijer_bv.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/f146f024fb217f1c284a59342f2a2675/watch"
@@ -201,7 +201,7 @@
     "id": 23,
     "title": "Huwelijk Eline & Luca (Bram)",
     "year": 2022,
-    "description": "Every wedding deserves a sibling with a camera, a point of view and absolutely no obligation to remain objective. Bram's personal gift to Eline and Luca turns their big day into something made especially for them.",
+    "description": "Huwelijk Eline & Luca (Bram)",
     "category": "EVENTS",
     "poster_url": "artwork/huwelijk_eline_luca_bram_gift.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/9502ccf331f821a06115991f3016353f/watch"
@@ -210,7 +210,7 @@
     "id": 24,
     "title": "Huwelijk Eline & Luca (Event)",
     "year": 2022,
-    "description": "One special day, not too long ago, two people said yes to one another—and not to 'spaghetti bolognese tonight?'. From the first arrivals to the celebrations that followed, this is Eline and Luca's wedding as it happened.",
+    "description": "Huwelijk Eline & Luca (Event)",
     "category": "EVENTS",
     "poster_url": "artwork/huwelijk_eline_luca_event.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/a32d52d8cc192ba1991f9b1b6a4ced09/watch"
@@ -219,7 +219,7 @@
     "id": 25,
     "title": "Huwelijk Eline & Luca (Highlights)",
     "year": 2022,
-    "description": "All the emotion, laughter and best bits, with none of the waiting around between them. Eline and Luca's wedding distilled into one highlight reel for whenever the day deserves to happen all over again.",
+    "description": "Huwelijk Eline & Luca (Highlights)",
     "category": "EVENTS",
     "poster_url": "artwork/huwelijk_eline_luca_highlights.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/dd8a806fa946fcecf2368834027f72d9/watch"
@@ -228,7 +228,7 @@
     "id": 26,
     "title": "Gouden Bruiloft Opa en Oma",
     "year": 2006,
-    "description": "Fifty years together is not just an anniversary; it is half a century of stories, habits, laughter and choosing one another. Opa and Oma's golden wedding celebrates a love story already longer than most film franchises.",
+    "description": "Gouden Bruiloft Opa en Oma",
     "category": "EVENTS",
     "poster_url": "artwork/gouden_bruiloft_opa_oma.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/f00c36fe6a6c33b403c44500ef9988a9/watch"
@@ -237,7 +237,7 @@
     "id": 27,
     "title": "Lucky (2004)",
     "year": 2004,
-    "description": "Meet Lucky, a four-legged scene-stealer with no apparent respect for who was supposed to be the star. This 2004 chapter captures the kind of everyday moments that quietly become family classics.",
+    "description": "Lucky (2004)",
     "category": "OTHERS",
     "poster_url": "artwork/lucky_2004.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/946dec5a57d6808e81b51d8d3a735e21/watch"
@@ -246,7 +246,7 @@
     "id": 28,
     "title": "Lucky (2013)",
     "year": 2013,
-    "description": "Nine years later, Lucky returns: older, wiser and still perfectly capable of stealing the frame. Some stars need a comeback tour; Lucky simply needed the camera switched on.",
+    "description": "Lucky (2013)",
     "category": "OTHERS",
     "poster_url": "artwork/lucky_2013.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/6c412887fda9a47a3c1f3a322d26826c/watch"
@@ -255,7 +255,7 @@
     "id": 29,
     "title": "The First Flight",
     "year": 2015,
-    "description": "Every aviation story has a moment when the ground finally disappears beneath you. The First Flight captures the nerves, excitement and unforgettable feeling of taking to the sky for the very first time.",
+    "description": "The First Flight",
     "category": "EVENTS",
     "poster_url": "artwork/the_first_flight.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c5dac7d7c461e463c7f6250f3d47b48e/watch"
@@ -264,7 +264,7 @@
     "id": 30,
     "title": "Musical De Boskampi's",
     "year": 2008,
-    "description": "Big characters, homemade theatre magic and a stage full of primary-school confidence: De Boskampi's comes to life. Broadway may have been safe, but only because Nutterden was quite far away.",
+    "description": "Musical De Boskampi's",
     "category": "OTHERS",
     "poster_url": "artwork/musical_de_boskampis.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/c57b6fda137b649c84369ba2913238ec/watch"
@@ -273,7 +273,7 @@
     "id": 31,
     "title": "Schoolkamp Nutterden",
     "year": 2008,
-    "description": "A few days away from parents, normal lessons and anything resembling an ordinary school week. Schoolkamp Nutterden captures the games, chaos and friendships that made 2008 feel briefly like one long adventure.",
+    "description": "Schoolkamp Nutterden",
     "category": "OTHERS",
     "poster_url": "artwork/schoolkamp_nutterden.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/4ab6866762bd88e9ee223b3f69c866c0/watch"
@@ -282,7 +282,7 @@
     "id": 32,
     "title": "Afsluiting Basisschool",
     "year": 2008,
-    "description": "One classroom chapter closes and a much bigger one waits just outside the door. Afsluiting Basisschool looks back at the people, moments and memories that made saying goodbye in 2008 surprisingly significant.",
+    "description": "Afsluiting Basisschool",
     "category": "OTHERS",
     "poster_url": "artwork/afsluiting_basisschool.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/dc2deaa0f8b0834c3f929a27bbfc2f70/watch"
@@ -291,16 +291,16 @@
     "id": 33,
     "title": "Bram & Astrid in de Goliath",
     "year": 2010,
-    "description": "Two riders, one enormous rollercoaster and several seconds in which reconsidering the plan is no longer an option. Bram and Astrid take on the Goliath—and fortunately, the camera survives too.",
+    "description": "Bram & Astrid in de Goliath",
     "category": "OTHERS",
-    "poster_url": "artwork/bram_astrid_goliath.png",
+    "poster_url": "artwork/generic_cinema_2.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/ac9b9a2419f450d8d7f7b56e3c3315c4/watch"
   },
   {
     "id": 34,
     "title": "Spotlight Eline",
     "year": 2004,
-    "description": "For a brief moment in 2004, the spotlight belongs entirely to Eline. Consider this her early screen test: confidence, character and just enough evidence that the camera knew where to look.",
+    "description": "Spotlight Eline",
     "category": "OTHERS",
     "poster_url": "artwork/spotlight_eline.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/d26c61ffa22e4b8e47a4d610f8997403/watch"
@@ -309,7 +309,7 @@
     "id": 35,
     "title": "Need For Speed: Molenhoek Drift",
     "year": 2015,
-    "description": "Forget Monaco, Tokyo and Los Angeles—the real underground racing scene was hiding in Molenhoek all along. Need For Speed: Molenhoek Drift brings questionable horsepower and blockbuster ambition to the Dutch streets.",
+    "description": "Need For Speed: Molenhoek Drift",
     "category": "OTHERS",
     "poster_url": "artwork/need_for_speed_molenhoek_drift.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/7da9aca84b7aa3dec844fbcb559f486c/watch"
@@ -318,7 +318,7 @@
     "id": 36,
     "title": "Lelibrambas+ Trailer",
     "year": 2026,
-    "description": "Decades of holidays, weddings, childhood chaos and family history finally have one place to live. Welcome to Lelibrambas+: the Peters family archive, remastered as the streaming service absolutely nobody asked for but everybody needed.",
+    "description": "We're celebrating the launch of our new streaming-service Lelibrambas+. What's to discover? Subscribe to get access to the exclusive Peters Family-archive..",
     "category": "EVENTS",
     "poster_url": "artwork/lelibrambas_trailer.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/781474858b0d754f748bfc4b51f9c43d/watch"
@@ -327,25 +327,25 @@
     "id": 37,
     "title": "Gouden Bruiloft Opa en Oma (Photoalbum)",
     "year": 2006,
-    "description": "Fifty years of marriage, one celebration and a lifetime of memories captured one photograph at a time. This photo album offers a quieter look back at Opa and Oma's golden milestone.",
+    "description": "Gouden Bruiloft Opa en Oma (Photoalbum)",
     "category": "EVENTS",
-    "poster_url": "artwork/gouden_bruiloft_opa_oma.png",
+    "poster_url": "artwork/generic_cinema_2.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/0ad3ec52cd812b702ac5c20fb09eb3b4/watch"
   },
   {
     "id": 38,
     "title": "Alanya, Turkey (Photoalbum)",
     "year": 2007,
-    "description": "Alanya, frame by frame: sunshine, family moments and all the little details that can disappear between moving images. A photographic companion to the 2007 Turkey adventure.",
+    "description": "Alanya, Turkey (Photoalbum)",
     "category": "VAKANTIEFILMS",
-    "poster_url": "artwork/alanya_turkey.png",
+    "poster_url": "artwork/generic_cinema_2.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/d5b358b57551b4eb7edc6b4a57a7f06c/watch"
   },
   {
     "id": 40,
     "title": "Doortje & Guusje",
     "year": 2015,
-    "description": "Meet Doortje and Guusje: two names, twice the personality and apparently enough material to earn their own title in the archive. Some duos simply refuse to remain supporting characters.",
+    "description": "Doortje & Guusje",
     "category": "OTHERS",
     "poster_url": "artwork/doortje_guusje.png",
     "stream_video_id": "https://customer-7c4f4yyof6wqvjv2.cloudflarestream.com/00b824031502ad91c99a67d1319b701d/watch"

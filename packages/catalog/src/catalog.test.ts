@@ -29,10 +29,29 @@ describe('generated media catalogue', () => {
       'EVENTS',
       'OTHERS',
     ]);
-    expect(collections.map((collection) => collection.videoIds.length)).toEqual([3, 18, 9, 9]);
+    expect(collections.map((collection) => collection.videoIds.length)).toEqual([2, 19, 9, 9]);
     expect(catalogueCategories.flatMap((category) => category.movies)).toHaveLength(
       generatedCatalog.length,
     );
+  });
+
+  it('uses the requested category and local poster mappings', () => {
+    expect(catalogue.find((video) => video.catalogueId === 3)?.categories).toEqual([
+      'VAKANTIEFILMS',
+    ]);
+    expect(catalogue.find((video) => video.catalogueId === 10)?.posterUrl).toBe(
+      'artwork/mas_patoxas_spain.png',
+    );
+    expect(catalogue.find((video) => video.catalogueId === 14)?.posterUrl).toBe(
+      'artwork/val_thorens_france.png',
+    );
+    expect(catalogue.find((video) => video.catalogueId === 40)?.posterUrl).toBe(
+      'artwork/doortje_guusje.png',
+    );
+  });
+
+  it('keeps runtime unknown when the canonical catalogue does not provide it', () => {
+    expect(catalogue.every((video) => video.durationSeconds === null)).toBe(true);
   });
 
   it('preserves every exact stream URL on the selected catalogue record', () => {

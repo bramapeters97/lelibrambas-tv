@@ -11,10 +11,11 @@ export interface MediaCatalogItem {
   stream_video_id: string;
 }
 
-export interface CatalogueVideoRecord extends VideoRecord {
+export interface CatalogueVideoRecord extends Omit<VideoRecord, 'durationSeconds'> {
   catalogueId: number;
   posterUrl: string;
   streamVideoId: string;
+  durationSeconds: number | null;
 }
 
 export interface CatalogueCategory {
@@ -130,7 +131,7 @@ export function createCatalogue(input: unknown): CatalogueVideoRecord[] {
       recordingDate: item.year === null ? null : `${item.year}-01-01`,
       dateApproximate: true,
       year: item.year,
-      durationSeconds: 3600,
+      durationSeconds: null,
       aspectRatio: '16:9',
       resolution: 'Adaptive Stream',
       frameRate: 25,
