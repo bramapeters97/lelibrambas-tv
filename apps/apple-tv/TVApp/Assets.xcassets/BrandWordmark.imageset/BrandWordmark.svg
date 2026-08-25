@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="240" viewBox="0 0 1200 240" role="img" aria-label="LeliBrambas plus development wordmark">
+  <defs>
+    <linearGradient id="plus" x1="1040" y1="55" x2="1152" y2="188" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F0D48A"/>
+      <stop offset="1" stop-color="#70D8FF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="240" fill="none"/>
+  <text x="48" y="159" fill="#F7F9FE" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" letter-spacing="4">LELIBRAMBAS</text>
+  <path d="M1090 59h31v46h46v31h-46v46h-31v-46h-46v-31h46V59Z" fill="url(#plus)"/>
+</svg>

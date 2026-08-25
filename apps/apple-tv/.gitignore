@@ -1,0 +1,18 @@
+# Generated build output (the generated .xcodeproj and shared scheme are committed)
+BuildArtifacts/
+DerivedData/
+Packages/*/.build/
+.swiftpm/
+.tools/
+
+# Per-user Xcode state
+**/xcuserdata/
+*.xcuserstate
+.DS_Store
+
+# Local signing and endpoint overrides (templates remain tracked)
+Config/Signing.xcconfig
+Config/Secrets.xcconfig
+
+# Generated App Store captures (plans/placeholders remain tracked)
+AppStore/Screenshots/**/*.png

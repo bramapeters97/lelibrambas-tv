@@ -1,0 +1,427 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Activation was declined.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Activation was declined." } },
+        "nl": { "stringUnit": { "state": "translated", "value": "De activering is geweigerd." } }
+      }
+    },
+    "Activation was not completed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Activation was not completed" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "De activering is niet voltooid" } }
+      }
+    },
+    "Add the secure gateway and activation URLs before using this build.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add the secure gateway and activation URLs before using this build."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voeg de beveiligde gateway- en activeringsadressen toe voordat je deze build gebruikt."
+          }
+        }
+      }
+    },
+    "Check the internet connection and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the internet connection and try again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Controleer de internetverbinding en probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "No films are available for this account yet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No films are available for this account yet."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Er zijn nog geen films beschikbaar voor dit account."
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "OK" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "OK" } }
+      }
+    },
+    "Opening the family archive…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Opening the family archive…" } },
+        "nl": {
+          "stringUnit": { "state": "translated", "value": "Het familiearchief wordt geopend…" }
+        }
+      }
+    },
+    "Playback unavailable": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Playback unavailable" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen niet beschikbaar" } }
+      }
+    },
+    "Please sign in again": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Please sign in again" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Log opnieuw in" } }
+      }
+    },
+    "Preparing secure activation…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preparing secure activation…" } },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beveiligde activering wordt voorbereid…"
+          }
+        }
+      }
+    },
+    "Request a new code": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Request a new code" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Vraag een nieuwe code aan" } }
+      }
+    },
+    "Retry": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Retry" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Opnieuw proberen" } }
+      }
+    },
+    "Session could not be saved": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Session could not be saved" } },
+        "nl": {
+          "stringUnit": { "state": "translated", "value": "De sessie kon niet worden opgeslagen" }
+        }
+      }
+    },
+    "Setup required": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Setup required" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Configuratie vereist" } }
+      }
+    },
+    "The activation code was not recognized. Request a new code.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The activation code was not recognized. Request a new code."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De activeringscode is niet herkend. Vraag een nieuwe code aan."
+          }
+        }
+      }
+    },
+    "The activation service is temporarily unavailable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The activation service is temporarily unavailable."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De activeringsservice is tijdelijk niet beschikbaar."
+          }
+        }
+      }
+    },
+    "The archive could not be loaded": {
+      "localizations": {
+        "en": {
+          "stringUnit": { "state": "translated", "value": "The archive could not be loaded" }
+        },
+        "nl": {
+          "stringUnit": { "state": "translated", "value": "Het archief kon niet worden geladen" }
+        }
+      }
+    },
+    "The archive is quiet": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The archive is quiet" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Het archief is stil" } }
+      }
+    },
+    "The archive is resting": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The archive is resting" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Het archief rust even" } }
+      }
+    },
+    "This film is unavailable": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "This film is unavailable" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Deze film is niet beschikbaar" } }
+      }
+    },
+    "Your private session expired. Activate this Apple TV again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your private session expired. Activate this Apple TV again."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je privésessie is verlopen. Activeer deze Apple TV opnieuw."
+          }
+        }
+      }
+    },
+    "10 seconds back": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "10 seconds back" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "10 seconden terug" } }
+      }
+    },
+    "10 seconds forward": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "10 seconds forward" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "10 seconden vooruit" } }
+      }
+    },
+    "A film from the private family archive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A film from the private family archive."
+          }
+        },
+        "nl": {
+          "stringUnit": { "state": "translated", "value": "Een film uit het privéfamiliearchief." }
+        }
+      }
+    },
+    "Activate Apple TV": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Activate Apple TV" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Activeer Apple TV" } }
+      }
+    },
+    "Back": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Back" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Terug" } }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Cancel" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Annuleer" } }
+      }
+    },
+    "Collection not found": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Collection not found" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Collectie niet gevonden" } }
+      }
+    },
+    "Collections": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Collections" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Collecties" } }
+      }
+    },
+    "Every available film, ordered as in the web archive.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every available film, ordered as in the web archive."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elke beschikbare film, in dezelfde volgorde als in het webarchief."
+          }
+        }
+      }
+    },
+    "FEATURED FROM THE ARCHIVE": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "FEATURED FROM THE ARCHIVE" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "UITGELICHT UIT HET ARCHIEF" } }
+      }
+    },
+    "Film not found": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Film not found" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Film niet gevonden" } }
+      }
+    },
+    "Library": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Library" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Bibliotheek" } }
+      }
+    },
+    "More info": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "More info" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Meer informatie" } }
+      }
+    },
+    "No description is available for this film.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No description is available for this film."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Er is geen beschrijving beschikbaar voor deze film."
+          }
+        }
+      }
+    },
+    "No films found": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "No films found" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Geen films gevonden" } }
+      }
+    },
+    "Play": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Play" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen" } }
+      }
+    },
+    "Playback stopped": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Playback stopped" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen gestopt" } }
+      }
+    },
+    "Preparing…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Preparing…" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Voorbereiden…" } }
+      }
+    },
+    "Return to details": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Return to details" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Terug naar details" } }
+      }
+    },
+    "Search": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Search" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Zoeken" } }
+      }
+    },
+    "Secure activation": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Secure activation" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Beveiligde activering" } }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Settings" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Instellingen" } }
+      }
+    },
+    "Sign out": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Sign out" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Uitloggen" } }
+      }
+    },
+    "The secure session will be removed from this device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The secure session will be removed from this device."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De beveiligde sessie wordt van dit apparaat verwijderd."
+          }
+        }
+      }
+    },
+    "Try again": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Try again" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Probeer opnieuw" } }
+      }
+    },
+    "Try another title or collection name.": {
+      "localizations": {
+        "en": {
+          "stringUnit": { "state": "translated", "value": "Try another title or collection name." }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Probeer een andere titel of collectienaam."
+          }
+        }
+      }
+    },
+    "Waiting for approval…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Waiting for approval…" } },
+        "nl": { "stringUnit": { "state": "translated", "value": "Wachten op goedkeuring…" } }
+      }
+    },
+    "Your private cinema, on the biggest screen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your private cinema, on the biggest screen."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je privébioscoop, op het grootste scherm."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

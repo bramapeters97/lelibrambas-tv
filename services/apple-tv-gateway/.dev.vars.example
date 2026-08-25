@@ -1,0 +1,16 @@
+# Copy to .dev.vars for local development only. Values below are deliberately non-production.
+PUBLIC_ORIGIN="https://apple-tv-gateway.invalid"
+UPSTREAM_ORIGIN="https://archive-origin.invalid"
+UPSTREAM_CATALOG_PATH="/data/media_catalog.json"
+ACCESS_TEAM_DOMAIN="https://replace-me.cloudflareaccess.com"
+ACCESS_AUD="replace-with-access-application-audience"
+
+# Comma-separated SHA-256 digests of normalized (trimmed, lowercase) allowed email addresses.
+ALLOWED_EMAIL_SHA256="replace-with-64-character-lowercase-hex-digest"
+
+# Cloudflare Access service-token values for the exact upstream origin. Never ship these to tvOS.
+UPSTREAM_ACCESS_CLIENT_ID="replace-locally"
+UPSTREAM_ACCESS_CLIENT_SECRET="replace-locally"
+
+# Generate at least 32 random bytes and store the encoded value only as a Worker secret.
+ARTWORK_SIGNING_KEY="replace-with-a-long-random-secret"

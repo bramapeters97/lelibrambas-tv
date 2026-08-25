@@ -1,0 +1,140 @@
+name: tvOS CI
+
+on:
+  pull_request:
+    paths:
+      - 'apps/apple-tv/**'
+      - 'services/apple-tv-gateway/**'
+      - '.github/workflows/tvos-ci.yml'
+  push:
+    paths:
+      - 'apps/apple-tv/**'
+      - 'services/apple-tv-gateway/**'
+      - '.github/workflows/tvos-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tvos-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gateway-check:
+    name: Validate isolated Apple TV gateway
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+        working-directory: services/apple-tv-gateway
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: services/apple-tv-gateway/package-lock.json
+
+      - name: Install locked gateway dependencies
+        run: npm ci --workspaces=false
+
+      - name: Typecheck, test, and dry-run build gateway
+        run: npm run check
+
+  build-and-test:
+    name: Build and test native tvOS
+    runs-on: macos-26
+    timeout-minutes: 50
+    needs: gateway-check
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/apple-tv
+    env:
+      BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Select stable Xcode
+        run: bash Scripts/select-stable-xcode.sh
+
+      - name: Print toolchain versions
+        run: |
+          xcodebuild -version
+          swift --version
+          xcrun simctl list runtimes available
+
+      - name: Verify executable script modes
+        run: |
+          script_count="$(git ls-files 'Scripts/*.sh' | wc -l | tr -d ' ')"
+          test "$script_count" -gt 0
+          invalid_modes="$(git ls-files --stage 'Scripts/*.sh' | awk '$1 != "100755" { print $4 }')"
+          if [[ -n "$invalid_modes" ]]; then
+            printf 'Apple TV scripts must be committed with mode 100755:\n%s\n' "$invalid_modes" >&2
+            exit 1
+          fi
+
+      - name: Install verified XcodeGen 2.46.0
+        run: bash Scripts/bootstrap-xcodegen.sh
+
+      - name: Verify deterministic Xcode project generation
+        run: bash Scripts/verify-project-generation.sh
+
+      - name: Resolve Swift packages
+        run: xcodebuild -resolvePackageDependencies -project LeliBrambasTV.xcodeproj -scheme LeliBrambasTV
+
+      - name: Enforce repository isolation
+        run: bash Scripts/assert-repository-isolation.sh
+
+      - name: Build tvOS simulator target
+        run: bash Scripts/build-simulator.sh
+
+      - name: Run LeliBrambasCore package tests
+        run: |
+          mkdir -p BuildArtifacts/Logs
+          swift test --package-path Packages/LeliBrambasCore | tee BuildArtifacts/Logs/core-package-tests.log
+
+      - name: Run tvOS app unit and UI tests
+        run: bash Scripts/test.sh --skip-core
+
+      - name: Validate unsigned device archive
+        run: bash Scripts/verify-unsigned-archive.sh
+
+      - name: Package unsigned simulator app
+        if: success()
+        run: |
+          APP_PATH="$(find BuildArtifacts/DerivedData/Build/Products -type d -name 'LeliBrambasTV.app' -path '*Debug-appletvsimulator*' -print -quit)"
+          test -n "$APP_PATH"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" BuildArtifacts/LeliBrambasTV-unsigned-simulator.zip
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-test-diagnostics-${{ github.run_id }}
+          path: |
+            apps/apple-tv/BuildArtifacts/Logs/
+            apps/apple-tv/BuildArtifacts/TestResults/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload unsigned validation artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-unsigned-validation-${{ github.run_id }}
+          path: |
+            apps/apple-tv/BuildArtifacts/LeliBrambasTV-unsigned-simulator.zip
+            apps/apple-tv/BuildArtifacts/Archives/LeliBrambasTV-unsigned-ci.xcarchive/
+          if-no-files-found: error
+          retention-days: 7

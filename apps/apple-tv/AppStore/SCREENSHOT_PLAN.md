@@ -1,0 +1,31 @@
+# App Store screenshot plan
+
+Apple currently accepts 1–10 tvOS screenshots at 1920×1080 or 3840×2160 without transparency. Confirm the specification on submission day in [App Store Connect screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications).
+
+Generate deterministic Debug-only fixture screens on a Mac:
+
+```bash
+cd apps/apple-tv
+./Scripts/capture-app-store-screenshots.sh
+```
+
+The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, captures PNGs, and rejects non-1920×1080 or transparent output.
+
+| Filename                             | Scene                             | Required review                                               |
+| ------------------------------------ | --------------------------------- | ------------------------------------------------------------- |
+| `1920x1080/01-home.png`              | Branded hero/home                 | Final wordmark, focus, backdrop crop, no private title/person |
+| `1920x1080/02-content-shelves.png`   | Multiple collection/media shelves | Card crop, spacing, synthetic labels, focus visibility        |
+| `1920x1080/03-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
+| `1920x1080/04-collections.png`       | Collections feature view          | Distinct grouping, synthetic/cleared artwork, focus order     |
+| `1920x1080/05-device-activation.png` | Optional activation               | Synthetic/non-live code and placeholder-safe domain only      |
+
+Before upload:
+
+- inspect at full size on a television-like display;
+- confirm every person/image/title is synthetic or explicitly cleared;
+- confirm no email, live code, token, signed URL, filesystem path, request details, or debugging UI appears;
+- avoid adding slogans/claims over product screenshots;
+- compare focus ring, colors, typography, safe areas, and cropping to the shipping build;
+- use only the strongest 1–10 images and preserve their unedited capture provenance.
+
+The repository does not generate 4K marketing upscales. Capture native 3840×2160 only from a simulator/runtime that actually renders at that size, then add equivalent dimension/alpha validation before submission.

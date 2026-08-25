@@ -1,0 +1,43 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "lelibrambas-apple-tv-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "minify": true,
+  "observability": {
+    "enabled": true,
+    "logs": { "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.05 },
+  },
+  "vars": {
+    "DEVICE_CODE_TTL_SECONDS": "600",
+    "DEVICE_POLL_INTERVAL_SECONDS": "5",
+    "SESSION_TTL_SECONDS": "2592000",
+    "ARTWORK_URL_TTL_SECONDS": "21600",
+    "ALLOWED_MEDIA_HOST_SUFFIXES": "cloudflarestream.com",
+  },
+  "secrets": {
+    "required": [
+      "PUBLIC_ORIGIN",
+      "UPSTREAM_ORIGIN",
+      "UPSTREAM_CATALOG_PATH",
+      "ACCESS_TEAM_DOMAIN",
+      "ACCESS_AUD",
+      "ALLOWED_EMAIL_SHA256",
+      "UPSTREAM_ACCESS_CLIENT_ID",
+      "UPSTREAM_ACCESS_CLIENT_SECRET",
+      "ARTWORK_SIGNING_KEY",
+    ],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lelibrambas-apple-tv-gateway-auth",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+}

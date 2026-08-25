@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "id": "101",
+      "title": "The Lantern Archive",
+      "year": 1998,
+      "description": "A completely fictional collection of glowing paper lanterns.",
+      "category": "JEUGDFILMS",
+      "poster_url": "https://images.example.test/synthetic/lantern-poster.svg",
+      "backdrop_url": "https://images.example.test/synthetic/lantern-backdrop.svg",
+      "stream_video_id": "https://media.example.test/synthetic/lantern.m3u8",
+      "playback_asset_id": "synthetic-asset-101",
+      "sort_order": 40,
+      "featured": true,
+      "preview_start_seconds": 12
+    },
+    {
+      "id": 102,
+      "title": "North Sea Sketchbook",
+      "year": 2004,
+      "category": "VAKANTIEFILMS",
+      "poster_url": "fixture://north-sea-poster"
+    },
+    {
+      "id": 103,
+      "title": "Midnight Carousel",
+      "year": 2012,
+      "description": "A synthetic town square illuminated after dark.",
+      "category": "EVENTS",
+      "poster_url": "fixture://carousel-poster",
+      "sort_order": 30,
+      "preview_start_seconds": -9
+    },
+    {
+      "id": 104,
+      "title": "Projector Beyond the Moon",
+      "year": 1987,
+      "description": "A fictional projector chooses an imaginary lunar feature.",
+      "category": "SCI-FI & FANTASY",
+      "poster_url": "fixture://projector-poster",
+      "sort_order": 20
+    }
+  ]
+}

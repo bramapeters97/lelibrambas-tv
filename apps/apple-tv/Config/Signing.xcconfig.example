@@ -1,0 +1,2 @@
+// Copy to Signing.xcconfig locally. Never commit a real Apple Team ID.
+DEVELOPMENT_TEAM =

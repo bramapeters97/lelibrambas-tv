@@ -1,0 +1,147 @@
+name: LeliBrambasTV
+
+options:
+  minimumXcodeGenVersion: 2.46.0
+  projectFormat: xcode16_0
+  deploymentTarget:
+    tvOS: '17.0'
+  createIntermediateGroups: true
+  groupSortPosition: top
+  generateEmptyDirectories: false
+  defaultConfig: Debug
+
+attributes:
+  BuildIndependentTargetsInParallel: true
+  LastSwiftUpdateCheck: '2600'
+
+configs:
+  Debug: debug
+  Release: release
+
+configFiles:
+  Debug: Config/Debug.xcconfig
+  Release: Config/Release.xcconfig
+
+packages:
+  LeliBrambasCore:
+    path: Packages/LeliBrambasCore
+
+fileGroups:
+  - Config
+  - Docs
+  - Scripts
+  - AppStore
+  - README.md
+
+targets:
+  LeliBrambasTV:
+    type: application
+    platform: tvOS
+    deploymentTarget: '17.0'
+    sources:
+      - path: TVApp/App
+      - path: TVApp/DesignSystem
+      - path: TVApp/Features
+      - path: TVApp/Assets.xcassets
+        buildPhase: resources
+      - path: TVApp/Resources
+        excludes:
+          - Info.plist
+        buildPhase: resources
+    dependencies:
+      - package: LeliBrambasCore
+    settings:
+      base:
+        CODE_SIGN_STYLE: Automatic
+        PRODUCT_MODULE_NAME: LeliBrambasTV
+        ENABLE_PREVIEWS: YES
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        TARGETED_DEVICE_FAMILY: '3'
+    preBuildScripts:
+      - name: Reject release fixture switches
+        basedOnDependencyAnalysis: false
+        inputFiles:
+          - $(SRCROOT)/TVApp
+        script: |
+          if [ "${CONFIGURATION}" = "Release" ]; then
+            if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|LBAutomaticSignIn|--screenshot-mode|--ui-testing' "${SRCROOT}/TVApp"; then
+              echo "error: Debug fixture switches leaked outside their guarded source."
+              exit 1
+            fi
+            for endpoint in "${API_BASE_URL}" "${ACTIVATION_BASE_URL}"; do
+              case "${endpoint}" in
+                ""|*example.test*|*localhost*|*127.0.0.1*|*0.0.0.0*)
+                  if [ "${CODE_SIGNING_ALLOWED}" = "NO" ] && [ "${LB_UNSIGNED_CI_VALIDATION}" = "YES" ]; then
+                    echo "warning: Unsigned CI compilation is using a non-routable endpoint placeholder."
+                  else
+                    echo "error: Release endpoint is missing or still points to a development placeholder."
+                    exit 1
+                  fi
+                  ;;
+              esac
+            done
+          fi
+
+  LeliBrambasTVTests:
+    type: bundle.unit-test
+    platform: tvOS
+    deploymentTarget: '17.0'
+    sources:
+      - path: TVAppTests
+    dependencies:
+      - target: LeliBrambasTV
+      - package: LeliBrambasCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.tests
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        CODE_SIGNING_ALLOWED: NO
+
+  LeliBrambasTVUITests:
+    type: bundle.ui-testing
+    platform: tvOS
+    deploymentTarget: '17.0'
+    sources:
+      - path: TVAppUITests
+    dependencies:
+      - target: LeliBrambasTV
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: ""
+        CODE_SIGNING_ALLOWED: NO
+        TEST_TARGET_NAME: LeliBrambasTV
+
+schemes:
+  LeliBrambasTV:
+    shared: true
+    build:
+      parallelizeBuild: true
+      buildImplicitDependencies: true
+      targets:
+        LeliBrambasTV: all
+        LeliBrambasTVTests: [test]
+        LeliBrambasTVUITests: [test]
+    run:
+      config: Debug
+      commandLineArguments:
+        '-ApplePersistenceIgnoreState YES': false
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - name: LeliBrambasTVTests
+          parallelizable: true
+          randomExecutionOrder: true
+        - name: LeliBrambasTVUITests
+          parallelizable: false
+          randomExecutionOrder: false
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
