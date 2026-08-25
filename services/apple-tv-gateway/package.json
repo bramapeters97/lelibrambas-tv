@@ -15,7 +15,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "types": "wrangler types ./worker-configuration.d.ts --env-interface Env --include-runtime false",
-    "types:check": "wrangler types ./worker-configuration.d.ts --env-interface Env --include-runtime false --check"
+    "types:check": "node ./scripts/verify-generated-types.mjs"
   },
   "dependencies": {},
   "devDependencies": {
