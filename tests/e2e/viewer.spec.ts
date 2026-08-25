@@ -51,6 +51,11 @@ test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ pag
     launchDescription,
   );
   await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', /(?:^|\/)favicon\.png$/);
+  await expect(page.locator('link[rel="shortcut icon"]')).toHaveAttribute(
+    'href',
+    /(?:^|\/)favicon\.png$/,
+  );
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('sizes', '512x512');
   expect((await request.get('/lelibrambas-share.png')).ok()).toBe(true);
   expect((await request.get('/favicon.png')).ok()).toBe(true);
 });

@@ -50,6 +50,7 @@
       }
     ],
     "win": {
+      "icon": "../tv/public/favicon.png",
       "target": [
         {
           "target": "portable",

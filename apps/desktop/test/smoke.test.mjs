@@ -130,6 +130,7 @@ test('manifest pins the runtime and portable Windows x64 packaging contract', as
   assert.match(manifest.scripts['smoke:electron'], /scripts\/run-smoke\.mjs$/);
   assert.match(manifest.scripts['smoke:stream'], /scripts\/run-smoke\.mjs --stream$/);
   assert.deepEqual(manifest.build.win.target, [{ target: 'portable', arch: ['x64'] }]);
+  assert.equal(manifest.build.win.icon, '../tv/public/favicon.png');
   assert.equal(manifest.build.extraResources[0].from, '../tv/dist');
   assert.equal(typeof manifest.build.nsis.artifactName, 'string');
 

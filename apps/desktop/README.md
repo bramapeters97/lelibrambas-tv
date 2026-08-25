@@ -2,7 +2,7 @@
 
 This workspace wraps the TV web build in a deliberately small Electron process. The renderer remains the same Vite/React TV application in development and production; Electron does not own a second UI implementation.
 
-The browser favicon is also used as the desktop window icon in development and packaged builds.
+The browser favicon is also used as the desktop window icon and Windows package icon.
 
 ## Commands
 
