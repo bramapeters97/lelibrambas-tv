@@ -97,3 +97,27 @@ func makeHTTPResponse(
         headerFields: headers
     )!
 }
+
+func requestBodyData(from request: URLRequest) -> Data? {
+    if let body = request.httpBody {
+        return body
+    }
+    guard let stream = request.httpBodyStream else {
+        return nil
+    }
+
+    stream.open()
+    defer { stream.close() }
+
+    var body = Data()
+    var buffer = [UInt8](repeating: 0, count: 4_096)
+    while true {
+        let count = buffer.withUnsafeMutableBufferPointer { pointer in
+            guard let baseAddress = pointer.baseAddress else { return 0 }
+            return stream.read(baseAddress, maxLength: pointer.count)
+        }
+        guard count >= 0 else { return nil }
+        guard count > 0 else { return body }
+        body.append(contentsOf: buffer.prefix(count))
+    }
+}

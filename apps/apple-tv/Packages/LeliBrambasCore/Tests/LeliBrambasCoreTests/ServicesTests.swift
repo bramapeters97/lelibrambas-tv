@@ -55,7 +55,10 @@ final class ServicesTests: XCTestCase {
             "/v1/device/authorizations/synthetic-device-code",
         ])
         XCTAssertTrue(
-            String(data: try XCTUnwrap(captured.first?.httpBody), encoding: .utf8)?
+            String(
+                data: try XCTUnwrap(captured.first.flatMap(requestBodyData(from:))),
+                encoding: .utf8
+            )?
                 .contains("Synthetic Apple TV") == true
         )
     }

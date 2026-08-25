@@ -38,7 +38,10 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(request.httpMethod, "POST")
         XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer synthetic-session-token")
         XCTAssertEqual(request.value(forHTTPHeaderField: "Content-Type"), "application/json")
-        XCTAssertTrue(String(data: try XCTUnwrap(request.httpBody), encoding: .utf8)?.contains("Fixture Viewer") == true)
+        XCTAssertTrue(
+            String(data: try XCTUnwrap(requestBodyData(from: request)), encoding: .utf8)?
+                .contains("Fixture Viewer") == true
+        )
     }
 
     func testRejectsAbsoluteAndCrossHostPathsBeforeTransport() async {
