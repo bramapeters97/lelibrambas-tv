@@ -8,7 +8,6 @@ source "$SCRIPT_DIR/common.sh"
 
 require_macos
 require_command sips
-xcrun --find pngcrush >/dev/null 2>&1 || fail "Xcode's pngcrush utility is required."
 "$SCRIPT_DIR/build-simulator.sh"
 
 udid="${TVOS_SIMULATOR_UDID:-$(resolve_tvos_simulator_udid)}"
@@ -57,7 +56,7 @@ normalize_opaque_capture() {
   local normalized="${target%.png}.normalized.png"
 
   rm -f -- "$normalized"
-  xcrun pngcrush -q -reduce "$target" "$normalized" >/dev/null
+  xcrun swift "$SCRIPT_DIR/normalize-opaque-png.swift" "$target" "$normalized"
   mv -f -- "$normalized" "$target"
 }
 
