@@ -35,7 +35,7 @@ function syntaxSignature(source) {
     ts.forEachChild(node, visit);
   };
   visit(sourceFile);
-  return nodes.join('\n');
+  return nodes;
 }
 
 try {
@@ -62,8 +62,20 @@ try {
   const committed = readFileSync(committedTypesPath, 'utf8');
   const generated = readFileSync(generatedTypesPath, 'utf8');
 
-  if (syntaxSignature(committed) !== syntaxSignature(generated)) {
-    throw new Error('worker-configuration.d.ts declarations differ from current Wrangler output.');
+  const committedSignature = syntaxSignature(committed);
+  const generatedSignature = syntaxSignature(generated);
+  const firstDifference = Math.max(committedSignature.length, generatedSignature.length)
+    ? Array.from({ length: Math.max(committedSignature.length, generatedSignature.length) }).findIndex(
+        (_, index) => committedSignature[index] !== generatedSignature[index],
+      )
+    : -1;
+
+  if (firstDifference !== -1) {
+    throw new Error(
+      `worker-configuration.d.ts differs at declaration node ${firstDifference}: ` +
+        `committed=${committedSignature[firstDifference] ?? '<missing>'}, ` +
+        `generated=${generatedSignature[firstDifference] ?? '<missing>'}.`,
+    );
   }
 
   console.log('Wrangler environment declarations are current.');
