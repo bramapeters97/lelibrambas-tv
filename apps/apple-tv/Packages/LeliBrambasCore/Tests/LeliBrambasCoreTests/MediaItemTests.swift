@@ -6,7 +6,7 @@ final class MediaItemTests: XCTestCase {
     func testCatalogFixtureDecodesStringAndIntegerIDsWithSafeDefaults() throws {
         let decoder = JSONDecoder()
         let items = try decoder.decode(
-            APIEnvelope<[MediaItem]>.self,
+            FixtureEnvelope<[MediaItem]>.self,
             from: TestFixtures.data(named: "catalog")
         ).data
 
@@ -29,7 +29,7 @@ final class MediaItemTests: XCTestCase {
 
     func testOrganizerSortsItemsAndUsesStablePreferredSectionOrder() throws {
         let items = try JSONDecoder().decode(
-            APIEnvelope<[MediaItem]>.self,
+            FixtureEnvelope<[MediaItem]>.self,
             from: TestFixtures.data(named: "catalog")
         ).data
         let sorted = CatalogOrganizer.sorted(items)
@@ -61,4 +61,8 @@ final class MediaItemTests: XCTestCase {
             featured: featured
         )
     }
+}
+
+private struct FixtureEnvelope<Value: Decodable>: Decodable {
+    let data: Value
 }
