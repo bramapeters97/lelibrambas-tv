@@ -44,8 +44,10 @@ final class AppModelTests: XCTestCase {
 
     func testPlaybackUsesSelectedItemsOwnStreamVideoID() async {
         let model = AppModel(catalogLoader: StubCatalogLoader(items: Self.items))
-        let first = await model.preparePlayback(for: Self.items[0])
-        let second = await model.preparePlayback(for: Self.items[1])
+        let firstItem = Self.items.first { $0.id == 10 }!
+        let secondItem = Self.items.first { $0.id == 20 }!
+        let first = await model.preparePlayback(for: firstItem)
+        let second = await model.preparePlayback(for: secondItem)
 
         XCTAssertEqual(first?.url.absoluteString, "https://media.example.test/first.m3u8")
         XCTAssertEqual(second?.url.absoluteString, "https://media.example.test/second.mp4")
