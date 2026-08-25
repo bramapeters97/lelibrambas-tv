@@ -29,6 +29,10 @@ It is an original system. Do not introduce third-party entertainment-company nam
 
 Focus motion is `1.055` scale over `190ms` with `cubic-bezier(.2,.8,.2,1)`. Intended TV safe margins are `4.6%` horizontal and `4.4%` vertical.
 
+The React DOM navigation rail is tokenized separately from the TV safe margin: `70px` on wider
+screens and `56px` at the `800px` responsive boundary. Any pop-out/focus translation must derive
+from the same CSS variables so reducing the rail never leaves stale content offsets.
+
 The web/admin CSS and native StyleSheet currently duplicate or closely mirror these constants rather than importing the package. Treat consolidation as future work; changing only the TypeScript token file does not automatically restyle every surface.
 
 ## Typography and layout
@@ -49,15 +53,32 @@ Do not place important actions behind hover, pointer gestures, or text entry alo
 
 Motion establishes hierarchy, not spectacle. Use roughly 150-240ms for focus/control transitions and longer motion only for the studio ident or deliberate player overlays. `prefers-reduced-motion` collapses web animations and transitions. Native reduced-motion behavior is not yet implemented and must be considered before release.
 
+Collection selection keeps selector order stable. The selected-card gradient lasts exactly one
+second; result replacement uses a 350ms leave and 650ms enter/slide sequence. The homepage hero
+keeps its checked-in LELIBRAMBAS studio-logo artwork at rest. After two idle seconds, a successfully
+playing trailer cued at 40 seconds can fade into the same masked media bounds. Detail pages use the
+same borderless treatment over their existing poster and cue at 120 seconds. Activity, scrolling,
+rejected autoplay, ending, or leaving restores the resting artwork. Ambient transitions are disabled
+in deterministic capture mode and never write watch progress.
+
 ## Artwork and privacy
 
-All checked-in artwork is CSS geometry/gradients derived from catalogue palettes. Generated MP4s use FFmpeg colour/geometric sources and silence. Do not substitute private photographs or captured video frames in public screenshots. Production artwork belongs behind the media/catalogue authorization boundary, with a synthetic fallback for unavailable images.
+Checked-in catalogue artwork and the hero logo use approved project PNGs; CSS palette geometry and
+`generic_cinema_2.png` provide the fallback treatment. Card/detail artwork always travels through
+the same `poster_url`/`resolvePosterUrl` path at every responsive breakpoint. Generated demo MP4s use
+FFmpeg colour/geometric sources and silence. Do not substitute private photographs or captured
+video frames in public screenshots. Production artwork belongs behind the media/catalogue
+authorization boundary.
 
 ## Component conventions
 
-- **Viewer hero:** readable layered scrim, concise synopsis, recording metadata, Play/Resume, More Information, Watchlist, and progress.
+- **Viewer hero:** near-black/deep-navy blended logo art, readable layered scrim, concise synopsis,
+  valid metadata only, Play/Resume, More Information, and progress.
 - **Navigation rail:** compact icons; reveal a label on focus without unexpectedly stealing focus from content.
 - **Cards and hubs:** stable dimensions, unclipped focused scale, deterministic IDs, and an explicit missing-artwork fallback.
+- **Responsive discovery:** compact horizontal rails; a one-row collection selector; exact
+  three-column collection results and two-column search at `<=800px`; mobile card taps play while a
+  separate sibling information action preserves Details.
 - **Player:** minimal near-black controls, original-aspect language, deliberate 4:3 pillarboxing, and retryable error/up-next states.
 - **Library Manager:** denser workstation spacing, visible keyboard focus, text-labelled statuses, and a persistent local/demo distinction.
 

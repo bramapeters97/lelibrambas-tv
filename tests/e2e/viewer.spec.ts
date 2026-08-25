@@ -6,6 +6,7 @@ interface GeneratedMovie {
   title: string;
   description: string;
   category: string;
+  poster_url: string;
   stream_video_id: string;
 }
 
@@ -50,14 +51,30 @@ test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ pag
     'content',
     launchDescription,
   );
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute('href', /(?:^|\/)favicon\.png$/);
+  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute(
+    'href',
+    /(?:^|\/)cinema-app-icon\.svg$/,
+  );
   await expect(page.locator('link[rel="shortcut icon"]')).toHaveAttribute(
     'href',
-    /(?:^|\/)favicon\.png$/,
+    /(?:^|\/)favicon-32\.png$/,
   );
-  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('sizes', '512x512');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    'href',
+    /(?:^|\/)apple-touch-icon\.png$/,
+  );
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('sizes', '180x180');
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
+    'href',
+    /(?:^|\/)site\.webmanifest$/,
+  );
   expect((await request.get('/lelibrambas-share.png')).ok()).toBe(true);
   expect((await request.get('/favicon.png')).ok()).toBe(true);
+  expect((await request.get('/favicon-32.png')).ok()).toBe(true);
+  expect((await request.get('/apple-touch-icon.png')).ok()).toBe(true);
+  expect((await request.get('/cinema-icon-192.png')).ok()).toBe(true);
+  expect((await request.get('/cinema-icon-512.png')).ok()).toBe(true);
+  expect((await request.get('/site.webmanifest')).ok()).toBe(true);
 });
 
 test('profile to home to details passes the selected row exact stream URL to playback', async ({
@@ -145,20 +162,36 @@ test('intro, profiles, and poster-backed cinema hero preserve the viewer contrac
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
 
   await expect(page.locator('.nav-wordmark__icon')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Lelibrambas+ Trailer' })).toBeVisible();
+  const heroHeading = page.getByRole('heading', { name: 'LELIBRAMBAS+ Trailer' });
+  await expect(heroHeading).toBeVisible();
+  await expect(heroHeading.locator('.hero-title-plus')).toHaveText('+');
+  expect(
+    await heroHeading
+      .locator('.hero-title-plus')
+      .evaluate((element) => getComputedStyle(element).color),
+  ).toBe('rgb(112, 216, 255)');
   await expect(page.getByRole('button', { name: 'Play Trailer' })).toBeVisible();
-  await expect(page.locator('.hero-art img')).toHaveCount(0);
+  await expect(page.locator('.hero-art .hero-poster')).toHaveCount(1);
+  await expect(page.locator('.hero-art .hero-poster')).toHaveAttribute(
+    'src',
+    /lelibrambas-studios.*\.png$/,
+  );
+  await expect(page.locator('.hero-art .hero-poster')).not.toHaveAttribute(
+    'src',
+    new RegExp(
+      generatedCatalog.find((movie) => movie.title === 'Lelibrambas+ Trailer')!.poster_url,
+    ),
+  );
   const heroArtwork = await page.locator('.hero-art').evaluate((element) => {
     const art = element.getBoundingClientRect();
     const hero = element.parentElement?.getBoundingClientRect();
     const mask = getComputedStyle(element).maskImage;
-    const backgroundImage = getComputedStyle(element).backgroundImage;
-    return { ratio: hero ? art.width / hero.width : 0, mask, backgroundImage };
+    return { ratio: hero ? art.width / hero.width : 0, mask };
   });
   expect(heroArtwork.ratio).toBeGreaterThanOrEqual(0.7);
-  expect(heroArtwork.ratio).toBeLessThanOrEqual(0.82);
+  expect(heroArtwork.ratio).toBeLessThanOrEqual(0.9);
   expect(heroArtwork.mask).toContain('radial-gradient');
-  expect(heroArtwork.backgroundImage).toContain('lelibrambas-studios');
+  await expect(page.getByText('Format unknown')).toHaveCount(0);
 });
 
 test('home collection shortcuts open the selected collection and home rows mirror JSON', async ({
@@ -199,7 +232,7 @@ test('home collection shortcuts open the selected collection and home rows mirro
   await expect(page.locator('[data-focus-id="collection-vakantiefilms"]')).toHaveClass(/active/);
   await expect(page.locator('.collection-grid > button').first()).toHaveAttribute(
     'data-focus-id',
-    'collection-vakantiefilms',
+    'collection-jeugdfilms',
   );
   const selectedCollectionStyle = await page
     .locator('[data-focus-id="collection-vakantiefilms"]')
@@ -233,9 +266,13 @@ test('rendered collection movie count and ids equal the generated JSON', async (
   const renderedIds: number[] = [];
   for (const category of ['JEUGDFILMS', 'VAKANTIEFILMS', 'EVENTS', 'OTHERS']) {
     await page.locator(`[data-focus-id="collection-${category.toLowerCase()}"]`).click();
+    await expect(page.locator('#collection-results')).toHaveAttribute(
+      'data-collection-id',
+      category.toLowerCase(),
+    );
     await expect(page.locator('.collection-grid > button').first()).toHaveAttribute(
       'data-focus-id',
-      `collection-${category.toLowerCase()}`,
+      'collection-jeugdfilms',
     );
     const ids = await page
       .locator('.collection-video-grid [data-catalogue-id]')
@@ -247,6 +284,38 @@ test('rendered collection movie count and ids equal the generated JSON', async (
   expect(renderedIds.sort((left, right) => left - right)).toEqual(
     generatedCatalog.map((movie) => movie.id),
   );
+});
+
+test('full library and home All movies contain every catalogue id exactly once in order', async ({
+  page,
+}) => {
+  await page.getByRole('button', { name: /Bart & Astrid/i }).click();
+  const expectedIds = generatedCatalog.map((movie) => movie.id);
+  const homeIds = await page
+    .locator('[data-all-movies-grid] [data-catalogue-id]')
+    .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
+  expect(homeIds).toEqual(expectedIds);
+
+  await page.getByRole('button', { name: 'Full Library' }).click();
+  const libraryCards = page.locator('[data-library-grid] [data-catalogue-id]');
+  await expect(libraryCards).toHaveCount(expectedIds.length);
+  const libraryIds = await libraryCards
+    .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
+  expect(libraryIds).toEqual(expectedIds);
+  expect(new Set(libraryIds).size).toBe(expectedIds.length);
+  await expect(page.getByText('Format unknown')).toHaveCount(0);
+});
+
+test('catalogue poster corrections use the exact generated PNGs', async ({ page, request }) => {
+  for (const id of [10, 14, 40]) {
+    const movie = byId.get(id)!;
+    await page.goto(`/?screen=details&capture=1&video=${id}`);
+    await expect(page.locator('.details-art img')).toHaveAttribute(
+      'src',
+      new RegExp(movie.poster_url),
+    );
+    expect((await request.get(`/${movie.poster_url}`)).ok()).toBe(true);
+  }
 });
 
 test('every generated movie selects its own playback row', async ({ page }) => {

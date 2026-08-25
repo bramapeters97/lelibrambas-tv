@@ -99,7 +99,17 @@ export function sectionIconForLabel(label: string): SectionIconName {
 export function SectionIcon({ name }: { name: SectionIconName }) {
   if (name === 'collections') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <rect x="3.5" y="5" width="7" height="6" rx="1.2" />
         <rect x="13.5" y="5" width="7" height="6" rx="1.2" />
         <rect x="3.5" y="14" width="7" height="5" rx="1.2" />
@@ -110,7 +120,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
 
   if (name === 'trending') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="m4 17 5-5 3.5 3.5L20 8" />
         <path d="M14.5 8H20v5.5" />
       </svg>
@@ -119,7 +139,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
 
   if (name === 'jeugdfilms') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <path d="m12 3 2.2 5.1 5.5.5-4.2 3.7 1.3 5.4L12 15l-4.8 2.7 1.3-5.4-4.2-3.7 5.5-.5Z" />
       </svg>
     );
@@ -127,7 +157,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
 
   if (name === 'vakantiefilms') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="12" cy="8.5" r="3.2" />
         <path d="M12 2v2M5.5 4.5 7 6m10-1.5L15.5 6M3 12h18M5 17c2-2 4.3-2 7 0s5 2 7 0" />
       </svg>
@@ -136,7 +176,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
 
   if (name === 'events') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <rect x="4" y="5.5" width="16" height="14" rx="2" />
         <path d="M8 3.5v4M16 3.5v4M4 10h16M9 14h2M14 14h2" />
       </svg>
@@ -145,7 +195,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
 
   if (name === 'others') {
     return (
-      <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+      <svg
+        className="section-title__icon"
+        aria-hidden="true"
+        focusable="false"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
         <circle cx="6" cy="12" r="1.5" />
         <circle cx="12" cy="12" r="1.5" />
         <circle cx="18" cy="12" r="1.5" />
@@ -154,7 +214,17 @@ export function SectionIcon({ name }: { name: SectionIconName }) {
   }
 
   return (
-    <svg className="section-title__icon" aria-hidden="true" viewBox="0 0 24 24">
+    <svg
+      className="section-title__icon"
+      aria-hidden="true"
+      focusable="false"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <rect x="3.5" y="5" width="17" height="14" rx="2" />
       <path d="M7 5v14M17 5v14M3.5 9h3.5M17 9h3.5M3.5 15h3.5M17 15h3.5" />
       <path d="m10.5 10 4 2-4 2Z" />
@@ -230,10 +300,10 @@ function NavIcon({ name }: { name: NavIconId }) {
   );
 }
 
-function durationLabel(video: CatalogueVideoRecord): string {
+function durationLabel(video: CatalogueVideoRecord): string | null {
   const duration = video.durationSeconds;
   if (duration === null || !Number.isFinite(duration) || duration <= 0) {
-    return 'Runtime unavailable';
+    return null;
   }
   if (duration < 60) return `${Math.round(duration)} sec`;
   return `${Math.round(duration / 60)} min`;
@@ -291,6 +361,23 @@ export function NavigationRail({
   );
 }
 
+function useMobileWebViewport(): boolean {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches,
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const query = window.matchMedia('(max-width: 800px)');
+    const update = (event: MediaQueryListEvent) => setIsMobile(event.matches);
+    setIsMobile(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+
+  return isMobile;
+}
+
 export function ArtCard({
   video,
   onSelect,
@@ -306,9 +393,10 @@ export function ArtCard({
   progress?: { seconds: number; durationSeconds?: number | null };
   index?: number;
 }) {
+  const isMobileViewport = useMobileWebViewport();
   const [a, b, c] = video.artwork.palette;
   const style = { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
-  const usesMobilePlay = mobilePrimaryPlay && Boolean(onPlay);
+  const usesMobilePlay = isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
   const progressDuration = progress?.durationSeconds ?? video.durationSeconds;
   const progressPercent =
     progress &&
@@ -318,12 +406,13 @@ export function ArtCard({
     progressDuration > 0
       ? Math.min(100, Math.max(0, (progress.seconds / progressDuration) * 100))
       : null;
+  const metadata = [
+    video.year?.toString() ?? 'Year unknown',
+    video.location ?? 'Archive shelf',
+    durationLabel(video),
+  ].filter((value): value is string => Boolean(value));
   const primaryAction = () => {
-    if (
-      usesMobilePlay &&
-      typeof window !== 'undefined' &&
-      window.matchMedia('(max-width: 800px)').matches
-    ) {
+    if (usesMobilePlay) {
       onPlay?.(video);
       return;
     }
@@ -361,10 +450,7 @@ export function ArtCard({
         </span>
         <span className="browse-card__copy">
           <strong>{video.title}</strong>
-          <small>
-            {video.year ?? 'Year unknown'} - {video.location ?? 'Archive shelf'} -{' '}
-            {durationLabel(video)}
-          </small>
+          <small>{metadata.join(' - ')}</small>
           {progressPercent !== null && (
             <span
               className="progress-track browse-card-progress"
@@ -451,6 +537,7 @@ export function HubsScreen({
   profile,
   onNavigate,
   onDetails,
+  onPlay,
   onReplayIntro,
   onProfile,
 }: {
@@ -459,6 +546,7 @@ export function HubsScreen({
   profile: Profile;
   onNavigate: (screen: BrowseScreenId) => void;
   onDetails: (video: CatalogueVideoRecord) => void;
+  onPlay?: (video: CatalogueVideoRecord) => void;
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
@@ -521,7 +609,14 @@ export function HubsScreen({
         </div>
         <div className="browse-rail">
           {matches.map((video, index) => (
-            <ArtCard key={video.catalogueId} video={video} index={index} onSelect={onDetails} />
+            <ArtCard
+              key={video.catalogueId}
+              video={video}
+              index={index}
+              onSelect={onDetails}
+              onPlay={onPlay}
+              mobilePrimaryPlay={Boolean(onPlay)}
+            />
           ))}
         </div>
       </section>

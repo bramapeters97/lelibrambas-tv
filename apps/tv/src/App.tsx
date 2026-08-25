@@ -21,18 +21,25 @@ import {
   ArtCard,
   CinemaIcon,
   CollectionsScreen,
+  FullLibraryScreen,
   HubsScreen,
   NavigationRail,
   SearchScreen,
+  SectionHeading,
+  sectionIconForLabel,
   type BrowseScreenId,
 } from './Discovery';
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
+import heroLogoUrl from '../assets/lelibrambas-studios.png';
 
 type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseScreenId;
 
 export const PROFILE_LOADING_DELAY_MS = 3000;
-export const HERO_IDLE_DELAY_MS = 5000;
+export const HERO_IDLE_DELAY_MS = 2000;
+export const HOME_PREVIEW_START_SECONDS = 40;
+export const DETAILS_PREVIEW_START_SECONDS = 120;
+const MIN_PROGRESS_DURATION_SECONDS = 1;
 
 type TransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { finished: Promise<void> };
@@ -138,15 +145,15 @@ export function nextPlayableVideo(
 }
 
 export function knownDuration(video: CatalogueVideoRecord): number | null {
-  return typeof video.durationSeconds === 'number' &&
-    Number.isFinite(video.durationSeconds) &&
-    video.durationSeconds > 0
-    ? video.durationSeconds
-    : null;
+  return finitePositiveDuration(video.durationSeconds);
+}
+
+function finitePositiveDuration(value: number | null | undefined): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
 }
 
 function progressFallbackDuration(video: CatalogueVideoRecord): number {
-  return knownDuration(video) ?? Math.max(1, video.progressSeconds);
+  return knownDuration(video) ?? Math.max(MIN_PROGRESS_DURATION_SECONDS, video.progressSeconds);
 }
 
 function progressFor(profile: Profile, video: CatalogueVideoRecord): PlaybackProgress {
@@ -177,12 +184,9 @@ export function recentlyWatchedFor(
   if (!getStored('remember-progress', true)) return [];
   return catalogue
     .map((video) => ({ video, progress: progressFor(profile, video) }))
-    .filter(
-      ({ progress }) => progress.seconds > 0 && Number.isFinite(Date.parse(progress.updatedAt)),
-    )
+    .filter(({ progress }) => progress.seconds > 0 && Date.parse(progress.updatedAt) > 0)
     .sort(
-      (left, right) =>
-        Date.parse(right.progress.updatedAt) - Date.parse(left.progress.updatedAt),
+      (left, right) => Date.parse(right.progress.updatedAt) - Date.parse(left.progress.updatedAt),
     );
 }
 
@@ -298,12 +302,15 @@ function ProfileLoading({
   }, [holdForCapture, onDone]);
 
   return (
-    <main className="profile-loading-screen" role="status" aria-live="polite">
-      <Wordmark />
+    <main
+      className="profile-loading-screen"
+      role="status"
+      aria-live="polite"
+      aria-label={`Opening ${profile.name}'s archive`}
+    >
       <span className="profile-loading-spinner" aria-hidden="true">
         <CinemaIcon />
       </span>
-      <p>Opening {profile.name}&apos;s archive&hellip;</p>
     </main>
   );
 }
@@ -347,20 +354,26 @@ function ProgressBar({ progress, duration }: { progress: number; duration: numbe
   );
 }
 
-function HeroTrailer({
+function AmbientPreview({
   video,
+  startSeconds,
+  kind,
+  className,
   onPlaying,
   onUnavailable,
   onEnded,
 }: {
   video: CatalogueVideoRecord;
+  startSeconds: number;
+  kind: 'hero' | 'details';
+  className: string;
   onPlaying: () => void;
   onUnavailable: () => void;
   onEnded: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const source = useMemo(() => {
-    const resolved = resolvePlaybackSource(video.streamVideoId, { autoplay: true });
+    const resolved = resolvePlaybackSource(video.streamVideoId);
     if (resolved.kind === 'iframe') {
       return {
         kind: 'hls' as const,
@@ -379,37 +392,82 @@ function HeroTrailer({
       onUnavailable();
       return;
     }
+    const playbackElement = element;
+    const playbackSource = source;
 
     let disposed = false;
     let attempted = false;
+    let cued = false;
+    let failed = false;
     let hls: HlsInstance | null = null;
-    const fail = () => {
-      if (!disposed) onUnavailable();
+    let cueTimeout: number | null = null;
+    const clearCueTimeout = () => {
+      if (cueTimeout !== null) window.clearTimeout(cueTimeout);
+      cueTimeout = null;
     };
+    const fail = () => {
+      if (disposed || failed) return;
+      failed = true;
+      clearCueTimeout();
+      playbackElement.pause();
+      onUnavailable();
+    };
+    cueTimeout = window.setTimeout(fail, 12_000);
     const attemptPlayback = () => {
       if (attempted || disposed) return;
+      if (!cued || playbackElement.currentTime < startSeconds - 0.5) {
+        fail();
+        return;
+      }
       attempted = true;
-      element.muted = false;
-      element.volume = 1;
-      void element
+      clearCueTimeout();
+      playbackElement.muted = false;
+      playbackElement.volume = 1;
+      void playbackElement
         .play()
         .then(() => {
           if (!disposed) onPlaying();
         })
         .catch(fail);
     };
+    const cuePlayback = () => {
+      if (cued || failed || disposed) return;
+      const mediaDuration = finitePositiveDuration(playbackElement.duration);
+      if (mediaDuration === null) return;
+      if (mediaDuration <= startSeconds + 0.25) {
+        fail();
+        return;
+      }
+      try {
+        playbackElement.currentTime = startSeconds;
+        cued = true;
+        if (!playbackElement.seeking && playbackElement.currentTime >= startSeconds - 0.5) {
+          attemptPlayback();
+        }
+      } catch {
+        fail();
+      }
+    };
+    const playAfterCue = () => {
+      if (cued) attemptPlayback();
+    };
     const reportPlaying = () => {
-      if (!disposed) onPlaying();
+      if (!disposed && playbackElement.currentTime >= startSeconds - 0.5) onPlaying();
     };
 
-    element.addEventListener('canplay', attemptPlayback, { once: true });
-    element.addEventListener('playing', reportPlaying);
-    element.addEventListener('error', fail, { once: true });
+    playbackElement.addEventListener('loadedmetadata', cuePlayback);
+    playbackElement.addEventListener('durationchange', cuePlayback);
+    playbackElement.addEventListener('seeked', playAfterCue);
+    playbackElement.addEventListener('playing', reportPlaying);
+    playbackElement.addEventListener('error', fail, { once: true });
 
     async function attachSource() {
-      if (source.kind === 'mp4' || element.canPlayType('application/vnd.apple.mpegurl')) {
-        element.src = source.url;
-        element.load();
+      if (
+        playbackSource.kind === 'mp4' ||
+        playbackElement.canPlayType('application/vnd.apple.mpegurl')
+      ) {
+        playbackElement.src = playbackSource.url;
+        playbackElement.load();
         return;
       }
 
@@ -423,31 +481,35 @@ function HeroTrailer({
       hls.on(Hls.Events.ERROR, (_event, data) => {
         if (data.fatal) fail();
       });
-      hls.loadSource(source.url);
-      hls.attachMedia(element);
+      hls.loadSource(playbackSource.url);
+      hls.attachMedia(playbackElement);
     }
 
     void attachSource().catch(fail);
     return () => {
       disposed = true;
+      clearCueTimeout();
       hls?.destroy();
-      element.removeEventListener('canplay', attemptPlayback);
-      element.removeEventListener('playing', reportPlaying);
-      element.removeEventListener('error', fail);
-      element.pause();
-      element.removeAttribute('src');
-      element.load();
+      playbackElement.removeEventListener('loadedmetadata', cuePlayback);
+      playbackElement.removeEventListener('durationchange', cuePlayback);
+      playbackElement.removeEventListener('seeked', playAfterCue);
+      playbackElement.removeEventListener('playing', reportPlaying);
+      playbackElement.removeEventListener('error', fail);
+      playbackElement.pause();
+      playbackElement.removeAttribute('src');
+      playbackElement.load();
     };
-  }, [onPlaying, onUnavailable, source]);
+  }, [onPlaying, onUnavailable, source, startSeconds]);
 
   if (!source) return null;
   return (
     <video
       ref={videoRef}
-      className="hero-trailer"
-      data-hero-media="trailer"
+      className={className}
+      data-hero-media={kind === 'hero' ? 'trailer' : undefined}
+      data-detail-media={kind === 'details' ? 'preview' : undefined}
+      data-preview-start-seconds={startSeconds}
       data-stream-video-id={source.originalUrl}
-      autoPlay
       controls={false}
       playsInline
       preload="auto"
@@ -456,6 +518,91 @@ function HeroTrailer({
       onEnded={onEnded}
     />
   );
+}
+
+function useAmbientPreviewState(playable: boolean, scrollThreshold = 48) {
+  const captureMode = new URLSearchParams(location.search).get('capture') === '1';
+  const [requested, setRequested] = useState(false);
+  const [playing, setPlaying] = useState(false);
+  const [blocked, setBlocked] = useState(false);
+
+  const stop = useCallback(() => {
+    setRequested(false);
+    setPlaying(false);
+  }, []);
+  const markPlaying = useCallback(() => setPlaying(true), []);
+  const reject = useCallback(() => {
+    setBlocked(true);
+    stop();
+  }, [stop]);
+
+  useEffect(() => {
+    if (captureMode || blocked || !playable) return;
+    let timer: number | null = null;
+    const hasScrolledBeyondThreshold = () =>
+      window.scrollY > scrollThreshold ||
+      (document.querySelector<HTMLElement>('.details-screen')?.scrollTop ?? 0) > scrollThreshold;
+    const clearTimer = () => {
+      if (timer !== null) window.clearTimeout(timer);
+      timer = null;
+    };
+    const schedule = () => {
+      clearTimer();
+      if (requested || document.visibilityState !== 'visible' || hasScrolledBeyondThreshold())
+        return;
+      timer = window.setTimeout(() => setRequested(true), HERO_IDLE_DELAY_MS);
+    };
+    const intentionalActivity = () => {
+      if (requested) stop();
+      else schedule();
+    };
+    const pointerActivity = () => {
+      if (!requested) schedule();
+    };
+    const handleScroll = () => {
+      if (hasScrolledBeyondThreshold()) {
+        clearTimer();
+        stop();
+      } else if (!requested) schedule();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'hidden') {
+        clearTimer();
+        stop();
+      } else {
+        schedule();
+      }
+    };
+
+    schedule();
+    window.addEventListener('pointerdown', intentionalActivity);
+    window.addEventListener('pointermove', pointerActivity);
+    window.addEventListener('keydown', intentionalActivity);
+    window.addEventListener('touchstart', intentionalActivity, { passive: true });
+    window.addEventListener('wheel', intentionalActivity, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { capture: true, passive: true });
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => {
+      clearTimer();
+      window.removeEventListener('pointerdown', intentionalActivity);
+      window.removeEventListener('pointermove', pointerActivity);
+      window.removeEventListener('keydown', intentionalActivity);
+      window.removeEventListener('touchstart', intentionalActivity);
+      window.removeEventListener('wheel', intentionalActivity);
+      window.removeEventListener('scroll', handleScroll);
+      document.removeEventListener('scroll', handleScroll, { capture: true });
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
+  }, [blocked, captureMode, playable, requested, scrollThreshold, stop]);
+
+  return {
+    requested,
+    playing,
+    markPlaying,
+    reject,
+    state: playing ? 'playing' : requested ? 'loading' : 'poster',
+  } as const;
 }
 
 function Home({
@@ -483,10 +630,7 @@ function Home({
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
-  const captureMode = new URLSearchParams(location.search).get('capture') === '1';
-  const [trailerRequested, setTrailerRequested] = useState(false);
-  const [trailerPlaying, setTrailerPlaying] = useState(false);
-  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+  const ambientPreview = useAmbientPreviewState(heroAvailability.playable);
   const trendingIds = [22, 23, 7, 40];
   const trending = trendingIds
     .map((id) => catalogue.find((item) => item.catalogueId === id))
@@ -495,72 +639,6 @@ function Home({
     () => recentlyWatchedFor(profile, catalogue),
     [catalogue, profile],
   );
-
-  const stopTrailer = useCallback(() => {
-    setTrailerRequested(false);
-    setTrailerPlaying(false);
-  }, []);
-  const rejectTrailer = useCallback(() => {
-    setAutoplayBlocked(true);
-    stopTrailer();
-  }, [stopTrailer]);
-
-  useEffect(() => {
-    if (captureMode || autoplayBlocked || !heroAvailability.playable) return;
-    let timer: number | null = null;
-    const clearTimer = () => {
-      if (timer !== null) window.clearTimeout(timer);
-      timer = null;
-    };
-    const schedule = () => {
-      clearTimer();
-      if (
-        trailerRequested ||
-        document.visibilityState !== 'visible' ||
-        window.scrollY > 48
-      )
-        return;
-      timer = window.setTimeout(() => setTrailerRequested(true), HERO_IDLE_DELAY_MS);
-    };
-    const noteActivity = () => {
-      if (!trailerRequested) schedule();
-    };
-    const handleScroll = () => {
-      if (window.scrollY > 48) {
-        clearTimer();
-        stopTrailer();
-      } else if (!trailerRequested) schedule();
-    };
-    const handleVisibility = () => {
-      if (document.visibilityState === 'hidden') {
-        clearTimer();
-        stopTrailer();
-      } else {
-        schedule();
-      }
-    };
-
-    schedule();
-    window.addEventListener('pointerdown', noteActivity);
-    window.addEventListener('keydown', noteActivity);
-    window.addEventListener('touchstart', noteActivity, { passive: true });
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    document.addEventListener('visibilitychange', handleVisibility);
-    return () => {
-      clearTimer();
-      window.removeEventListener('pointerdown', noteActivity);
-      window.removeEventListener('keydown', noteActivity);
-      window.removeEventListener('touchstart', noteActivity);
-      window.removeEventListener('scroll', handleScroll);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
-  }, [
-    autoplayBlocked,
-    captureMode,
-    heroAvailability.playable,
-    stopTrailer,
-    trailerRequested,
-  ]);
 
   return (
     <main className="tv-shell">
@@ -573,21 +651,45 @@ function Home({
       />
       <section className="home-content">
         <div className="hero" style={paletteStyle(hero)}>
-          <div className="hero-art" aria-hidden="true" />
+          <div
+            className={`hero-art${ambientPreview.playing ? ' is-playing' : ''}`}
+            data-hero-state={ambientPreview.state}
+            aria-hidden="true"
+          >
+            <img
+              className="hero-poster"
+              data-hero-media="poster"
+              src={heroLogoUrl}
+              alt=""
+              onError={(event) => applyPosterFallback(event.currentTarget)}
+            />
+            {ambientPreview.requested && (
+              <AmbientPreview
+                video={hero}
+                startSeconds={HOME_PREVIEW_START_SECONDS}
+                kind="hero"
+                className="hero-trailer"
+                onPlaying={ambientPreview.markPlaying}
+                onUnavailable={ambientPreview.reject}
+                onEnded={ambientPreview.reject}
+              />
+            )}
+          </div>
           <div className="hero-scrim" />
           <div className="hero-copy">
             <p className="studio-line">{hero.categories[0]}</p>
-            <h1>{hero.title}</h1>
+            <h1 className="hero-title">
+              LELIBRAMBAS<span className="hero-title-plus">+</span> Trailer
+            </h1>
             <div className="metadata">
               <span>{hero.year ?? 'Year unknown'}</span>
               <span>{hero.categories[0]}</span>
-              <span>{durationLabel(hero)}</span>
+              {durationLabel(hero) && <span>{durationLabel(hero)}</span>}
               <span>{hero.location}</span>
-              <span className="format">Format unknown</span>
             </div>
             <p>{hero.description}</p>
             {resumeSeconds > 0 && (
-              <ProgressBar progress={resumeSeconds} duration={hero.durationSeconds} />
+              <ProgressBar progress={resumeSeconds} duration={saved.durationSeconds} />
             )}
             <div className="hero-actions">
               <ActionButton
@@ -610,7 +712,7 @@ function Home({
         </div>
         <section className="home-hubs-strip">
           <div className="rail-heading">
-            <h2>Collections</h2>
+            <SectionHeading icon="collections">Collections</SectionHeading>
             <span>{collections.length} folder categories</span>
           </div>
           <div className="home-hubs-row">
@@ -632,15 +734,46 @@ function Home({
         </section>
         <section className="rail-section home-multi-rail" data-home-rail="currently-trending">
           <div className="rail-heading">
-            <h2>Currently Trending</h2>
+            <SectionHeading icon="trending">Currently Trending</SectionHeading>
             <span>{trending.length} titles</span>
           </div>
           <div className="card-rail">
             {trending.map((item, index) => (
-              <ArtCard key={item.catalogueId} video={item} index={index} onSelect={onDetails} />
+              <ArtCard
+                key={item.catalogueId}
+                video={item}
+                index={index}
+                onSelect={onDetails}
+                onPlay={onPlay}
+                mobilePrimaryPlay
+              />
             ))}
           </div>
         </section>
+        {recentlyWatched.length > 0 && (
+          <section className="rail-section home-multi-rail" data-home-rail="recently-watched">
+            <div className="rail-heading">
+              <SectionHeading icon="movies">Recently watched</SectionHeading>
+              <span>{recentlyWatched.length} titles</span>
+            </div>
+            <div className="card-rail">
+              {recentlyWatched.map(({ video: item, progress }, index) => (
+                <ArtCard
+                  key={item.catalogueId}
+                  video={item}
+                  index={index}
+                  onSelect={onDetails}
+                  onPlay={onPlay}
+                  mobilePrimaryPlay
+                  progress={{
+                    seconds: progress.seconds,
+                    durationSeconds: progress.durationSeconds,
+                  }}
+                />
+              ))}
+            </div>
+          </section>
+        )}
         {collections.map((collection) => {
           const videos = collection.videoIds
             .map((id) => catalogue.find((item) => item.id === id))
@@ -652,7 +785,9 @@ function Home({
               data-home-rail={collection.id}
             >
               <div className="rail-heading">
-                <h2>{collection.title}</h2>
+                <SectionHeading icon={sectionIconForLabel(collection.title)}>
+                  {collection.title}
+                </SectionHeading>
                 <span>{videos.length} titles</span>
               </div>
               <div className="card-rail">
@@ -662,12 +797,32 @@ function Home({
                     video={item}
                     index={index}
                     onSelect={onDetails}
+                    onPlay={onPlay}
+                    mobilePrimaryPlay
                   />
                 ))}
               </div>
             </section>
           );
         })}
+        <section className="rail-section home-multi-rail" data-home-rail="all-movies">
+          <div className="rail-heading">
+            <SectionHeading icon="movies">All movies</SectionHeading>
+            <span>{catalogue.length} titles</span>
+          </div>
+          <div className="poster-grid all-movies-grid" data-all-movies-grid>
+            {catalogue.map((item, index) => (
+              <ArtCard
+                key={item.catalogueId}
+                video={item}
+                index={index}
+                onSelect={onDetails}
+                onPlay={onPlay}
+                mobilePrimaryPlay
+              />
+            ))}
+          </div>
+        </section>
       </section>
     </main>
   );
@@ -686,14 +841,16 @@ function Details({
 }) {
   const [saved, setSaved] = useState(() => progressFor(profile, video));
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
+  const duration = knownDuration(video);
   const availability = playbackAvailability(video);
+  const ambientPreview = useAmbientPreviewState(availability.playable);
   useEffect(() => setSaved(progressFor(profile, video)), [profile, video]);
   const savePosition = (seconds: number, completed: boolean) => {
     const progress = {
       profileId: profile.id,
       videoId: video.id,
       seconds,
-      durationSeconds: video.durationSeconds,
+      durationSeconds: duration ?? Math.max(saved.durationSeconds, seconds, 1),
       completed,
       updatedAt: new Date().toISOString(),
     };
@@ -702,12 +859,27 @@ function Details({
   };
   return (
     <main className="details-screen" style={paletteStyle(video)}>
-      <div className="details-art" aria-hidden="true">
+      <div
+        className={`details-art${ambientPreview.playing ? ' is-playing' : ''}`}
+        data-detail-preview-state={ambientPreview.state}
+        aria-hidden="true"
+      >
         <img
           src={resolvePosterUrl(video.posterUrl)}
           alt=""
           onError={(event) => applyPosterFallback(event.currentTarget)}
         />
+        {ambientPreview.requested && (
+          <AmbientPreview
+            video={video}
+            startSeconds={DETAILS_PREVIEW_START_SECONDS}
+            kind="details"
+            className="details-preview"
+            onPlaying={ambientPreview.markPlaying}
+            onUnavailable={ambientPreview.reject}
+            onEnded={ambientPreview.reject}
+          />
+        )}
         <span>{video.location}</span>
       </div>
       <div className="details-scrim" />
@@ -722,13 +894,13 @@ function Details({
       </button>
       <section className="details-copy">
         <p className="studio-line">LELIBRAMBAS+ catalogue</p>
-        <h1>{video.title}</h1>
+        <h1 className="details-title">{video.title}</h1>
         <p className="subtitle">{video.subtitle}</p>
         <div className="metadata">
           <span>{video.year ?? 'Year unknown'}</span>
-          <span>{durationLabel(video)}</span>
+          {durationLabel(video) && <span>{durationLabel(video)}</span>}
           <span>{video.location}</span>
-          <span className="format">{video.aspectRatio}</span>
+          {video.aspectRatio !== 'unknown' && <span className="format">{video.aspectRatio}</span>}
         </div>
         <p className="synopsis">{video.description}</p>
         {!availability.playable && (
@@ -740,11 +912,11 @@ function Details({
         <div className="hero-actions">
           <ActionButton
             id="detail-play"
-          disabled={!availability.playable}
-          onClick={() => onPlay(video)}
-        >
+            disabled={!availability.playable}
+            onClick={() => onPlay(video)}
+          >
             {availability.playable ? (resumeSeconds > 0 ? 'Resume' : 'Play') : availability.title}
-        </ActionButton>
+          </ActionButton>
           <ActionButton
             id="detail-restart"
             disabled={!availability.playable}
@@ -760,14 +932,14 @@ function Details({
             id="detail-watched"
             tone="quiet"
             pressed={saved.completed}
-            onClick={() => savePosition(video.durationSeconds, true)}
+            onClick={() => savePosition(duration ?? Math.max(saved.seconds, 1), true)}
           >
             {saved.completed ? 'Watched' : 'Mark watched'}
           </ActionButton>
         </div>
         {resumeSeconds > 0 && (
           <div className="resume-row">
-            <ProgressBar progress={resumeSeconds} duration={video.durationSeconds} />
+            <ProgressBar progress={resumeSeconds} duration={duration ?? saved.durationSeconds} />
             <span>
               Resume at {Math.floor(resumeSeconds / 60)}:
               {String(Math.floor(resumeSeconds % 60)).padStart(2, '0')}
@@ -823,6 +995,7 @@ function Player({
   const videoRef = useRef<HTMLVideoElement>(null);
   const persistenceTimer = useRef<number | null>(null);
   const dirty = useRef(false);
+  const catalogueDurationSeconds = knownDuration(video);
   const saved = progressFor(profile, video);
   const initialSeconds = saved.completed ? 0 : saved.seconds;
   const currentRef = useRef(initialSeconds);
@@ -839,6 +1012,15 @@ function Player({
   const [error, setError] = useState(forcedPlayerState === 'error');
   const [ended, setEnded] = useState(forcedPlayerState === 'up-next');
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [mediaDurationSeconds, setMediaDurationSeconds] = useState<number | null>(null);
+  const persistedDurationSeconds =
+    Date.parse(saved.updatedAt) > 0 ? finitePositiveDuration(saved.durationSeconds) : null;
+  const progressDurationSeconds =
+    catalogueDurationSeconds ??
+    mediaDurationSeconds ??
+    persistedDurationSeconds ??
+    MIN_PROGRESS_DURATION_SECONDS;
+  const displayedDurationSeconds = catalogueDurationSeconds ?? mediaDurationSeconds;
 
   useEffect(() => {
     const element = videoRef.current;
@@ -914,18 +1096,18 @@ function Player({
   }, [availability.playable, error, playbackSource]);
 
   const persistAt = useCallback(
-    (seconds: number, completed = shouldMarkComplete(seconds, video.durationSeconds)) => {
+    (seconds: number, completed = shouldMarkComplete(seconds, progressDurationSeconds)) => {
       if (!getStored('remember-progress', true)) return;
       writeProgress({
         profileId: profile.id,
         videoId: video.id,
-        seconds: clampSeek(0, seconds, video.durationSeconds),
-        durationSeconds: video.durationSeconds,
+        seconds: clampSeek(0, seconds, progressDurationSeconds),
+        durationSeconds: progressDurationSeconds,
         completed,
         updatedAt: new Date().toISOString(),
       });
     },
-    [profile.id, video.durationSeconds, video.id],
+    [profile.id, progressDurationSeconds, video.id],
   );
 
   const flushProgress = useCallback(
@@ -935,11 +1117,11 @@ function Player({
         persistenceTimer.current = null;
       }
       if (!dirty.current && !completed) return;
-      const seconds = completed ? video.durationSeconds : currentRef.current;
-      persistAt(seconds, completed || shouldMarkComplete(seconds, video.durationSeconds));
+      const seconds = completed ? progressDurationSeconds : currentRef.current;
+      persistAt(seconds, completed || shouldMarkComplete(seconds, progressDurationSeconds));
       dirty.current = false;
     },
-    [persistAt, video.durationSeconds],
+    [persistAt, progressDurationSeconds],
   );
 
   const scheduleProgress = useCallback(() => {
@@ -948,29 +1130,29 @@ function Player({
   }, [flushProgress]);
 
   const setPresentationTime = useCallback(
-    (seconds: number) => {
-      const safeSeconds = clampSeek(0, seconds, video.durationSeconds);
+    (seconds: number, duration = progressDurationSeconds) => {
+      const safeSeconds = clampSeek(0, seconds, duration);
       currentRef.current = safeSeconds;
       setCurrent(safeSeconds);
     },
-    [video.durationSeconds],
+    [progressDurationSeconds],
   );
 
   const seek = useCallback(
     (seconds: number) => {
       const element = videoRef.current;
       if (!element || !availability.playable) return;
-      const target = clampSeek(0, seconds, video.durationSeconds);
+      const target = clampSeek(0, seconds, progressDurationSeconds);
       element.currentTime = mediaSecondsForPresentation(
         target,
-        video.durationSeconds,
+        progressDurationSeconds,
         element.duration,
       );
       setPresentationTime(target);
       dirty.current = true;
       scheduleProgress();
     },
-    [availability.playable, scheduleProgress, setPresentationTime, video.durationSeconds],
+    [availability.playable, progressDurationSeconds, scheduleProgress, setPresentationTime],
   );
 
   const toggle = useCallback(async () => {
@@ -1049,7 +1231,7 @@ function Player({
 
   const format = (seconds: number) =>
     `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
-  const progressPercent = Math.min(100, (current / video.durationSeconds) * 100);
+  const progressPercent = Math.min(100, (current / progressDurationSeconds) * 100);
   const playerState = error
     ? {
         eyebrow: 'PLAYBACK INTERRUPTED',
@@ -1082,12 +1264,17 @@ function Player({
             muted={muted}
             playsInline
             onLoadedMetadata={(event) => {
-              if (initialSeconds > 0)
+              const loadedDuration = finitePositiveDuration(event.currentTarget.duration);
+              if (loadedDuration !== null) setMediaDurationSeconds(loadedDuration);
+              const presentationDuration =
+                catalogueDurationSeconds ?? loadedDuration ?? progressDurationSeconds;
+              if (initialSeconds > 0) {
                 event.currentTarget.currentTime = mediaSecondsForPresentation(
                   initialSeconds,
-                  video.durationSeconds,
+                  presentationDuration,
                   event.currentTarget.duration,
                 );
+              }
             }}
             onPlay={() => setPlaying(true)}
             onPause={() => {
@@ -1095,19 +1282,25 @@ function Player({
               flushProgress();
             }}
             onTimeUpdate={(event) => {
+              const loadedDuration = finitePositiveDuration(event.currentTarget.duration);
+              if (loadedDuration !== null && loadedDuration !== mediaDurationSeconds) {
+                setMediaDurationSeconds(loadedDuration);
+              }
+              const presentationDuration =
+                catalogueDurationSeconds ?? loadedDuration ?? progressDurationSeconds;
               const seconds = presentationSecondsForMedia(
                 event.currentTarget.currentTime,
                 event.currentTarget.duration,
-                video.durationSeconds,
+                presentationDuration,
               );
-              setPresentationTime(seconds);
+              setPresentationTime(seconds, presentationDuration);
               dirty.current = true;
               scheduleProgress();
             }}
             onEnded={() => {
               setPlaying(false);
               setEnded(true);
-              setPresentationTime(video.durationSeconds);
+              setPresentationTime(progressDurationSeconds);
               dirty.current = true;
               flushProgress(true);
             }}
@@ -1180,8 +1373,8 @@ function Player({
               <h1>{nextVideo.title}</h1>
               <div className="metadata">
                 <span>{nextVideo.year ?? 'Date unknown'}</span>
-                <span>{durationLabel(nextVideo)}</span>
-                <span>{nextVideo.aspectRatio}</span>
+                {durationLabel(nextVideo) && <span>{durationLabel(nextVideo)}</span>}
+                {nextVideo.aspectRatio !== 'unknown' && <span>{nextVideo.aspectRatio}</span>}
               </div>
               <div className="hero-actions">
                 <ActionButton
@@ -1236,7 +1429,11 @@ function Player({
               </div>
               <div className="player-times">
                 <span>{format(current)}</span>
-                <span>−{format(Math.max(0, video.durationSeconds - current))}</span>
+                <span>
+                  {displayedDurationSeconds === null
+                    ? 'Duration unavailable'
+                    : `−${format(Math.max(0, displayedDurationSeconds - current))}`}
+                </span>
               </div>
               <div className="player-controls">
                 <button
@@ -1459,6 +1656,10 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
       />,
     );
   const onNavigate = (next: BrowseScreenId) => go(next);
+  const onPlay = (next: CatalogueVideoRecord) => {
+    setVideo(next);
+    go('player');
+  };
   const onDetails = (next: CatalogueVideoRecord) => {
     setVideo(next);
     go('details');
@@ -1470,6 +1671,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
+        onPlay={onPlay}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
       />,
@@ -1482,6 +1684,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
+        onPlay={onPlay}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
       />,
@@ -1495,6 +1698,19 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
         profile={profile}
         onNavigate={onNavigate}
         onDetails={onDetails}
+        onPlay={onPlay}
+        onReplayIntro={replayIntro}
+        onProfile={openProfiles}
+      />,
+    );
+  if (screen === 'library')
+    return renderScreen(
+      <FullLibraryScreen
+        catalogue={catalogue}
+        profile={profile}
+        onNavigate={onNavigate}
+        onDetails={onDetails}
+        onPlay={onPlay}
         onReplayIntro={replayIntro}
         onProfile={openProfiles}
       />,
@@ -1512,10 +1728,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
       onDetails={onDetails}
       onReplayIntro={replayIntro}
       onProfile={openProfiles}
-      onPlay={(next) => {
-        setVideo(next);
-        go('player');
-      }}
+      onPlay={onPlay}
     />,
   );
 }

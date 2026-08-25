@@ -25,7 +25,12 @@ Solid lines describe current runtime relationships. Dashed lines are implemented
 
 ## Two viewer implementations
 
-`apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles, generated catalogue rails, discovery views, search, details, local watchlists/progress, Stream/direct-media player states, deterministic capture routes, keyboard spatial navigation, and the renderer packaged by Electron.
+`apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles and a
+three-second profile gate, responsive generated catalogue rails, search, collections, a complete
+Full Library view, details, profile-scoped progress/history, Stream/direct-media player states,
+two-second ambient Home/detail previews with policy-safe fallback, deterministic capture routes, keyboard spatial
+navigation, and the renderer packaged by Electron. The same React DOM tree adapts at `<=800px`;
+mobile cards route their primary tap directly to playback while retaining a separate Details action.
 
 `apps/tv/App.tsx` is the Expo/React Native entry for two Apple targets. It dispatches on
 `Platform.isTV`: tvOS builds render the smaller profile/home/player shell with
@@ -71,6 +76,13 @@ are retained only for tvOS, and native application targets are limited to iPhone
 - Production-shaped device tokens are hashed in D1; Stream playback uses short-lived signed HLS generated server-side.
 - Electron has no preload or IPC bridge and denies navigation, windows, downloads, webviews, and permissions.
 
+The editable catalogue source is `media_catalog_populated.xlsx`. Generation produces the committed
+`data/media_catalog.json`; content preparation copies that JSON and approved artwork into ignored
+web runtime output. Catalogue order is numeric ID order throughout Home, Collections, Search results
+before filtering, and Full Library. Runtime is nullable because the workbook has no authoritative
+duration column; actual HTML media metadata can drive player timing and locally persisted progress,
+but the catalogue adapter never invents a universal length.
+
 ## Build and generated artifacts
 
 Expo Continuous Native Generation treats `apps/tv/ios/` as disposable, target-specific output of
@@ -78,6 +90,10 @@ Expo Continuous Native Generation treats `apps/tv/ios/` as disposable, target-sp
 Electron installers land in `apps/desktop/release/`. Playwright artifacts and importer state are
 ignored. Screenshot capture is the deliberate exception: it writes synthetic review images to the
 repository-root `assets/lelibrambas-plus/screenshots/`.
+
+The Vite public surface also contains a project-owned cinema favicon, Safari pinned-tab mark,
+silver-gradient Apple touch icon, and web app manifest. These are static presentation assets only;
+they do not alter native Expo icon generation or provision an install target.
 
 See [iPhone development](README_IPHONE.md), [ADR 0001](docs/decisions/0001-tv-stack.md),
 [ADR 0002](docs/decisions/0002-private-media-pipeline.md), [Security](SECURITY.md), and

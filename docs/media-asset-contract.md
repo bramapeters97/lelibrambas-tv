@@ -40,8 +40,8 @@ The JSON does not need to be rewritten for that native mapping.
 
 The seven-column workbook and generated JSON do not currently contain authoritative runtimes.
 Catalogue records therefore expose `durationSeconds` as `null` until playback or provider metadata
-supplies a finite positive duration. The viewer must label that state as unknown or omit the runtime;
-it must not substitute a universal estimate.
+supplies a finite positive duration. Cards and details omit the runtime until it is known; the player
+may use neutral `Duration unavailable` copy. The viewer must not substitute a universal estimate.
 
 ## Playback URLs
 

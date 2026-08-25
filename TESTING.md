@@ -57,10 +57,14 @@ fallback behavior, Cloudflare web/native playback resolution, selected-row URL p
 player/progress/pairing helpers, geometry-based focus, and TV watchlist state. The remaining suites
 cover the Library Manager, provider contracts, API, D1, importer, and Electron policies.
 
-Playwright covers profile-to-home-to-details-to-player selection, exact selected-row Stream URL
-handoff, visible arrow focus, search/watchlist, all four collections, poster-backed hero rendering,
-and rendered catalogue ID/count parity with the generated JSON. Tests reset local storage and use
-deterministic capture routes.
+Playwright covers profile-to-home-to-details-to-player selection, the exact three-second profile
+gate under a controlled clock, exact selected-row Stream URL handoff, visible arrow focus,
+profile-isolated viewing history, all four collections, stable catalogue order, Full Library/Home
+catalogue parity, exact poster responses, the cinema favicon/install assets, and the two-second
+Home/detail preview cue, cleanup, and rejected-autoplay paths. Responsive assertions cover the React DOM viewer's one-row profiles,
+mobile shimmer, horizontal collection selector, three-column collection results, two-column search,
+first-tap playback, reduced motion, and document-level overflow. Tests reset local storage and use
+deterministic capture routes unless timer behavior itself is under test.
 
 Importer conversion tests use a fake process runner and temporary fixtures. They prove orchestration/safety, not that a particular installed FFmpeg build correctly decodes every family codec or damaged disc.
 
@@ -81,7 +85,8 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
 
 Before calling a surface ready, record date, revision, device/OS, exact command, and artifact hash.
 
-1. Web: Edge and Chrome at 1920x1080 and 1280x720; keyboard-only complete flow; reduced motion; 200% admin zoom.
+1. Web: Edge and Chrome at 320x720, 390x844, 430x932, mobile landscape, 800px, 1280x720,
+   and 1920x1080; keyboard-only complete flow; touch emulation; reduced motion; 200% admin zoom.
 2. Electron: packaged portable artifact, fullscreen/input, denied navigation/download, offline local assets, and clean exit.
 3. iPhone Safari: same trusted LAN, current Mobile Safari, portrait/landscape, touch, text input,
    profile/Home/Search/Collections/Saved/details/player, and reload/session behavior.
@@ -91,10 +96,10 @@ Before calling a surface ready, record date, revision, device/OS, exact command,
 5. tvOS: current supported Xcode/tvOS simulator plus physical Apple TV before distribution.
 6. Importer: a copied non-critical sample set, a dry-run review, interrupted/resumed conversion, checksum verify, and visual/audio spot checks. Never use the only copy of an archive as a test fixture.
 
-Safari exercises the React Native Web rendering of the phone branch. It is not native iOS evidence,
-and neither Safari nor a native phone pass establishes parity with the React DOM viewer or the
-tvOS shell. See [iPhone preview and native development](README_IPHONE.md) for the LAN and Xcode
-routes.
+Safari can exercise either the responsive React DOM/Vite viewer or the separate React Native Web
+phone branch, depending on the command used. Neither is native iOS evidence, and neither a Safari
+nor native phone pass establishes parity with the tvOS shell. See
+[iPhone preview and native development](README_IPHONE.md) for the LAN and Xcode routes.
 
 ## Screenshots and artifacts
 

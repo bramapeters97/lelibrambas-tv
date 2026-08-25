@@ -11,9 +11,14 @@ import {
   View,
 } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { catalogue, catalogueCategories, profiles } from '@lelibrambas/catalog';
+import {
+  catalogue,
+  catalogueCategories,
+  profiles,
+  type CatalogueVideoRecord,
+} from '@lelibrambas/catalog';
 import { midnightArchive } from '@lelibrambas/design-system';
-import type { Profile, VideoRecord } from '@lelibrambas/types';
+import type { Profile } from '@lelibrambas/types';
 
 const demoSource = require('../assets/archive-demo.mp4');
 const studioArtwork = require('../assets/lelibrambas-studios.png');
@@ -167,7 +172,7 @@ function PaletteArtwork({
   video,
   size = 'card',
 }: {
-  video: VideoRecord;
+  video: CatalogueVideoRecord;
   size?: 'card' | 'row' | 'detail';
 }) {
   const [first, second, accent] = video.artwork.palette;
@@ -191,7 +196,7 @@ function PaletteArtwork({
   );
 }
 
-function MemoryCard({ video, onPress }: { video: VideoRecord; onPress: () => void }) {
+function MemoryCard({ video, onPress }: { video: CatalogueVideoRecord; onPress: () => void }) {
   return (
     <Pressable
       accessibilityHint="Opens archive details"
@@ -218,7 +223,7 @@ function HomeScreen({
   onSelectCollection,
 }: {
   profile: Profile;
-  onOpenVideo: (video: VideoRecord) => void;
+  onOpenVideo: (video: CatalogueVideoRecord) => void;
   onPlayDemo: () => void;
   onProfile: () => void;
   onSelectCollection: (name: string) => void;
@@ -318,7 +323,7 @@ function HomeScreen({
   );
 }
 
-function SearchScreen({ onOpenVideo }: { onOpenVideo: (video: VideoRecord) => void }) {
+function SearchScreen({ onOpenVideo }: { onOpenVideo: (video: CatalogueVideoRecord) => void }) {
   const [query, setQuery] = useState('');
   const normalizedQuery = query.trim().toLocaleLowerCase();
   const matches = useMemo(() => {
@@ -432,7 +437,7 @@ function CollectionsScreen({
 }: {
   selectedCollection: string | null;
   onBack: () => void;
-  onOpenVideo: (video: VideoRecord) => void;
+  onOpenVideo: (video: CatalogueVideoRecord) => void;
   onSelectCollection: (name: string) => void;
 }) {
   const category = catalogueCategories.find((item) => item.name === selectedCollection);
@@ -532,7 +537,7 @@ function SavedScreen({
 }: {
   profile: Profile;
   savedIds: string[];
-  onOpenVideo: (video: VideoRecord) => void;
+  onOpenVideo: (video: CatalogueVideoRecord) => void;
 }) {
   const savedVideos = savedIds
     .map((id) => catalogue.find((video) => video.id === id))
@@ -585,7 +590,7 @@ function DetailsScreen({
   onToggleSaved,
 }: {
   saved: boolean;
-  video: VideoRecord;
+  video: CatalogueVideoRecord;
   onBack: () => void;
   onToggleSaved: () => void;
 }) {
@@ -741,7 +746,7 @@ export default function MobileApp() {
   const [switchingProfile, setSwitchingProfile] = useState(false);
   const [activeTab, setActiveTab] = useState<MobileTab>('home');
   const [selectedCollection, setSelectedCollection] = useState<string | null>(null);
-  const [selectedVideo, setSelectedVideo] = useState<VideoRecord | null>(null);
+  const [selectedVideo, setSelectedVideo] = useState<CatalogueVideoRecord | null>(null);
   const [playingDemo, setPlayingDemo] = useState(false);
   const [savedIds, setSavedIds] = useState<string[]>([]);
 
