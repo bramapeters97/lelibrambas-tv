@@ -332,7 +332,6 @@ export function NavigationRail({
         onClick={onReplayIntro}
       >
         <CinemaIcon />
-        <span className="nav-wordmark__label">Intro</span>
       </button>
       {navItems.map((item) => (
         <button

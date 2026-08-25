@@ -213,6 +213,11 @@ test('intro, profiles, and poster-backed cinema hero preserve the viewer contrac
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
 
   await expect(page.locator('.nav-wordmark__icon')).toBeVisible();
+  const introButton = page.getByRole('button', { name: 'Replay entrance with logo and tune' });
+  await expect(introButton).toHaveText('');
+  const introWidth = (await introButton.boundingBox())!.width;
+  await introButton.focus();
+  expect((await introButton.boundingBox())!.width).toBe(introWidth);
   const heroHeading = page.getByRole('heading', { name: 'LELIBRAMBAS+ Trailer' });
   await expect(heroHeading).toBeVisible();
   await expect(heroHeading.locator('.hero-title-plus')).toHaveText('+');

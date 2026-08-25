@@ -1673,22 +1673,9 @@ button:focus-visible,
   color: #ffe4a8;
   filter: drop-shadow(0 0 11px rgba(233, 199, 120, 0.38));
 }
-.full-nav .nav-wordmark__label {
-  display: none;
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 700;
-  white-space: nowrap;
-}
 .full-nav .nav-wordmark:focus-visible {
-  width: 176px;
-  justify-content: flex-start;
-  padding-left: 14px;
-  transform: translateX(var(--nav-popout-shift)) scale(1.03);
+  transform: scale(1.03);
   background: var(--surface-raised);
-}
-.full-nav .nav-wordmark:focus-visible .nav-wordmark__label {
-  display: block;
 }
 .full-nav .nav-button {
   min-height: 47px;
