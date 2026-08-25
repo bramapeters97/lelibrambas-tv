@@ -82,9 +82,17 @@ test.describe('mobile responsive viewer', () => {
       .first()
       .evaluate((element) => {
         const style = getComputedStyle(element, '::after');
-        return { name: style.animationName, duration: style.animationDuration };
+        return {
+          name: style.animationName,
+          duration: style.animationDuration,
+          iterations: style.animationIterationCount,
+        };
       });
-    expect(shimmer).toEqual({ name: 'home-collection-shade', duration: '2s' });
+    expect(shimmer).toEqual({
+      name: 'home-collection-shade',
+      duration: '2s',
+      iterations: '1',
+    });
 
     const visibleCardCount = await page
       .locator('.card-rail')
@@ -286,6 +294,20 @@ test('profile-isolated Recently watched is newest-first and carries saved progre
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
   const history = page.locator('[data-home-rail="recently-watched"]');
   await expect(history).toBeVisible();
+  expect(
+    await page
+      .locator('.home-content > [data-home-rail]')
+      .evaluateAll((elements) => elements.map((element) => element.getAttribute('data-home-rail'))),
+  ).toEqual([
+    'collections',
+    'recently-watched',
+    'currently-trending',
+    'jeugdfilms',
+    'vakantiefilms',
+    'events',
+    'others',
+    'all-movies',
+  ]);
   expect(
     await history
       .locator('[data-catalogue-id]')

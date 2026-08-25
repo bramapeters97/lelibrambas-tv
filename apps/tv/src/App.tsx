@@ -709,7 +709,7 @@ function Home({
             <i />
           </div>
         </div>
-        <section className="home-hubs-strip">
+        <section className="home-hubs-strip" data-home-rail="collections">
           <div className="rail-heading">
             <SectionHeading icon="collections">Collections</SectionHeading>
             <span>{collections.length} folder categories</span>
@@ -728,24 +728,6 @@ function Home({
                   <strong>{collection.title}</strong>
                 </span>
               </button>
-            ))}
-          </div>
-        </section>
-        <section className="rail-section home-multi-rail" data-home-rail="currently-trending">
-          <div className="rail-heading">
-            <SectionHeading icon="trending">Currently Trending</SectionHeading>
-            <span>{trending.length} titles</span>
-          </div>
-          <div className="card-rail">
-            {trending.map((item, index) => (
-              <ArtCard
-                key={item.catalogueId}
-                video={item}
-                index={index}
-                onSelect={onDetails}
-                onPlay={onPlay}
-                mobilePrimaryPlay
-              />
             ))}
           </div>
         </section>
@@ -773,6 +755,24 @@ function Home({
             </div>
           </section>
         )}
+        <section className="rail-section home-multi-rail" data-home-rail="currently-trending">
+          <div className="rail-heading">
+            <SectionHeading icon="trending">Currently Trending</SectionHeading>
+            <span>{trending.length} titles</span>
+          </div>
+          <div className="card-rail">
+            {trending.map((item, index) => (
+              <ArtCard
+                key={item.catalogueId}
+                video={item}
+                index={index}
+                onSelect={onDetails}
+                onPlay={onPlay}
+                mobilePrimaryPlay
+              />
+            ))}
+          </div>
+        </section>
         {collections.map((collection) => {
           const videos = collection.videoIds
             .map((id) => catalogue.find((item) => item.id === id))

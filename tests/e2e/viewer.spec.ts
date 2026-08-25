@@ -255,12 +255,23 @@ test('home collection shortcuts open the selected collection and home rows mirro
     .evaluateAll((elements) =>
       elements.map((element) => {
         const style = getComputedStyle(element, '::after');
-        return { name: style.animationName, duration: style.animationDuration };
+        return {
+          name: style.animationName,
+          duration: style.animationDuration,
+          iterations: style.animationIterationCount,
+        };
       }),
     );
   expect(collectionCardAnimations).toHaveLength(4);
   expect(collectionCardAnimations).toEqual(
-    Array.from({ length: 4 }, () => ({ name: 'home-collection-shade', duration: '2s' })),
+    Array.from({ length: 4 }, () => ({
+      name: 'home-collection-shade',
+      duration: '2s',
+      iterations: 'infinite',
+    })),
+  );
+  expect((await page.locator('.home-hubs-row button').first().boundingBox())!.width).toBeGreaterThanOrEqual(
+    230,
   );
 
   const trendingIds = await page

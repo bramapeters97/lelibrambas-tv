@@ -776,8 +776,8 @@ button:focus-visible,
 }
 .home-hubs-row button {
   position: relative;
-  flex: 0 0 clamp(198px, 13.2vw, 252px);
-  min-height: 118px;
+  flex: 0 0 clamp(230px, 16vw, 300px);
+  min-height: 142px;
   display: flex;
   align-items: flex-end;
   padding: 17px;
@@ -831,7 +831,7 @@ button:focus-visible,
     rgba(255, 255, 255, 0.025) 57%,
     transparent 66%
   );
-  animation: home-collection-shade 2s ease-out 1 forwards;
+  animation: home-collection-shade 2s ease-out infinite;
 }
 @keyframes home-collection-shade {
   0% {
@@ -2957,6 +2957,10 @@ button:focus-visible,
     flex-basis: clamp(150px, 45vw, 184px);
     min-height: 96px;
     padding: 13px;
+  }
+  .home-hubs-row button::after {
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
   }
   .rail-section {
     margin-top: 0;
