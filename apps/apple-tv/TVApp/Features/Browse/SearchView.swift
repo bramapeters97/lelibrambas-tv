@@ -55,6 +55,10 @@ struct SearchView: View {
             .padding(.vertical, LBSpacing.safeVertical)
         }
         .defaultFocus($searchFieldFocused, true)
+        .task {
+            await Task.yield()
+            searchFieldFocused = true
+        }
         .accessibilityIdentifier("search-screen")
     }
 

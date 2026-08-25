@@ -47,6 +47,7 @@ struct ProfileSelectionView: View {
             .padding(.vertical, 46)
         }
         .onAppear { focusedProfileID = profiles.first?.id }
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("profile-selector")
     }
 
@@ -101,8 +102,10 @@ private struct ProfileButton: View {
         }
         .buttonStyle(.plain)
         .focusEffectDisabled()
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(profile.name)
         .accessibilityHint("Open this local profile")
+        .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("profile-\(profile.id)")
     }
 }

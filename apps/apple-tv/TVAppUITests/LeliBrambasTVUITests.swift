@@ -73,7 +73,7 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["6 results"].exists)
         let searchField = identified("search-field", in: app)
         XCTAssertTrue(searchField.waitForExistence(timeout: 5))
-        XCTAssertTrue(searchField.hasFocus)
+        XCTAssertTrue(waitForFocus(on: searchField))
     }
 
     func testFixtureFullLibraryMatchesWebHierarchy() throws {
