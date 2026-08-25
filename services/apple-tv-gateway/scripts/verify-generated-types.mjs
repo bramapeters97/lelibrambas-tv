@@ -12,7 +12,7 @@ const temporaryDirectory = mkdtempSync(path.join(tmpdir(), 'lelibrambas-worker-t
 const generatedTypesPath = path.join(temporaryDirectory, 'worker-configuration.d.ts');
 const wranglerPath = path.join(gatewayRoot, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 
-function syntaxSignature(source) {
+function environmentSignature(source) {
   const sourceFile = ts.createSourceFile(
     'worker-configuration.d.ts',
     source,
@@ -25,6 +25,14 @@ function syntaxSignature(source) {
     throw new Error('Wrangler environment declarations contain invalid TypeScript syntax.');
   }
 
+  const environmentInterface = sourceFile.statements.find(
+    (statement) =>
+      ts.isInterfaceDeclaration(statement) && statement.name.text === '__BaseEnv_Env',
+  );
+  if (!environmentInterface) {
+    throw new Error('Wrangler output does not declare __BaseEnv_Env.');
+  }
+
   const nodes = [];
   const visit = (node) => {
     let value = '';
@@ -34,7 +42,7 @@ function syntaxSignature(source) {
     nodes.push(`${node.kind}${value}`);
     ts.forEachChild(node, visit);
   };
-  visit(sourceFile);
+  visit(environmentInterface);
   return nodes;
 }
 
@@ -62,8 +70,8 @@ try {
   const committed = readFileSync(committedTypesPath, 'utf8');
   const generated = readFileSync(generatedTypesPath, 'utf8');
 
-  const committedSignature = syntaxSignature(committed);
-  const generatedSignature = syntaxSignature(generated);
+  const committedSignature = environmentSignature(committed);
+  const generatedSignature = environmentSignature(generated);
   const firstDifference = Math.max(committedSignature.length, generatedSignature.length)
     ? Array.from({ length: Math.max(committedSignature.length, generatedSignature.length) }).findIndex(
         (_, index) => committedSignature[index] !== generatedSignature[index],
@@ -72,7 +80,7 @@ try {
 
   if (firstDifference !== -1) {
     throw new Error(
-      `worker-configuration.d.ts differs at declaration node ${firstDifference}: ` +
+      `worker-configuration.d.ts environment differs at node ${firstDifference}: ` +
         `committed=${committedSignature[firstDifference] ?? '<missing>'}, ` +
         `generated=${generatedSignature[firstDifference] ?? '<missing>'}.`,
     );
