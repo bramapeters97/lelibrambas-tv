@@ -27,8 +27,9 @@ struct HomeView: View {
                     Color.clear.frame(height: LBSpacing.safeVertical)
                 }
             }
-            .onAppear {
+            .task(id: sections.first?.id) {
                 guard startAtShelves, let first = sections.first else { return }
+                await Task.yield()
                 proxy.scrollTo("shelf-\(first.id)", anchor: .top)
             }
         }
