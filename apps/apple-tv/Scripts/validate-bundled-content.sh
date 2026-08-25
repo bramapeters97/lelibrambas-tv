@@ -46,7 +46,18 @@ if [[ -n "$bundle_path" ]]; then
   [[ -f "$bundle_path/artwork/generic_cinema_2.png" ]] || fail "Built app is missing artwork/generic_cinema_2.png."
   [[ -f "$bundle_path/lelibrambas-studios.png" ]] || fail "Built app is missing lelibrambas-studios.png."
   cmp -s "$catalog" "$bundle_path/media_catalog.json" || fail "Built app catalogue differs from data/media_catalog.json."
-  cmp -s "$studio_brand" "$bundle_path/lelibrambas-studios.png" || fail "Built app studio brand differs from the root source."
+  if ! cmp -s "$studio_brand" "$bundle_path/lelibrambas-studios.png"; then
+    # Xcode losslessly normalizes standalone PNG resources during CopyPNGFile.
+    # Reproduce that exact transformation before comparing bundle contents.
+    require_macos
+    require_command xcrun
+    normalized_brand="$(mktemp "${TMPDIR:-/tmp}/lelibrambas-studio-brand.XXXXXX")"
+    trap 'rm -f -- "$normalized_brand"' EXIT
+    copypng_tool="$(xcrun --find copypng)"
+    "$copypng_tool" -compress -strip-PNG-text "$studio_brand" "$normalized_brand" >/dev/null
+    cmp -s "$normalized_brand" "$bundle_path/lelibrambas-studios.png" \
+      || fail "Built app studio brand differs from Xcode's normalized root source."
+  fi
 fi
 
 log "Bundled catalogue and artwork validation passed ($stream_count distinct video sources)."
