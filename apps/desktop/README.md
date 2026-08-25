@@ -11,6 +11,7 @@ The browser favicon is also used as the desktop window icon and Windows package 
 - `yarn desktop:package` is the preferred root command for creating the portable Windows x64 executable under `apps/desktop/release`.
 - `yarn workspace @lelibrambas/desktop smoke` runs the policy/runtime smoke suite.
 - `yarn workspace @lelibrambas/desktop smoke:electron` launches a hidden production-mode window against the built TV renderer and exits after the page title loads.
+- `yarn workspace @lelibrambas/desktop smoke:stream` opt-in tests real Stream HLS metadata plus the app-owned ten-second controls through the custom packaged origin.
 - `yarn workspace @lelibrambas/desktop dist:portable` creates the default portable Windows x64 executable under `apps/desktop/release`.
 - `yarn workspace @lelibrambas/desktop dist:nsis` creates the optional per-user NSIS installer.
 
@@ -18,7 +19,7 @@ The package intentionally pins Electron `43.4.0` and stable electron-builder `26
 
 ## Input contract
 
-Arrow keys, Enter, Space, Escape, Backspace, `R`, `M`, `S`, and `P` pass through unchanged to the TV renderer, which already implements spatial navigation, back, restart, mute, search, and playback behavior. `F11` is the only key consumed by the shell; it toggles native fullscreen while ordinary text input remains untouched.
+Arrow keys, Enter, Space, Escape, Backspace, `R`, `M`, `S`, and `P` pass through unchanged to the TV renderer, which implements spatial navigation, back, restart, mute, search, app-owned ±10-second controls, timeline seeking, and playback behavior. `F11` is the only key consumed by the shell; it toggles native fullscreen while ordinary text input remains untouched.
 
 The window opens at 1600x900 with a 960x540 minimum and no forced aspect-ratio lock, so standard Windows resizing, snapping, maximizing, and fullscreen behavior remain available. Desktop-only injected CSS suppresses accidental page-text selection and image dragging while preserving selection inside editable fields.
 
@@ -28,5 +29,5 @@ The window opens at 1600x900 with a 960x540 minimum and no forced aspect-ratio l
 - There is no preload API and no IPC surface. The main process loads the loopback Vite origin in development. A packaged build authenticates against the HTTPS canonical origin declared by `tv-dist/index.html`, then loads that same bundle locally through the private `lelibrambas://app` protocol.
 - Development URLs are restricted to plain HTTP loopback origins. Production paths are traversal-checked before local reads.
 - During authentication, top-level navigation is restricted to the protected application origin, the exact Cloudflare Access team host learned from its redirect, and a script-free local retry page. The session cookie is checked locally and against the protected origin on window focus and every five minutes; an expired cookie returns to the same email/code flow, while network/login failures show the fail-closed retry page without exposing the renderer. No credentials, tokens, or allowed addresses are bundled.
-- New windows, downloads, webviews, unrelated external navigation, device permissions, and unrelated runtime permission requests are denied. Authentication redirects, secure Cloudflare Stream subframe redirects, and fullscreen requests from the app or an allowed Stream frame are the narrow exceptions needed for login and playback.
+- New windows, downloads, webviews, unrelated external navigation, device permissions, and unrelated runtime permission requests are denied. Authentication redirects, narrowly allowlisted Stream compatibility frames, and fullscreen requests from the app or an allowed Stream frame are the only exceptions. Full movie playback uses the same local React controller and direct HTTPS Stream HLS as the web viewer.
 - Packaged HTML receives a CSP that permits local scripts only. Images, media, and service requests are limited to local resources and HTTPS Cloudflare Stream delivery hosts; remote script execution remains blocked.

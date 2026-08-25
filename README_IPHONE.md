@@ -2,7 +2,8 @@
 
 The Expo entry in `apps/tv/App.tsx` selects the tvOS shell when `Platform.isTV` is true and the
 phone UI in `apps/tv/mobile/MobileApp.tsx` otherwise. The phone UI currently covers profile
-selection, Home, Search, Collections, Saved, catalogue details, and the bundled demo player.
+selection, Home, Search, Collections, Saved, catalogue details, and the bundled demo player with
+native media controls plus accessible ten-second skip buttons.
 
 This is a mobile adaptation, not feature parity with the React DOM TV viewer. It uses only the
 checked-in synthetic catalogue, artwork, and demo video. Saved-item and profile changes live in
@@ -90,9 +91,9 @@ build is authorized by this guide.
   network, do not add a tunnel or port-forward, and stop Metro afterward.
 - HTTP LAN traffic is not production transport. The preview has no authentication and is not a
   distribution mechanism.
-- Test portrait and landscape, small and large iPhone sizes, VoiceOver labels, text input, back and
-  fullscreen behavior, audio, interruption/background-resume, and memory pressure in the eventual
-  native build.
+- Test portrait and landscape, small and large iPhone sizes, VoiceOver labels, text input, back,
+  exact/clamped ±10-second inline seeking without changing play state, fullscreen system controls,
+  audio, interruption/background-resume, and memory pressure in the eventual native build.
 - Native iPhone, tvOS, Electron, and React DOM results are separate evidence. Passing
   one surface never establishes parity or release readiness for another.
 - The shared React Native TV dependency is retained solely for the separate tvOS target.

@@ -6,6 +6,7 @@ import {
   clampSeek,
   getStored,
   readProgress,
+  SEEK_INTERVAL_SECONDS,
   setStored,
   shouldMarkComplete,
   writeProgress,
@@ -118,6 +119,18 @@ export function presentationSecondsForMedia(
     0,
     Math.min(presentationDuration, (seconds / mediaDuration) * presentationDuration),
   );
+}
+
+export function mediaSeekTarget(
+  currentSeconds: number,
+  deltaSeconds: number,
+  durationSeconds: number | null,
+): number {
+  const current = Number.isFinite(currentSeconds) ? Math.max(0, currentSeconds) : 0;
+  const duration = finitePositiveDuration(durationSeconds);
+  return duration === null
+    ? Math.max(0, current + deltaSeconds)
+    : clampSeek(current, deltaSeconds, duration);
 }
 
 export function nextPlayableVideo(
@@ -996,6 +1009,7 @@ function Player({
   onBack: () => void;
   onPlayNext: (video: CatalogueVideoRecord) => void;
 }) {
+  const playerScreenRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const persistenceTimer = useRef<number | null>(null);
   const dirty = useRef(false);
@@ -1005,7 +1019,11 @@ function Player({
   const currentRef = useRef(initialSeconds);
   const availability = playbackAvailability(video);
   const playbackSource = useMemo(
-    () => resolvePlaybackSource(video.streamVideoId, { autoplay: true }),
+    () =>
+      resolvePlaybackSource(video.streamVideoId, {
+        autoplay: true,
+        preferDirectHls: true,
+      }),
     [video.streamVideoId],
   );
   const nextVideo = useMemo(() => nextPlayableVideo(video, catalogue), [catalogue, video]);
@@ -1016,6 +1034,7 @@ function Player({
   const [error, setError] = useState(forcedPlayerState === 'error');
   const [ended, setEnded] = useState(forcedPlayerState === 'up-next');
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
   const [mediaDurationSeconds, setMediaDurationSeconds] = useState<number | null>(null);
   const persistedDurationSeconds =
     Date.parse(saved.updatedAt) > 0 ? finitePositiveDuration(saved.durationSeconds) : null;
@@ -1159,6 +1178,33 @@ function Player({
     [availability.playable, progressDurationSeconds, scheduleProgress, setPresentationTime],
   );
 
+  const seekBy = useCallback(
+    (deltaSeconds: number) => {
+      const element = videoRef.current;
+      if (!element || !availability.playable) return;
+      const mediaDuration = finitePositiveDuration(element.duration);
+      const mediaCurrent = Number.isFinite(element.currentTime) ? element.currentTime : 0;
+      const mediaTarget = mediaSeekTarget(mediaCurrent, deltaSeconds, mediaDuration);
+      element.currentTime = mediaTarget;
+      const presentationDuration =
+        catalogueDurationSeconds ?? mediaDuration ?? progressDurationSeconds;
+      const presentationTarget =
+        mediaDuration === null
+          ? clampSeek(0, mediaTarget, presentationDuration)
+          : presentationSecondsForMedia(mediaTarget, mediaDuration, presentationDuration);
+      setPresentationTime(presentationTarget, presentationDuration);
+      dirty.current = true;
+      scheduleProgress();
+    },
+    [
+      availability.playable,
+      catalogueDurationSeconds,
+      progressDurationSeconds,
+      scheduleProgress,
+      setPresentationTime,
+    ],
+  );
+
   const toggle = useCallback(async () => {
     const element = videoRef.current;
     if (!element || !availability.playable || ended) return;
@@ -1176,7 +1222,44 @@ function Player({
     onBack();
   }, [flushProgress, onBack]);
 
+  const toggleMuted = useCallback(() => {
+    const element = videoRef.current;
+    if (!element) return;
+    const nextMuted = !element.muted;
+    element.muted = nextMuted;
+    setMuted(nextMuted);
+  }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    const screen = playerScreenRef.current;
+    if (!screen) return;
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen();
+      } else if (screen.requestFullscreen) {
+        await screen.requestFullscreen();
+      } else {
+        const legacyVideo = videoRef.current as
+          | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
+          | null;
+        legacyVideo?.webkitEnterFullscreen?.();
+      }
+    } catch {
+      const legacyVideo = videoRef.current as
+        | (HTMLVideoElement & { webkitEnterFullscreen?: () => void })
+        | null;
+      legacyVideo?.webkitEnterFullscreen?.();
+    }
+  }, []);
+
   useEffect(() => () => flushProgress(), [flushProgress]);
+
+  useEffect(() => {
+    const updateFullscreenState = () =>
+      setFullscreen(document.fullscreenElement === playerScreenRef.current);
+    document.addEventListener('fullscreenchange', updateFullscreenState);
+    return () => document.removeEventListener('fullscreenchange', updateFullscreenState);
+  }, []);
 
   useEffect(() => {
     const saveBeforeLeaving = () => flushProgress();
@@ -1253,6 +1336,7 @@ function Player({
 
   return (
     <main
+      ref={playerScreenRef}
       className={`player-screen ${video.aspectRatio === '4:3' ? 'archive-43' : ''}`}
       style={paletteStyle(video)}
     >
@@ -1281,6 +1365,7 @@ function Player({
               }
             }}
             onPlay={() => setPlaying(true)}
+            onVolumeChange={(event) => setMuted(event.currentTarget.muted)}
             onPause={() => {
               setPlaying(false);
               flushProgress();
@@ -1430,6 +1515,27 @@ function Player({
               <div className="timeline">
                 <i style={{ width: `${progressPercent}%` }} />
                 <b style={{ left: `${progressPercent}%` }} />
+                <input
+                  data-focusable
+                  data-focus-id="timeline"
+                  type="range"
+                  min={0}
+                  max={progressDurationSeconds}
+                  step={0.1}
+                  value={current}
+                  onChange={(event) => seek(Number(event.currentTarget.value))}
+                  onKeyDown={(event) => {
+                    if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
+                      event.stopPropagation();
+                    }
+                  }}
+                  aria-label="Playback position"
+                  aria-valuetext={`${format(current)} of ${
+                    displayedDurationSeconds === null
+                      ? 'an unknown duration'
+                      : format(displayedDurationSeconds)
+                  }`}
+                />
               </div>
               <div className="player-times">
                 <span>{format(current)}</span>
@@ -1442,9 +1548,31 @@ function Player({
               <div className="player-controls">
                 <button
                   data-focusable
+                  data-focus-id="mute"
+                  onClick={toggleMuted}
+                  aria-label={muted ? 'Unmute' : 'Mute'}
+                  aria-pressed={muted}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M4 9h4l5-4v14l-5-4H4z" />
+                    {muted ? (
+                      <>
+                        <path d="m17 9 4 6" />
+                        <path d="m21 9-4 6" />
+                      </>
+                    ) : (
+                      <>
+                        <path d="M16 9.5a4 4 0 0 1 0 5" />
+                        <path d="M18.5 7a7.5 7.5 0 0 1 0 10" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+                <button
+                  data-focusable
                   data-focus-id="rewind"
-                  onClick={() => seek(currentRef.current - 10)}
-                  aria-label="Rewind ten seconds"
+                  onClick={() => seekBy(-SEEK_INTERVAL_SECONDS)}
+                  aria-label="Skip back 10 seconds"
                 >
                   ↶<small>10</small>
                 </button>
@@ -1461,10 +1589,24 @@ function Player({
                 <button
                   data-focusable
                   data-focus-id="forward"
-                  onClick={() => seek(currentRef.current + 10)}
-                  aria-label="Forward ten seconds"
+                  onClick={() => seekBy(SEEK_INTERVAL_SECONDS)}
+                  aria-label="Skip forward 10 seconds"
                 >
                   ↷<small>10</small>
+                </button>
+                <button
+                  data-focusable
+                  data-focus-id="fullscreen"
+                  onClick={() => void toggleFullscreen()}
+                  aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+                  aria-pressed={fullscreen}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path d="M8 3H3v5" />
+                    <path d="M16 3h5v5" />
+                    <path d="M8 21H3v-5" />
+                    <path d="M16 21h5v-5" />
+                  </svg>
                 </button>
                 <span>
                   {video.aspectRatio === '4:3' ? 'Original 4:3 · Pillarboxed' : 'Original aspect'} ·

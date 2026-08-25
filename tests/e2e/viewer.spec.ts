@@ -138,12 +138,45 @@ test('profile to home to details passes the selected row exact stream URL to pla
   expect(detailLogoBackground).toBe('none');
   await page.locator('[data-focus-id="detail-play"]').click();
   await expect(page.locator('.player-screen')).toBeVisible();
-  const player = page.locator('video, iframe.stream-iframe');
+  const player = page.locator('.player-screen > video');
   await expect(player).toHaveCount(1);
   await expect(player).toHaveAttribute('data-catalogue-id', String(movie.id));
   await expect(player).toHaveAttribute('data-stream-video-id', movie.stream_video_id);
-  await expect(player).toHaveAttribute('src', /\/iframe\?autoplay=true$/);
-  await expect(player).toHaveAttribute('allow', /autoplay/);
+  await expect(player).toHaveAttribute('data-playback-url', /\/manifest\/video\.m3u8$/);
+  const skipBack = page.getByRole('button', { name: 'Skip back 10 seconds' });
+  const playPause = page.locator('[data-focus-id="play-pause"]');
+  const skipForward = page.getByRole('button', { name: 'Skip forward 10 seconds' });
+  const mute = page.getByRole('button', { name: 'Mute' });
+  await expect(skipBack).toBeVisible();
+  await expect(skipForward).toBeVisible();
+  await expect(mute).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Enter fullscreen' })).toBeVisible();
+  await expect(page.getByRole('slider', { name: 'Playback position' })).toBeVisible();
+  const skipStyle = await skipBack.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      width: style.width,
+      height: style.height,
+      borderRadius: style.borderRadius,
+      backgroundColor: style.backgroundColor,
+    };
+  });
+  const volumeStyle = await mute.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      width: style.width,
+      height: style.height,
+      borderRadius: style.borderRadius,
+      backgroundColor: style.backgroundColor,
+    };
+  });
+  expect(skipStyle).toEqual(volumeStyle);
+  await playPause.focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(skipBack).toBeFocused();
+  await playPause.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(skipForward).toBeFocused();
   const playerBack = page.locator('[data-focus-id="player-back"]');
   await expect(playerBack).toHaveText('←');
   const playerBackStyle = await playerBack.evaluate((element) => {
@@ -151,8 +184,8 @@ test('profile to home to details passes the selected row exact stream URL to pla
     return { borderWidth: style.borderTopWidth, backgroundColor: style.backgroundColor };
   });
   expect(playerBackStyle).toEqual({
-    borderWidth: '0px',
-    backgroundColor: 'rgba(0, 0, 0, 0)',
+    borderWidth: '1px',
+    backgroundColor: 'rgba(3, 5, 11, 0.42)',
   });
   await playerBack.click();
   await expect(page.locator('.details-screen')).toBeVisible();

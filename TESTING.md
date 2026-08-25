@@ -52,12 +52,14 @@ corepack yarn test:e2e
 The catalogue validation script checks Excel/JSON row parity, all seven keys and types, unique
 integer IDs, four categories, safe resolvable poster paths, fallback existence, deterministic output,
 and removal of the old viewer placeholder fixtures. Vitest also covers JSON loading failures, poster
-fallback behavior, Cloudflare web/native playback resolution, selected-row URL preservation,
-player/progress/pairing helpers, geometry-based focus, and TV watchlist state. The remaining suites
+fallback behavior, Cloudflare iframe compatibility and controlled HLS resolution, selected-row URL
+preservation, exact ten-second seek boundaries, player/progress/pairing helpers, geometry-based
+focus, and TV watchlist state. The remaining suites
 cover provider contracts, API, D1, importer, and Electron policies.
 
 Playwright covers profile-to-home-to-details-to-player selection, the exact three-second profile
-gate under a controlled clock, exact selected-row Stream URL handoff, visible arrow focus,
+gate under a controlled clock, exact selected-row Stream URL/HLS handoff, visible app-owned
+ten-second, volume, timeline, and fullscreen controls, deterministic transport focus, visible arrow focus,
 profile-isolated viewing history, all four collections, stable catalogue order, Full Library/Home
 catalogue parity, exact poster responses, the cinema favicon/install assets, and the two-second Home
 and one-second detail preview cues, cleanup, and rejected-autoplay paths. Responsive assertions cover the React DOM viewer's one-row profiles,
@@ -70,7 +72,7 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
 ## Not included in `validate`
 
 - Playwright E2E and screenshot capture.
-- Interactive Electron fullscreen/input QA and Windows NSIS install/uninstall. The hidden production shell and portable x64 artifact smoke tests passed locally.
+- Interactive Electron fullscreen/input QA and Windows NSIS install/uninstall. Hidden production-shell and portable-artifact launch checks must be recorded separately for the current host; neither is included in `validate`.
 - A real FFmpeg/FFprobe/HandBrakeCLI import.
 - Automated coverage of the phone-specific profile/Home/Search/Collections/Saved/details/player
   flow.
@@ -85,14 +87,17 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
 Before calling a surface ready, record date, revision, device/OS, exact command, and artifact hash.
 
 1. Web: Edge and Chrome at 320x720, 390x844, 430x932, mobile landscape, 800px, 1280x720,
-   and 1920x1080; keyboard-only complete flow; touch emulation; reduced motion; 200% zoom.
-2. Electron: packaged portable artifact, fullscreen/input, denied navigation/download, offline local assets, and clean exit.
+   and 1920x1080; keyboard-only complete flow; ±10-second boundary/paused-state checks; touch
+   emulation; reduced motion; 200% zoom.
+2. Electron: packaged portable artifact, Stream HLS playback, ±10-second controls, volume,
+   scrubber, fullscreen/input, denied navigation/download, offline local assets, and clean exit.
 3. iPhone Safari: same trusted LAN, current Mobile Safari, portrait/landscape, touch, text input,
    profile/Home/Search/Collections/Saved/details/player, and reload/session behavior.
 4. Native iPhone: current supported Mac/Xcode and physical iPhone; signing/install, safe areas,
-   native video/fullscreen/audio, VoiceOver, interruption, background/foreground, and memory
-   pressure.
-5. tvOS: current supported Xcode/tvOS simulator plus physical Apple TV before distribution.
+   native video/fullscreen/audio, inline ±10-second controls and VoiceOver labels, interruption,
+   background/foreground, and memory pressure.
+5. tvOS: current supported Xcode/tvOS simulator plus physical Apple TV; verify Play/Pause remains
+   preferred focus and Left/Right reach the clamped ±10-second controls.
 6. Importer: a copied non-critical sample set, a dry-run review, interrupted/resumed conversion, checksum verify, and visual/audio spot checks. Never use the only copy of an archive as a test fixture.
 
 Safari can exercise either the responsive React DOM/Vite viewer or the separate React Native Web

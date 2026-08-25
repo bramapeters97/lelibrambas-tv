@@ -51,7 +51,7 @@ describe('runtime catalogue loading and media resolution', () => {
     expect(image.dataset.fallbackApplied).toBe('true');
   });
 
-  it('uses a secure Stream iframe on web and derives the documented HLS manifest for native', () => {
+  it('keeps Stream iframe compatibility and derives HLS for app-owned controls', () => {
     const source = resolvePlaybackSource(generatedCatalog[0]?.stream_video_id);
     expect(source.kind).toBe('iframe');
     expect(source.originalUrl).toBe(generatedCatalog[0]?.stream_video_id);
@@ -61,6 +61,13 @@ describe('runtime catalogue loading and media resolution', () => {
       autoplay: true,
     });
     expect(autoplaySource.url).toMatch(/\/iframe\?autoplay=true$/);
+    const controlledSource = resolvePlaybackSource(generatedCatalog[0]?.stream_video_id, {
+      preferDirectHls: true,
+    });
+    expect(controlledSource.kind).toBe('hls');
+    expect(controlledSource.url).toMatch(/\/manifest\/video\.m3u8$/);
+    expect(controlledSource.originalUrl).toBe(generatedCatalog[0]?.stream_video_id);
+    expect(controlledSource.tvosCompatible).toBe(true);
     const nativeSource = resolveNativePlaybackSource(generatedCatalog[0]?.stream_video_id);
     expect(nativeSource.kind).toBe('hls');
     expect(nativeSource.url).toMatch(/\/manifest\/video\.m3u8$/);

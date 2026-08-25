@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { catalogue } from '@lelibrambas/catalog';
 import {
+  mediaSeekTarget,
   mediaSecondsForPresentation,
   nextPlayableVideo,
   playbackAvailability,
@@ -18,6 +19,13 @@ describe('viewer playback state', () => {
     expect(mediaSecondsForPresentation(-20, 1200, 10)).toBe(0);
     expect(mediaSecondsForPresentation(2000, 1200, 10)).toBe(10);
     expect(presentationSecondsForMedia(20, 10, 1200)).toBe(1200);
+  });
+
+  it('skips ten live media seconds and clamps at either edge', () => {
+    expect(mediaSeekTarget(14, -10, 100)).toBe(4);
+    expect(mediaSeekTarget(4, -10, 100)).toBe(0);
+    expect(mediaSeekTarget(96, 10, 100)).toBe(100);
+    expect(mediaSeekTarget(Number.NaN, 10, null)).toBe(10);
   });
 
   it('distinguishes processing, failed and unavailable catalogue entries', () => {

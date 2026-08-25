@@ -266,27 +266,46 @@ async function verifyPackagedStreamPlayback(window: BrowserWindow): Promise<void
 
       const detailPlay = await waitFor(() => document.querySelector('[data-focus-id="detail-play"]'));
       detailPlay.click();
-      const frame = await waitFor(() => document.querySelector('iframe.stream-iframe'));
+      const video = await waitFor(() => document.querySelector('.player-screen > video'));
+      const skipBack = await waitFor(() => document.querySelector('[aria-label="Skip back 10 seconds"]'));
+      const skipForward = await waitFor(() => document.querySelector('[aria-label="Skip forward 10 seconds"]'));
+      await waitFor(() => {
+        if (video.error) throw new Error('Stream media element reported a playback error.');
+        return video.readyState >= HTMLMediaElement.HAVE_METADATA;
+      });
       return {
-        src: frame.src,
-        catalogueId: frame.dataset.catalogueId,
-        streamVideoId: frame.dataset.streamVideoId,
+        playbackUrl: video.dataset.playbackUrl,
+        catalogueId: video.dataset.catalogueId,
+        streamVideoId: video.dataset.streamVideoId,
+        readyState: video.readyState,
+        skipBack: skipBack.getAttribute('aria-label'),
+        skipForward: skipForward.getAttribute('aria-label'),
       };
     })()
-  `)) as { src: string; catalogueId: string; streamVideoId: string };
+  `)) as {
+    playbackUrl: string;
+    catalogueId: string;
+    streamVideoId: string;
+    readyState: number;
+    skipBack: string;
+    skipForward: string;
+  };
 
-  const playerUrl = new URL(state.src);
+  const playerUrl = new URL(state.playbackUrl);
 
   if (
     state.catalogueId !== '1' ||
     !state.streamVideoId.includes('.cloudflarestream.com/') ||
-    !isAllowedStreamFrame(state.src) ||
-    !playerUrl.pathname.endsWith('/iframe')
+    !isAllowedStreamFrame(state.playbackUrl) ||
+    !playerUrl.pathname.endsWith('/manifest/video.m3u8') ||
+    state.readyState < 1 ||
+    state.skipBack !== 'Skip back 10 seconds' ||
+    state.skipForward !== 'Skip forward 10 seconds'
   ) {
     throw new Error('Packaged Stream player did not receive the selected catalogue row.');
   }
   console.log(
-    `[desktop-stream-smoke] OK: catalogue ${state.catalogueId} opened its Stream iframe.`,
+    `[desktop-stream-smoke] OK: catalogue ${state.catalogueId} loaded HLS with 10-second controls.`,
   );
 }
 

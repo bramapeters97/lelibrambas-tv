@@ -51,8 +51,10 @@ bundle the generated JSON and root artwork and resolve `artwork/<filename>.png` 
 
 ## Required native QA
 
-- Siri Remote focus, select, Menu/Back, and Play/Pause.
-- Local `expo-video` playback, pause/resume, containment, audio, and errors.
+- Siri Remote focus, select, Menu/Back, and Play/Pause; Play/Pause remains preferred focus while
+  Left/Right reach the trapped ten-second transport controls.
+- Local `expo-video` playback, pause/resume, exact and boundary-clamped ±10-second seeking,
+  containment, audio, and errors.
 - Safe-area behavior at 1080p and 4K simulator/device settings.
 - Cold launch, background/foreground, memory pressure, and a physical Apple TV before distribution.
 - Any future HLS, subtitle, alternate-audio, caching, or signed-token flow.

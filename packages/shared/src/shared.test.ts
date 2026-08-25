@@ -5,6 +5,7 @@ import {
   createPairingCode,
   isExpired,
   progressKey,
+  SEEK_INTERVAL_SECONDS,
   shouldMarkComplete,
   tokenNeedsRefresh,
 } from './index';
@@ -18,8 +19,9 @@ describe('progressKey', () => {
 
 describe('player state', () => {
   it('clamps ten-second seek without leaving the timeline', () => {
-    expect(clampSeek(4, -10, 100)).toBe(0);
-    expect(clampSeek(96, 10, 100)).toBe(100);
+    expect(SEEK_INTERVAL_SECONDS).toBe(10);
+    expect(clampSeek(4, -SEEK_INTERVAL_SECONDS, 100)).toBe(0);
+    expect(clampSeek(96, SEEK_INTERVAL_SECONDS, 100)).toBe(100);
   });
 
   it('marks complete near the end and suppresses stale resume', () => {

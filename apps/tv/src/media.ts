@@ -36,7 +36,7 @@ function isCloudflareStreamHost(hostname: string): boolean {
 
 export function resolvePlaybackSource(
   value?: string,
-  options: { autoplay?: boolean } = {},
+  options: { autoplay?: boolean; preferDirectHls?: boolean } = {},
 ): PlaybackSource {
   const originalUrl = value?.trim() ?? '';
   let parsed: URL;
@@ -74,6 +74,14 @@ export function resolvePlaybackSource(
     const manifest = new URL(iframe.toString());
     manifest.pathname = `/${identifier}/manifest/video.m3u8`;
     manifest.search = '';
+    if (options.preferDirectHls) {
+      return {
+        kind: 'hls',
+        url: manifest.toString(),
+        originalUrl,
+        tvosCompatible: true,
+      };
+    }
     return {
       kind: 'iframe',
       url: iframe.toString(),
@@ -87,12 +95,5 @@ export function resolvePlaybackSource(
 }
 
 export function resolveNativePlaybackSource(value?: string): PlaybackSource {
-  const source = resolvePlaybackSource(value);
-  if (source.kind !== 'iframe') return source;
-  return {
-    kind: 'hls',
-    url: source.directHlsUrl,
-    originalUrl: source.originalUrl,
-    tvosCompatible: true,
-  };
+  return resolvePlaybackSource(value, { preferDirectHls: true });
 }

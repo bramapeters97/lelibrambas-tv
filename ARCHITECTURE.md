@@ -26,7 +26,7 @@ Solid lines describe current runtime relationships. Dashed lines are implemented
 
 `apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles and a
 three-second profile gate, responsive generated catalogue rails, search, collections, a complete
-Full Library view, details, profile-scoped progress/history, Stream/direct-media player states,
+Full Library view, details, profile-scoped progress/history, app-owned Stream HLS/direct-media player states with an interactive timeline, volume, fullscreen, and shared ten-second transport controls,
 two-second ambient Home and one-second detail previews with policy-safe fallback, deterministic capture routes, keyboard spatial
 navigation, and the renderer packaged by Electron. The same React DOM tree adapts at `<=800px`;
 mobile cards route their primary tap directly to playback while retaining a separate Details action.
@@ -35,7 +35,9 @@ mobile cards route their primary tap directly to playback while retaining a sepa
 `Platform.isTV`: tvOS builds render the smaller profile/home/player shell with
 remote-aware focus, while phones render `apps/tv/mobile/MobileApp.tsx`. The phone branch provides
 profile selection, Home, Search, Collections, Saved, catalogue details, and a bundled demo player.
-Both branches use explicit local screen state.
+The tvOS player uses the same ten-second interval around its focused Play/Pause control; the phone
+player preserves native media controls and adds accessible ten-second transport buttons. Both
+branches use explicit local screen state.
 
 The tvOS shell, phone branch, and rich viewer share catalogue/types/helper packages and visual
 intent, but not complete components or navigation state. React Native Web `0.21.2` renders the

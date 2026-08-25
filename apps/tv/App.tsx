@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useEvent } from 'expo';
 import {
   Platform,
   Pressable,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { catalogue } from '@lelibrambas/catalog';
+import { SEEK_INTERVAL_SECONDS } from '@lelibrambas/shared';
 import MobileApp from './mobile/MobileApp';
 import { resolveNativePlaybackSource } from './src/media';
 
@@ -20,6 +22,7 @@ function NativeTvApp() {
   const player = useVideoPlayer(playback.url, (instance) => {
     instance.loop = false;
   });
+  const { isPlaying } = useEvent(player, 'playingChange', { isPlaying: player.playing });
   const onTvEvent = useCallback(
     (event: { eventType?: string }) => {
       if (event.eventType === 'menu') setScreen('home');
@@ -64,18 +67,36 @@ function NativeTvApp() {
           contentFit="contain"
           nativeControls={false}
         />
-        <View style={styles.controls}>
+        <TVFocusGuideView style={styles.controls} autoFocus trapFocusLeft trapFocusRight>
           <Pressable
-            hasTVPreferredFocus
-            onPress={() => (player.playing ? player.pause() : player.play())}
+            accessibilityLabel="Skip back 10 seconds"
+            accessibilityRole="button"
+            onPress={() => player.seekBy(-SEEK_INTERVAL_SECONDS)}
             style={({ focused }) => [styles.button, focused && styles.focused]}
           >
-            <Text style={styles.buttonText}>{player.playing ? 'Pause' : 'Play'}</Text>
+            <Text style={styles.buttonText}>↶ 10</Text>
+          </Pressable>
+          <Pressable
+            hasTVPreferredFocus
+            accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
+            accessibilityRole="button"
+            onPress={() => (isPlaying ? player.pause() : player.play())}
+            style={({ focused }) => [styles.button, focused && styles.focused]}
+          >
+            <Text style={styles.buttonText}>{isPlaying ? 'Pause' : 'Play'}</Text>
+          </Pressable>
+          <Pressable
+            accessibilityLabel="Skip forward 10 seconds"
+            accessibilityRole="button"
+            onPress={() => player.seekBy(SEEK_INTERVAL_SECONDS)}
+            style={({ focused }) => [styles.button, focused && styles.focused]}
+          >
+            <Text style={styles.buttonText}>↷ 10</Text>
           </Pressable>
           <Text style={styles.meta}>
             Original aspect · {Platform.isTV ? 'TV remote ready' : Platform.OS}
           </Text>
-        </View>
+        </TVFocusGuideView>
       </View>
     );
   }

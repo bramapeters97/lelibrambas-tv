@@ -2,6 +2,8 @@ import type { PlaybackProgress } from '@lelibrambas/types';
 
 const prefix = 'lelibrambas-plus:';
 
+export const SEEK_INTERVAL_SECONDS = 10;
+
 export function getStored<T>(key: string, fallback: T): T {
   if (typeof localStorage === 'undefined') return fallback;
   try {

@@ -45,14 +45,16 @@ may use neutral `Duration unavailable` copy. The viewer must not substitute a un
 
 ## Playback URLs
 
-The JSON preserves each spreadsheet `stream_video_id` exactly. The web resolver supports direct
+The JSON preserves each spreadsheet `stream_video_id` exactly. The shared resolver supports direct
 MP4, direct HLS, and Cloudflare Stream watch/iframe URLs. Direct MP4 and HLS use the native video
-element (with `hls.js` when the browser lacks native HLS). Cloudflare watch/iframe values use the
-secure responsive Stream iframe.
+element (with `hls.js` when the browser lacks native HLS). Its default result retains the secure
+responsive Stream iframe compatibility path; full React DOM/Electron playback requests the derived
+HLS result so one app-owned timeline, volume, fullscreen, and ten-second controller is used.
 
 Cloudflare documents the corresponding HLS shape as
-`https://customer-<CODE>.cloudflarestream.com/<UID>/manifest/video.m3u8`. The native resolver uses
-only the host and UID already present in a valid Stream watch/iframe URL to derive that manifest;
+`https://customer-<CODE>.cloudflarestream.com/<UID>/manifest/video.m3u8`. Controlled web/Electron
+playback and the native resolver use only the host and UID already present in a valid Stream
+watch/iframe URL to derive that manifest;
 it does not invent an account, domain, token, or secret. See
 [Cloudflare: use your own player](https://developers.cloudflare.com/stream/viewing-videos/using-own-player/)
 and [Cloudflare: Stream player](https://developers.cloudflare.com/stream/viewing-videos/using-the-stream-player/).

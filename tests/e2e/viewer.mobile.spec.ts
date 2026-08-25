@@ -235,6 +235,8 @@ test.describe('mobile responsive viewer', () => {
       'data-catalogue-id',
       '7',
     );
+    await expect(page.getByRole('button', { name: 'Skip back 10 seconds' })).toBeInViewport();
+    await expect(page.getByRole('button', { name: 'Skip forward 10 seconds' })).toBeInViewport();
   });
 
   test('keeps mobile details readable, scrollable, and free of fabricated runtime copy', async ({

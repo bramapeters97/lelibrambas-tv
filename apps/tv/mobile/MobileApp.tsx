@@ -18,6 +18,7 @@ import {
   type CatalogueVideoRecord,
 } from '@lelibrambas/catalog';
 import { midnightArchive } from '@lelibrambas/design-system';
+import { clampSeek, SEEK_INTERVAL_SECONDS } from '@lelibrambas/shared';
 import type { Profile } from '@lelibrambas/types';
 
 const demoSource = require('../assets/archive-demo.mp4');
@@ -679,6 +680,17 @@ function PlayerScreen({ onBack }: { onBack: () => void }) {
     onBack();
   };
 
+  const skipBy = (deltaSeconds: number) => {
+    const currentSeconds = Number.isFinite(player.currentTime) ? player.currentTime : 0;
+    const durationSeconds =
+      Number.isFinite(player.duration) && player.duration > 0 ? player.duration : null;
+    const targetSeconds =
+      durationSeconds === null
+        ? Math.max(0, currentSeconds + deltaSeconds)
+        : clampSeek(currentSeconds, deltaSeconds, durationSeconds);
+    player.seekBy(targetSeconds - currentSeconds);
+  };
+
   return (
     <SafeAreaView style={styles.playerRoot}>
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
@@ -706,11 +718,31 @@ function PlayerScreen({ onBack }: { onBack: () => void }) {
         playsInline
         style={styles.video}
       />
+      <View style={styles.playerSeekControls}>
+        <Pressable
+          accessibilityLabel="Skip back 10 seconds"
+          accessibilityRole="button"
+          onPress={() => skipBy(-SEEK_INTERVAL_SECONDS)}
+          style={({ pressed }) => [styles.playerSeekButton, pressedStyle(pressed)]}
+        >
+          <Text style={styles.playerSeekIcon}>↶</Text>
+          <Text style={styles.playerSeekInterval}>10</Text>
+        </Pressable>
+        <Pressable
+          accessibilityLabel="Skip forward 10 seconds"
+          accessibilityRole="button"
+          onPress={() => skipBy(SEEK_INTERVAL_SECONDS)}
+          style={({ pressed }) => [styles.playerSeekButton, pressedStyle(pressed)]}
+        >
+          <Text style={styles.playerSeekIcon}>↷</Text>
+          <Text style={styles.playerSeekInterval}>10</Text>
+        </Pressable>
+      </View>
       <View style={styles.playerFooter}>
         <Text style={styles.playerFooterTitle}>Original shape, always.</Text>
         <Text style={styles.playerFooterText}>
-          Use the native controls to play, scrub, or enter fullscreen. The video is contained rather
-          than stretched or cropped.
+          Use the native controls to play, scrub, adjust volume, or enter fullscreen. The matching
+          buttons skip exactly 10 seconds without changing play or pause state.
         </Text>
       </View>
     </SafeAreaView>
@@ -1499,6 +1531,30 @@ const styles = StyleSheet.create({
   },
   playerTitle: { marginTop: 3, color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   video: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000000' },
+  playerSeekControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 24,
+    paddingTop: 14,
+  },
+  playerSeekButton: {
+    width: 52,
+    height: 52,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#30394A',
+    borderRadius: 26,
+    backgroundColor: '#151923',
+  },
+  playerSeekIcon: { color: '#FFFFFF', fontSize: 27, lineHeight: 30 },
+  playerSeekInterval: {
+    position: 'absolute',
+    color: '#FFFFFF',
+    fontSize: 9,
+    fontWeight: '900',
+  },
   playerFooter: { padding: 21 },
   playerFooterTitle: { color: '#FFFFFF', fontSize: 18, fontWeight: '800' },
   playerFooterText: { marginTop: 7, color: '#9BA5B8', fontSize: 13, lineHeight: 20 },
