@@ -96,10 +96,13 @@ test.describe('mobile responsive viewer', () => {
           return cardBounds.left < railBounds.right && cardBounds.right > railBounds.left;
         }).length;
       });
-    expect(visibleCardCount).toBeGreaterThanOrEqual(2);
+    expect(visibleCardCount).toBeGreaterThanOrEqual(3);
+    expect((await page.locator('.card-rail .art-card-shell').first().boundingBox())!.width).toBeLessThanOrEqual(
+      135,
+    );
   });
 
-  test('renders stable scrollable collection selectors and an exact three-column movie grid', async ({
+  test('renders stable scrollable collection selectors and an exact two-column movie grid', async ({
     page,
   }) => {
     await page.getByRole('button', { name: /Bart & Astrid/i }).click();
@@ -143,7 +146,7 @@ test.describe('mobile responsive viewer', () => {
     const grid = page.locator('[data-collection-video-grid]');
     const gridLayout = await grid.evaluate((element) => {
       const style = getComputedStyle(element);
-      const first = [...element.children].slice(0, 3).map((child) => child.getBoundingClientRect());
+      const first = [...element.children].slice(0, 2).map((child) => child.getBoundingClientRect());
       return {
         columns: style.gridTemplateColumns.split(' ').filter(Boolean).length,
         firstRowSpread:
@@ -151,9 +154,9 @@ test.describe('mobile responsive viewer', () => {
         xPositions: first.map(({ x }) => x),
       };
     });
-    expect(gridLayout.columns).toBe(3);
+    expect(gridLayout.columns).toBe(2);
     expect(gridLayout.firstRowSpread).toBeLessThan(2);
-    expect(new Set(gridLayout.xPositions).size).toBe(3);
+    expect(new Set(gridLayout.xPositions).size).toBe(2);
 
     const selectedAnimation = await page
       .locator('[data-focus-id="collection-vakantiefilms"]')
@@ -351,11 +354,12 @@ test('hero idle media is disabled in capture mode and restores the poster after 
       Promise.reject(new DOMException('Blocked', 'NotAllowedError'));
   });
   await page.goto('/?screen=home');
+  await expect(page.locator('[data-hero-state="poster"]')).toBeVisible();
   await page.clock.fastForward(1500);
   await page.dispatchEvent('body', 'pointerdown');
-  await page.clock.fastForward(501);
+  await page.clock.fastForward(1999);
   await expect(page.locator('[data-hero-media="trailer"]')).toHaveCount(0);
-  await page.clock.fastForward(1499);
+  await page.clock.fastForward(2);
   const trailer = page.locator('[data-hero-media="trailer"]');
   await expect(trailer).toHaveCount(1);
   await expect(trailer).toHaveAttribute('data-preview-start-seconds', '40');

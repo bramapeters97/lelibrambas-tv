@@ -12,7 +12,6 @@ const suites = [
   { path: 'packages/navigation' },
   { path: 'packages/shared' },
   { path: 'apps/tv' },
-  { path: 'apps/admin', config: 'vitest.config.ts' },
   { path: 'tools/video-importer' },
   { path: 'services/api' },
   { path: 'infra/d1' },

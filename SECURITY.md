@@ -4,11 +4,10 @@ LELIBRAMBAS+ is private-by-design, but this repository is a prototype, not a com
 
 ## Trust boundaries
 
-### Browser viewers and Library Manager
+### Browser viewers
 
-The rich viewer and admin app are local Vite applications. Profile, progress, watchlist, settings, catalogue edits, and simulated job state use browser `localStorage`; this is convenience persistence, not encrypted storage or access control. The Library Manager's upload/import buttons do not currently call the importer or Worker.
-
-Do not expose the admin Vite server to a LAN/public origin. Its default `127.0.0.1` binding is intentional. Before any hosted admin use, add real identity, authorization, CSRF/origin policy, audit logging, and server-side storage.
+The rich viewer is a Vite application. Profile, progress, and watch state use browser
+`localStorage`; this is convenience persistence, not encrypted storage or access control.
 
 ### Electron
 

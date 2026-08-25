@@ -33,12 +33,11 @@ The React DOM navigation rail is tokenized separately from the TV safe margin: `
 screens and `56px` at the `800px` responsive boundary. Any pop-out/focus translation must derive
 from the same CSS variables so reducing the rail never leaves stale content offsets.
 
-The web/admin CSS and native StyleSheet currently duplicate or closely mirror these constants rather than importing the package. Treat consolidation as future work; changing only the TypeScript token file does not automatically restyle every surface.
+The web CSS and native StyleSheet currently duplicate or closely mirror these constants rather than importing the package. Treat consolidation as future work; changing only the TypeScript token file does not automatically restyle every surface.
 
 ## Typography and layout
 
 - Viewer: `Segoe UI Variable Display`, `Segoe UI`, then system sans-serif.
-- Admin: Inter/Manrope if locally available, then `Segoe UI`/system; no webfont request is made.
 - Headlines use tight tracking and large scale; labels use uppercase, wider tracking, and short phrases.
 - TV composition assumes 16:9, keeps key controls inside safe margins, and uses horizontal rails sized for remote scanning.
 - Player media uses containment so legacy 4:3 stays pillarboxed rather than stretched.
@@ -77,10 +76,9 @@ authorization boundary.
 - **Navigation rail:** compact icons; reveal a label on focus without unexpectedly stealing focus from content.
 - **Cards and hubs:** stable dimensions, unclipped focused scale, deterministic IDs, and an explicit missing-artwork fallback.
 - **Responsive discovery:** compact horizontal rails; a one-row collection selector; exact
-  three-column collection results and two-column search at `<=800px`; mobile card taps play while a
+  two-column collection results and search at `<=800px`; mobile card taps play while a
   separate sibling information action preserves Details.
 - **Player:** minimal near-black controls, original-aspect language, deliberate 4:3 pillarboxing, and retryable error/up-next states.
-- **Library Manager:** denser workstation spacing, visible keyboard focus, text-labelled statuses, and a persistent local/demo distinction.
 
 Success, warning, and error colours must always be paired with readable text or iconography. Do not imply that conversion/upload completed merely through optimistic colour or copy.
 
@@ -89,5 +87,5 @@ Success, warning, and error colours must always be paired with readable text or 
 - Preserve semantic buttons, headings, labels, and visible `:focus-visible` rings.
 - Maintain readable contrast for muted copy and status chips; status also needs text, not colour alone.
 - Respect reduced motion and avoid flashing effects.
-- Test 200% browser zoom for the admin surface and living-room distance for TV surfaces.
+- Test 200% browser zoom and living-room distance for viewer surfaces.
 - Caption/subtitle selection is not implemented end to end; do not claim accessibility parity until native/web playback controls and converted subtitle handling are added and tested.

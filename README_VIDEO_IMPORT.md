@@ -2,7 +2,7 @@
 
 The CLI in `tools/video-importer` scans ordinary media and unencrypted `VIDEO_TS` folders, writes reviewable manifests/job state, and creates separate H.264/AAC viewing copies. It never deletes or intentionally overwrites source media.
 
-The Library Manager's import screens are a UI prototype only; they do not launch this CLI. Run commands from PowerShell at the project root.
+The importer CLI is the repository's only local import interface. Run commands from PowerShell at the project root.
 
 ## Prerequisites
 

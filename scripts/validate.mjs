@@ -4,7 +4,7 @@ import { platform } from 'node:process';
 
 const corepack = platform === 'win32' ? 'corepack.cmd' : 'corepack';
 const yarnCli = process.env.npm_execpath;
-const checks = ['typecheck', 'lint', 'format:check', 'test', 'build:web', 'build:admin'];
+const checks = ['typecheck', 'lint', 'format:check', 'test', 'build:web'];
 for (const check of checks) {
   console.log(`\n[validate] ${check}`);
   const command = yarnCli && existsSync(yarnCli) ? process.execPath : corepack;

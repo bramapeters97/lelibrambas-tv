@@ -11,8 +11,8 @@
   color: #f7f9fe;
   font-synthesis: none;
   --void: #03050b;
-  --midnight: #070d1b;
-  --deep-navy: #0b1427;
+  --midnight: #04070d;
+  --deep-navy: #070b14;
   --surface: #111c33;
   --surface-raised: #172541;
   --text: #f7f9fe;
@@ -24,8 +24,8 @@
   --rose: #c56d72;
   --walnut: #6e4a3e;
   --page-gradient:
-    radial-gradient(circle at 82% 0%, rgba(49, 78, 134, 0.16), transparent 34%),
-    linear-gradient(155deg, var(--deep-navy) 0%, var(--midnight) 42%, var(--void) 82%);
+    radial-gradient(circle at 82% 0%, rgba(32, 48, 78, 0.09), transparent 32%),
+    linear-gradient(155deg, var(--deep-navy) 0%, var(--midnight) 38%, var(--void) 78%);
   --nav-rail-width: 70px;
   --nav-popout-shift: 52px;
   --nav-content-safe: 4.6vw;
@@ -2978,7 +2978,7 @@ button:focus-visible,
     padding: 6px 14px 26px 4px;
   }
   .art-card-shell {
-    flex-basis: clamp(140px, 43vw, 180px);
+    flex-basis: clamp(105px, 32.25vw, 135px);
   }
   .browse-card > span:last-child,
   .browse-card__copy {
@@ -3058,8 +3058,11 @@ button:focus-visible,
     font-size: 0.55rem;
   }
   .collection-video-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+  }
+  .collection-results > .result-title > span {
+    display: none;
   }
   .collection-video-grid .browse-card > span:last-child,
   .collection-video-grid .browse-card__copy {
@@ -3128,7 +3131,7 @@ button:focus-visible,
   .poster-grid,
   .library-grid,
   .all-movies-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
   .all-movies-grid {

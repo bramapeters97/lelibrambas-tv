@@ -1,6 +1,6 @@
 # Cloud hosting boundary
 
-Nothing in this repository is provisioned or deployed. The Cloudflare code is a production-shaped adapter with placeholder identifiers, unit tests, a D1 migration, and a Wrangler dry-run build. It is not connected to the checked-in viewer or Library Manager.
+Nothing in this repository is provisioned or deployed. The Cloudflare code is a production-shaped adapter with placeholder identifiers, unit tests, a D1 migration, and a Wrangler dry-run build. It is not connected to the checked-in viewer.
 
 The rich viewer can use one existing public Cloudflare Stream video as temporary synthetic
 playback. Set `VITE_STREAM_PLACEHOLDER_ASSET_ID` and
@@ -20,8 +20,6 @@ own configuration; merely uploading the built files does not make a host consume
 
 Build the static viewer from the repository root with `corepack yarn build:web`. The deployable
 output is `apps/tv/dist`; the two public Stream variables must be present when that build runs.
-The Library Manager is intentionally local-only and must not be published without authentication
-and origin controls.
 
 ## Cloudflare Workers Builds Git contract
 
@@ -41,7 +39,7 @@ security gates are deliberately provisioned.
 
 | Service           | Intended private responsibility                                                                                          | Current repository state                                             |
 | ----------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
-| Worker            | Catalogue/progress/watchlist, device pairing/revocation, signed playback, admin media/artwork operations, Stream webhook | Routes and tests exist; no deploy script or deployed URL.            |
+| Worker            | Catalogue/progress/watchlist, device pairing/revocation, signed playback, authenticated media/artwork operations, Stream webhook | Routes and tests exist; no deploy script or deployed URL.            |
 | D1 (`DB`)         | Videos, profiles, progress, watchlists, devices/pairings, media state, webhook receipts                                  | Initial migration/tests exist; config ID is all-zero placeholder.    |
 | R2 (`ARTWORK`)    | Approved custom artwork only                                                                                             | Binding/bucket name template exists; no bucket provisioned.          |
 | Stream (`STREAM`) | Private video ingest/transcode/delivery                                                                                  | Native binding adapter exists; no assets/customer domain configured. |

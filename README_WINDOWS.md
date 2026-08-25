@@ -1,6 +1,6 @@
 # Clean Windows setup
 
-This is the supported setup for the web viewer, Library Manager, Electron shell, and importer.
+This is the supported setup for the web viewer, Electron shell, and importer.
 Native iPhone and tvOS compilation require a Mac.
 
 ## 1. Install the base tools
@@ -33,7 +33,6 @@ corepack yarn setup
 corepack yarn typecheck
 corepack yarn test
 corepack yarn build:web
-corepack yarn build:admin
 ```
 
 The repository may live in OneDrive, but syncing `node_modules` can be slow. Real archive sources must be locally hydrated before import; select **Always keep on this device** in File Explorer.
@@ -41,13 +40,10 @@ The repository may live in OneDrive, but syncing `node_modules` can be slow. Rea
 ## 3. Run the applications
 
 ```powershell
-corepack yarn dev             # TV preview and Library Manager
+corepack yarn dev             # TV preview
 corepack yarn dev:tv-web      # http://127.0.0.1:5173
-corepack yarn dev:admin       # http://127.0.0.1:4174
 corepack yarn desktop:dev
 ```
-
-The servers intentionally bind to loopback. The Library Manager is a local prototype, not a remotely authenticated admin site.
 
 ## 4. FFmpeg and HandBrakeCLI
 
@@ -100,7 +96,7 @@ The Electron process consumes only unmodified `F`; the remaining keys pass to th
 ## 7. Common failures
 
 - **Wrong Yarn or duplicate `PATH`/`Path`:** prefer root `corepack yarn ...` commands; root scripts invoke CLI files through the selected Node process.
-- **Port in use:** stop the process using `5173`, `4173`, or `4174`; Vite uses strict ports.
+- **Port in use:** stop the process using `5173` or `4173`; Vite uses strict ports.
 - **Playwright browser missing:** run `corepack yarn playwright install chromium` before `corepack yarn test:e2e`.
 - **OneDrive file cannot be probed:** hydrate it and run `prepare` again; do not reuse a manifest that marks it unavailable.
 
@@ -110,6 +106,6 @@ The Electron process consumes only unmodified `F`; the remaining keys pass to th
 corepack yarn validate
 ```
 
-This runs type checking, lint, formatting validation, automated tests, and both web production builds. Electron packaging, native iPhone/tvOS builds, and Cloudflare remain separate evidence tracks; see [TESTING.md](TESTING.md).
+This runs type checking, lint, formatting validation, automated tests, and the web production build. Electron packaging, native iPhone/tvOS builds, and Cloudflare remain separate evidence tracks; see [TESTING.md](TESTING.md).
 
 Official reference: [Expo SDK compatibility](https://docs.expo.dev/versions/latest/).

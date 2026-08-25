@@ -11,7 +11,6 @@ const projects = [
   'packages/navigation',
   'packages/shared',
   'apps/tv',
-  'apps/admin',
   'apps/desktop',
   'tools/video-importer',
   'services/api',

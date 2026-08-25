@@ -66,8 +66,7 @@ export function playbackAvailability(video: CatalogueVideoRecord): PlaybackAvail
       playable: false,
       eyebrow: 'VIEWING COPY NEEDS REVIEW',
       title: 'This memory needs a little attention.',
-      description:
-        'The last conversion did not complete. It can be retried from the Library Manager.',
+      description: 'The last conversion did not complete. Review the source in Cloudflare.',
     };
   }
   if (video.processingStatus === 'unavailable') {
@@ -86,7 +85,7 @@ export function playbackAvailability(video: CatalogueVideoRecord): PlaybackAvail
       title: 'We could not find the viewing copy.',
       description: import.meta.env.DEV
         ? `Unrecognized playback URL for ${video.title} (catalogue ID ${video.catalogueId}).`
-        : 'The archive record is intact. Check the local media source in the Library Manager.',
+        : 'The archive record is intact. Check its media source in Cloudflare.',
     };
   }
   return {

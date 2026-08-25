@@ -14,7 +14,6 @@ Without a new explicit owner instruction, never push, merge, open a pull request
 
 - `apps/tv/src/` is the complete React DOM/Vite/Electron viewer.
 - `apps/tv/App.tsx` is a smaller native Expo/React Native entry for tvOS and iPhone.
-- `apps/admin` persists a local demo snapshot and simulates importer/cloud jobs; it does not execute the CLI or Worker.
 - `tools/video-importer` is the real local import path and must remain source-preserving.
 - `services/api`/`infra` are unprovisioned adapters. A Wrangler dry-run is allowed; a deployment is not implicit.
 - Generated `apps/tv/ios/` content is disposable CNG output and ignored.
@@ -33,7 +32,6 @@ corepack yarn lint
 corepack yarn format:check
 corepack yarn test
 corepack yarn build:web
-corepack yarn build:admin
 corepack yarn validate
 ```
 
@@ -45,12 +43,11 @@ Run Playwright, Electron smoke, native builds, or importer integration checks wh
 2. Preserve exact pins and one `yarn.lock`; use Expo's SDK matrix and tvOS guidance before any native dependency change.
 3. Do not claim web feature parity on iPhone/tvOS without native evidence.
 4. Keep server-only code/secrets out of Vite/Electron renderer bundles; never use `VITE_` for privileged values.
-5. Do not make the admin server listen publicly without adding/reviewing authentication and origin controls.
-6. Importer output must stay outside source. Keep dry-run side-effect free, use `.partial` promotion, atomic state, bounded concurrency, and no source deletion.
-7. Do not weaken Electron sandbox/context isolation/navigation/permission controls to solve a content issue.
-8. Do not edit generated `apps/tv/ios/` content as the source of truth; change `app.config.ts`/plugins and regenerate for iPhone or tvOS.
-9. Update architecture/security/testing/platform docs when behavior, commands, bindings, artifacts, or support claims change.
-10. Keep unrelated user changes intact and avoid destructive Git commands.
+5. Importer output must stay outside source. Keep dry-run side-effect free, use `.partial` promotion, atomic state, bounded concurrency, and no source deletion.
+6. Do not weaken Electron sandbox/context isolation/navigation/permission controls to solve a content issue.
+7. Do not edit generated `apps/tv/ios/` content as the source of truth; change `app.config.ts`/plugins and regenerate for iPhone or tvOS.
+8. Update architecture/security/testing/platform docs when behavior, commands, bindings, artifacts, or support claims change.
+9. Keep unrelated user changes intact and avoid destructive Git commands.
 
 ## Before handoff
 

@@ -61,13 +61,9 @@ function stop(process) {
 }
 
 const tv = startVite('apps/tv', 4173);
-const admin = startVite('apps/admin', 4174);
 
 try {
-  await Promise.all([
-    waitFor('http://127.0.0.1:4173', tv),
-    waitFor('http://127.0.0.1:4174', admin),
-  ]);
+  await waitFor('http://127.0.0.1:4173', tv);
 
   const browser = await chromium.launch({
     headless: true,
@@ -115,13 +111,6 @@ try {
       '.timeline-list',
       'decade-2010',
     ],
-    ['08-library-manager.webp', 'http://127.0.0.1:4174/#/dashboard', '.dashboard-view', null],
-    [
-      '09-video-ts-import.webp',
-      'http://127.0.0.1:4174/#/video-ts',
-      '[data-testid="video-ts-view"]',
-      null,
-    ],
   ];
 
   for (const [filename, url, readySelector, focusId] of captures) {
@@ -143,7 +132,7 @@ try {
   await page.goto('http://127.0.0.1:4173/?screen=home&capture=1', { waitUntil: 'networkidle' });
   await page.locator('[data-focus-id="hero-play"]').focus();
   await page.screenshot({
-    path: join(outputRoot, '10-home-1280x720.webp'),
+    path: join(outputRoot, '08-home-1280x720.webp'),
     type: 'webp',
     quality: 86,
     animations: 'disabled',
@@ -152,5 +141,4 @@ try {
   await browser.close();
 } finally {
   stop(tv);
-  stop(admin);
 }

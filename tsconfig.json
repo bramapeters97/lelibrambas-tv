@@ -8,7 +8,6 @@
     { "path": "./packages/navigation" },
     { "path": "./packages/shared" },
     { "path": "./apps/tv" },
-    { "path": "./apps/admin" },
     { "path": "./tools/video-importer" },
     { "path": "./services/api" },
     { "path": "./infra/d1" }

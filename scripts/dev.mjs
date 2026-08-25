@@ -9,7 +9,6 @@ const spawnVite = (args) =>
 
 const children = [
   spawnVite(['apps/tv', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '5173']),
-  spawnVite(['apps/admin', '--configLoader', 'runner', '--host', '127.0.0.1', '--port', '4174']),
 ];
 
 let stopping = false;

@@ -51,30 +51,74 @@ test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ pag
     'content',
     launchDescription,
   );
-  await expect(page.locator('link[rel="icon"][type="image/svg+xml"]')).toHaveAttribute(
-    'href',
-    /(?:^|\/)cinema-app-icon\.svg$/,
+  await expect(page.locator('link[rel="icon"][href$="/cinema-app-icon.png"]')).toHaveAttribute(
+    'sizes',
+    '1024x1024',
   );
   await expect(page.locator('link[rel="shortcut icon"]')).toHaveAttribute(
     'href',
-    /(?:^|\/)favicon-32\.png$/,
+    /(?:^|\/)favicon\.png$/,
   );
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
     'href',
     /(?:^|\/)apple-touch-icon\.png$/,
   );
   await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('sizes', '180x180');
+  await expect(page.locator('link[rel="mask-icon"]')).toHaveAttribute(
+    'href',
+    /(?:^|\/)safari-pinned-tab\.png$/,
+  );
   await expect(page.locator('link[rel="manifest"]')).toHaveAttribute(
     'href',
     /(?:^|\/)site\.webmanifest$/,
   );
   expect((await request.get('/lelibrambas-share.png')).ok()).toBe(true);
   expect((await request.get('/favicon.png')).ok()).toBe(true);
-  expect((await request.get('/favicon-32.png')).ok()).toBe(true);
+  expect((await request.get('/cinema-app-icon.png')).ok()).toBe(true);
+  expect((await request.get('/safari-pinned-tab.png')).ok()).toBe(true);
   expect((await request.get('/apple-touch-icon.png')).ok()).toBe(true);
   expect((await request.get('/cinema-icon-192.png')).ok()).toBe(true);
   expect((await request.get('/cinema-icon-512.png')).ok()).toBe(true);
-  expect((await request.get('/site.webmanifest')).ok()).toBe(true);
+  const manifestResponse = await request.get('/site.webmanifest');
+  expect(manifestResponse.ok()).toBe(true);
+  const manifest = (await manifestResponse.json()) as {
+    name: string;
+    background_color: string;
+    icons: { src: string; sizes: string; type: string }[];
+  };
+  expect(manifest.name).toBe('LELIBRAMBAS+');
+  expect(manifest.background_color).toBe('#03050b');
+  expect(manifest.icons).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ src: '/favicon.png', sizes: '1024x1024', type: 'image/png' }),
+      expect.objectContaining({ src: '/cinema-icon-192.png', sizes: '192x192' }),
+      expect.objectContaining({ src: '/cinema-icon-512.png', sizes: '512x512' }),
+    ]),
+  );
+
+  const iconGeometry = await page.evaluate(async () => {
+    const image = new Image();
+    image.src = '/favicon.png';
+    await image.decode();
+    const canvas = document.createElement('canvas');
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext('2d', { willReadFrequently: true })!;
+    context.drawImage(image, 0, 0);
+    const alphaAt = (x: number, y: number) => context.getImageData(x, y, 1, 1).data[3];
+    return {
+      width: image.naturalWidth,
+      height: image.naturalHeight,
+      corners: [alphaAt(0, 0), alphaAt(1023, 0), alphaAt(0, 1023), alphaAt(1023, 1023)],
+      edgeCenters: [alphaAt(512, 0), alphaAt(0, 512), alphaAt(1023, 512), alphaAt(512, 1023)],
+    };
+  });
+  expect(iconGeometry).toEqual({
+    width: 1024,
+    height: 1024,
+    corners: [0, 0, 0, 0],
+    edgeCenters: [255, 255, 255, 255],
+  });
 });
 
 test('profile to home to details passes the selected row exact stream URL to playback', async ({
@@ -116,9 +160,16 @@ test('profile to home to details passes the selected row exact stream URL to pla
 
 test('arrow navigation exposes a visible deterministic focus state', async ({ page }) => {
   await page.getByRole('button', { name: /Bram & Edvin/i }).click();
+  await expect(page.locator('[data-focus-id="hero-play"]')).toBeVisible();
+  await page.locator('[data-focus-id="nav-home"]').focus();
   await page.keyboard.press('ArrowRight');
+  await expect
+    .poll(() =>
+      page.evaluate(() => (document.activeElement as HTMLElement | null)?.dataset.focusId),
+    )
+    .not.toBe('nav-home');
   const focusId = await page.evaluate(
-    () => (document.activeElement as HTMLElement | null)?.dataset.focusId,
+    () => (document.activeElement as HTMLElement | null)?.dataset.focusId ?? null,
   );
   expect(focusId).toBeTruthy();
   await expect(page.locator(':focus')).toBeVisible();
@@ -291,8 +342,9 @@ test('full library and home All movies contain every catalogue id exactly once i
 }) => {
   await page.getByRole('button', { name: /Bart & Astrid/i }).click();
   const expectedIds = generatedCatalog.map((movie) => movie.id);
-  const homeIds = await page
-    .locator('[data-all-movies-grid] [data-catalogue-id]')
+  const homeCards = page.locator('[data-all-movies-grid] [data-catalogue-id]');
+  await expect(homeCards).toHaveCount(expectedIds.length);
+  const homeIds = await homeCards
     .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
   expect(homeIds).toEqual(expectedIds);
 

@@ -13,8 +13,7 @@ Run from the project root in PowerShell:
 | `corepack yarn format:check`                                  | Prettier check.                                                       |
 | `corepack yarn test`                                          | Vitest plus compiled Electron policy/path/input smoke tests.          |
 | `corepack yarn build:web`                                     | TV React DOM typecheck and Vite production bundle.                    |
-| `corepack yarn build:admin`                                   | Admin typecheck and Vite production bundle.                           |
-| `corepack yarn validate`                                      | The six checks above, sequentially.                                   |
+| `corepack yarn validate`                                      | Typecheck, lint, formatting, tests, and web build, sequentially.      |
 | `corepack yarn catalog:test`                                  | Excel/JSON row, schema, poster, category, and determinism checks.     |
 | `corepack yarn test:e2e`                                      | Playwright against a Vite preview on `127.0.0.1:4173`.                |
 | `corepack yarn test:stream`                                   | Opt-in real Stream HLS/CORS smoke using ignored public viewer config. |
@@ -55,14 +54,14 @@ integer IDs, four categories, safe resolvable poster paths, fallback existence, 
 and removal of the old viewer placeholder fixtures. Vitest also covers JSON loading failures, poster
 fallback behavior, Cloudflare web/native playback resolution, selected-row URL preservation,
 player/progress/pairing helpers, geometry-based focus, and TV watchlist state. The remaining suites
-cover the Library Manager, provider contracts, API, D1, importer, and Electron policies.
+cover provider contracts, API, D1, importer, and Electron policies.
 
 Playwright covers profile-to-home-to-details-to-player selection, the exact three-second profile
 gate under a controlled clock, exact selected-row Stream URL handoff, visible arrow focus,
 profile-isolated viewing history, all four collections, stable catalogue order, Full Library/Home
 catalogue parity, exact poster responses, the cinema favicon/install assets, and the two-second
 Home/detail preview cue, cleanup, and rejected-autoplay paths. Responsive assertions cover the React DOM viewer's one-row profiles,
-mobile shimmer, horizontal collection selector, three-column collection results, two-column search,
+mobile shimmer, horizontal collection selector, two-column collection results, two-column search,
 first-tap playback, reduced motion, and document-level overflow. Tests reset local storage and use
 deterministic capture routes unless timer behavior itself is under test.
 
@@ -86,7 +85,7 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
 Before calling a surface ready, record date, revision, device/OS, exact command, and artifact hash.
 
 1. Web: Edge and Chrome at 320x720, 390x844, 430x932, mobile landscape, 800px, 1280x720,
-   and 1920x1080; keyboard-only complete flow; touch emulation; reduced motion; 200% admin zoom.
+   and 1920x1080; keyboard-only complete flow; touch emulation; reduced motion; 200% zoom.
 2. Electron: packaged portable artifact, fullscreen/input, denied navigation/download, offline local assets, and clean exit.
 3. iPhone Safari: same trusted LAN, current Mobile Safari, portrait/landscape, touch, text input,
    profile/Home/Search/Collections/Saved/details/player, and reload/session behavior.
@@ -107,6 +106,6 @@ nor native phone pass establishes parity with the tvOS shell. See
 corepack yarn screenshots
 ```
 
-This captures synthetic web/admin states, not native tvOS UI. See [`docs/screenshots/README.md`](docs/screenshots/README.md). Playwright traces/reports, generated iOS content, Electron releases, and importer state are ignored by Git.
+This captures synthetic web viewer states, not native tvOS UI. See [`docs/screenshots/README.md`](docs/screenshots/README.md). Playwright traces/reports, generated iOS content, Electron releases, and importer state are ignored by Git.
 
 Open every final WebP at full size and reject captures with browser chrome, loading states, clipped focus, scrollbars, personal paths, real media, weak contrast, or stretched 4:3 content. File presence alone is not visual approval.

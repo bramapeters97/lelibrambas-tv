@@ -100,7 +100,7 @@ export class LocalMediaProvider implements MediaProvider {
   public async deleteAsset(assetId: string): Promise<void> {
     this.#requireRecord(assetId);
     throw new MediaProviderError(
-      'Viewer code cannot delete local media. Use the Library Manager to update catalogue visibility.',
+      'Viewer code cannot delete local media. Update catalogue visibility at the source.',
       'UPLOAD_NOT_SUPPORTED',
       false,
     );

@@ -10,11 +10,10 @@ flowchart LR
   Workbook["Root Excel catalogue"] --> Json["Generated data/media_catalog.json"]
   Json --> Web["React DOM TV viewer"]
   Json --> Native["Expo native tvOS / iPhone entry"]
-  Seed["Synthetic admin snapshot"] --> Admin["Local Library Manager prototype"]
   Copies -. "future local service" .-> Provider["Provider-neutral media contract"]
   Provider -. "future integration" .-> Web
   Web --> Electron["Hardened Electron shell"]
-  Admin -. "not currently wired" .-> Worker["Cloudflare Worker adapter"]
+  Web -. "future integration" .-> Worker["Cloudflare Worker adapter"]
   Native -. "not currently wired" .-> Worker
   Worker --> D1["D1 metadata"]
   Worker --> R2["R2 artwork"]
@@ -63,7 +62,6 @@ are retained only for tvOS, and native application targets are limited to iPhone
 | `packages/navigation`    | Geometry-based web focus selection                         | DOM only                                   |
 | `packages/design-system` | Semantic colour, motion, and TV-safe-area constants        | Renderers currently mirror values manually |
 | `packages/media`         | Mock, local, and Cloudflare Stream provider contracts      | Adapters only                              |
-| `apps/admin`             | Catalogue/import/device/settings management UI prototype   | Browser `localStorage`; no CLI/cloud calls |
 | `tools/video-importer`   | Real filesystem scan, manifest, conversion, resume, verify | Local files only                           |
 | `services/api`           | Authenticated Worker routes and Cloudflare bindings        | Tested/dry-run only; not deployed          |
 
@@ -72,7 +70,6 @@ are retained only for tvOS, and native application targets are limited to iPhone
 - Source media is immutable input. The importer requires a distinct output root and writes `.partial` derivatives before atomic promotion.
 - Manifests contain private absolute paths and stay local/ignored. They are not catalogue payloads for a browser.
 - Viewer bundles receive provider-neutral URLs, never Cloudflare account credentials or signing material.
-- The demo Library Manager's local state is useful for interaction design, not multi-user authorization or durable production storage.
 - Production-shaped device tokens are hashed in D1; Stream playback uses short-lived signed HLS generated server-side.
 - Electron has no preload or IPC bridge and denies navigation, windows, downloads, webviews, and permissions.
 
@@ -91,8 +88,8 @@ Electron installers land in `apps/desktop/release/`. Playwright artifacts and im
 ignored. Screenshot capture is the deliberate exception: it writes synthetic review images to the
 repository-root `assets/lelibrambas-plus/screenshots/`.
 
-The Vite public surface also contains a project-owned cinema favicon, Safari pinned-tab mark,
-silver-gradient Apple touch icon, and web app manifest. These are static presentation assets only;
+The Vite public surface also contains a project-owned PNG cinema favicon family, Safari saved-app
+icon, and web app manifest. These are static presentation assets only;
 they do not alter native Expo icon generation or provision an install target.
 
 See [iPhone development](README_IPHONE.md), [ADR 0001](docs/decisions/0001-tv-stack.md),
