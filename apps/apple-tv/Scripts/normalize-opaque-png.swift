@@ -1,6 +1,7 @@
 #!/usr/bin/env swift
 
 import CoreGraphics
+import Darwin
 import Foundation
 import ImageIO
 import UniformTypeIdentifiers
@@ -64,6 +65,8 @@ func normalizeOpaquePNG(sourceURL: URL, destinationURL: URL) throws {
     context.setFillColor(CGColor(gray: 0, alpha: 1))
     context.fill(bounds)
     context.interpolationQuality = .none
+    context.translateBy(x: 0, y: CGFloat(image.height))
+    context.scaleBy(x: 1, y: -1)
     context.draw(image, in: bounds)
 
     guard let normalizedImage = context.makeImage() else {

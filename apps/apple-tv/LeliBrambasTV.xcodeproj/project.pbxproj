@@ -56,6 +56,7 @@
 		06ECAFF420162BEBE005E63B /* AppStoreIconForeground.svg */ = {isa = PBXFileReference; path = AppStoreIconForeground.svg; sourceTree = "<group>"; };
 		0D4C95E5797D4FFF09575990 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
 		12B916D9B6980AD721314AEC /* TopShelf.svg */ = {isa = PBXFileReference; path = TopShelf.svg; sourceTree = "<group>"; };
+		13E291EC79283AB3C0A97E0F /* normalize-opaque-png.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "normalize-opaque-png.swift"; sourceTree = "<group>"; };
 		14000B1E807731FDDD0A15CF /* ARCHITECTURE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ARCHITECTURE.md; sourceTree = "<group>"; };
 		1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "validate-release-configuration.sh"; sourceTree = "<group>"; };
 		147C9E1A4AE14235D9034D40 /* bootstrap-xcodegen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-xcodegen.sh"; sourceTree = "<group>"; };
@@ -224,6 +225,7 @@
 				36F11F8991064D4F494F2AA0 /* common.sh */,
 				1DA66EC96AD59283897813D2 /* doctor.sh */,
 				5D50AD8297349C06C92CE9B4 /* generate-project.sh */,
+				13E291EC79283AB3C0A97E0F /* normalize-opaque-png.swift */,
 				82CBD0F52BA4A363B16B0C25 /* resolve-simulator.sh */,
 				E58312F24024B7E450FF01BA /* select-stable-xcode.sh */,
 				3A51A26E31349B507044E9C8 /* test.sh */,
