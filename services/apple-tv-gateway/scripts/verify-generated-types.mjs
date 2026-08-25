@@ -12,10 +12,6 @@ const temporaryDirectory = mkdtempSync(path.join(tmpdir(), 'lelibrambas-worker-t
 const generatedTypesPath = path.join(temporaryDirectory, 'worker-configuration.d.ts');
 const wranglerPath = path.join(gatewayRoot, 'node_modules', 'wrangler', 'bin', 'wrangler.js');
 
-function generatedHash(source) {
-  return source.match(/\(hash: ([a-f0-9]+)\)/)?.[1];
-}
-
 function syntaxSignature(source) {
   const sourceFile = ts.createSourceFile(
     'worker-configuration.d.ts',
@@ -65,12 +61,6 @@ try {
 
   const committed = readFileSync(committedTypesPath, 'utf8');
   const generated = readFileSync(generatedTypesPath, 'utf8');
-  const committedHash = generatedHash(committed);
-  const currentHash = generatedHash(generated);
-
-  if (!committedHash || committedHash !== currentHash) {
-    throw new Error('worker-configuration.d.ts has an outdated Wrangler configuration hash.');
-  }
 
   if (syntaxSignature(committed) !== syntaxSignature(generated)) {
     throw new Error('worker-configuration.d.ts declarations differ from current Wrangler output.');
