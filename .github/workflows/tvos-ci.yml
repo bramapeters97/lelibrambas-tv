@@ -93,7 +93,7 @@ jobs:
       - name: Package generated Xcode project
         run: |
           mkdir -p BuildArtifacts/GeneratedProject
-          ditto -c -k --sequesterRsrc --keepParent LeliBrambasTV.xcodeproj BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip
+          ditto -c -k --keepParent LeliBrambasTV.xcodeproj BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip
 
       - name: Resolve Swift packages
         run: xcodebuild -resolvePackageDependencies -project LeliBrambasTV.xcodeproj -scheme LeliBrambasTV

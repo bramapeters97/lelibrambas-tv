@@ -9,7 +9,7 @@ cd apps/apple-tv
 ./Scripts/capture-app-store-screenshots.sh
 ```
 
-The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, captures PNGs, and rejects output that is transparent or not a native 1920×1080/3840×2160 tvOS size. It selects the matching output directory from the simulator framebuffer.
+The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, and captures PNGs. Xcode's `pngcrush -reduce` losslessly removes a redundant fully opaque alpha plane when CoreSimulator emits one; a file with real transparency remains alpha-bearing and is rejected. Output must use a native 1920×1080/3840×2160 tvOS size, and the script selects the matching directory from the simulator framebuffer.
 
 It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launching the app. That image is internal proof that the app was installed into a real CoreSimulator runtime; it is not an App Store product screenshot and must not be submitted.
 

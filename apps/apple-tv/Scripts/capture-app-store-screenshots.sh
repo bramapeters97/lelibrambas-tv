@@ -8,6 +8,7 @@ source "$SCRIPT_DIR/common.sh"
 
 require_macos
 require_command sips
+xcrun --find pngcrush >/dev/null 2>&1 || fail "Xcode's pngcrush utility is required."
 "$SCRIPT_DIR/build-simulator.sh"
 
 udid="${TVOS_SIMULATOR_UDID:-$(resolve_tvos_simulator_udid)}"
@@ -51,10 +52,20 @@ validate_capture() {
   log "Captured $filename (${width}x${height}, opaque)"
 }
 
+normalize_opaque_capture() {
+  local target="$1"
+  local normalized="${target%.png}.normalized.png"
+
+  rm -f -- "$normalized"
+  xcrun pngcrush -q -reduce "$target" "$normalized" >/dev/null
+  mv -f -- "$normalized" "$target"
+}
+
 home_target="$preview_directory/00-tvos-home.png"
 xcrun simctl terminate "$udid" "$bundle_id" >/dev/null 2>&1 || true
 sleep 2
 xcrun simctl io "$udid" screenshot --type=png "$home_target"
+normalize_opaque_capture "$home_target"
 validate_capture "00-tvos-home.png" "$home_target"
 
 capture() {
@@ -69,6 +80,7 @@ capture() {
     --screenshot-screen "$scene"
   sleep 3
   xcrun simctl io "$udid" screenshot --type=png "$target"
+  normalize_opaque_capture "$target"
   validate_capture "$filename" "$target"
 }
 

@@ -1,0 +1,882 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B094F859A0CD522479197D /* Assets.xcassets */; };
+		150EDF448F27D0E32A7AB867 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881C69D789B172F8E82DDCA /* MediaDetailView.swift */; };
+		23A4577535EDBD961518D9C9 /* LBArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D7624166CEEFC1504CFC04 /* LBArtwork.swift */; };
+		2762AC45ABFCD85A3F863CDC /* DebugFixtureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11D920ECBE561930EBDCC87 /* DebugFixtureServices.swift */; };
+		2A3176BF75C723B88D90EA7A /* LBTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3827223857D1C0160CD02242 /* LBTheme.swift */; };
+		432BA582EDCAE64D4024CA4C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */; };
+		43B9CD5AB8ECF80672180D95 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABACF4CC8E45DE3406BD8197 /* HomeView.swift */; };
+		4C9358A28ED980EC8BF90341 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F0C14DE27A0F3F9CF1ADAA7A /* Localizable.xcstrings */; };
+		535E154ED5078A16BD3D3ABE /* DeviceActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */; };
+		5C193A95CD6042A9FDA95BBC /* LBControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB5D1D9A9D0F0D493DFAA12 /* LBControls.swift */; };
+		631C60091FE29F1CB17B9620 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF05C60C3746AE6C128480B /* LeliBrambasCore */; };
+		642BF37621DC8D182C1AF45A /* LeliBrambasTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */; };
+		6766B9233F3E456DD52D406D /* LeliBrambasTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */; };
+		770743F693A51316D01A18F8 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE741EB66A43FF0AAEB6D982 /* SearchView.swift */; };
+		8220F4CB9C4308321BC4F909 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8A3E3777DABF12BC3DA8F56C /* LeliBrambasCore */; };
+		84E1CA656FE1F781660DBF1B /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719C2AFEC74622525A953D1C /* PlayerScreen.swift */; };
+		953003CE1CC2A0E6C95E93D4 /* AuthenticatedRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2AA57C079338F74FC1DEF /* AuthenticatedRootView.swift */; };
+		B1748AA4FBB7DAB91D80C36A /* CollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9425CACC7CAB26F94E31597C /* CollectionsView.swift */; };
+		B3BDE3F1AA6AACC96311E090 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604F25A75BB609E7C7A21545 /* LibraryView.swift */; };
+		BFCBADA76CA7FB1923080B55 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E191E046436319456D1A05 /* AppModelTests.swift */; };
+		C234315E69B4015D485A49D7 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AE0BE1029EB1708DA812EF /* AppModel.swift */; };
+		C2724E1E8C2770FF8164B752 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961F87CEB7661CA46DC68C31 /* SettingsView.swift */; };
+		F59A7B6F8ED0BFBDFC58ECA1 /* LBMediaComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D441D700FCF53157BB44F08 /* LBMediaComponents.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4B13F6CBA3E72BFB13049B7E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3A5438C2BD159E40665E513 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDFD6A6A94A176F0CF0EB88C;
+			remoteInfo = LeliBrambasTV;
+		};
+		D56DA8840BCDEBDD3619791E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F3A5438C2BD159E40665E513 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CDFD6A6A94A176F0CF0EB88C;
+			remoteInfo = LeliBrambasTV;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		009351F35C87D8CD03CC8E11 /* APP_PRIVACY_ANSWERS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_PRIVACY_ANSWERS.md; sourceTree = "<group>"; };
+		046DBE424833C47E5B279E2C /* AppIconBackground.svg */ = {isa = PBXFileReference; path = AppIconBackground.svg; sourceTree = "<group>"; };
+		051418288DDB40B2854B4076 /* TESTFLIGHT_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTFLIGHT_RUNBOOK.md; sourceTree = "<group>"; };
+		06ECAFF420162BEBE005E63B /* AppStoreIconForeground.svg */ = {isa = PBXFileReference; path = AppStoreIconForeground.svg; sourceTree = "<group>"; };
+		0D4C95E5797D4FFF09575990 /* Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Shared.xcconfig; sourceTree = "<group>"; };
+		12B916D9B6980AD721314AEC /* TopShelf.svg */ = {isa = PBXFileReference; path = TopShelf.svg; sourceTree = "<group>"; };
+		14000B1E807731FDDD0A15CF /* ARCHITECTURE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ARCHITECTURE.md; sourceTree = "<group>"; };
+		1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "validate-release-configuration.sh"; sourceTree = "<group>"; };
+		147C9E1A4AE14235D9034D40 /* bootstrap-xcodegen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-xcodegen.sh"; sourceTree = "<group>"; };
+		15E191E046436319456D1A05 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
+		1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LeliBrambasTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1DA66EC96AD59283897813D2 /* doctor.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = doctor.sh; sourceTree = "<group>"; };
+		1E4F2C95807018A5DAEBAB58 /* APP_REVIEW_NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_REVIEW_NOTES.md; sourceTree = "<group>"; };
+		1F85AC5FDC75C12E34B40C5B /* DESIGN_PARITY_MATRIX.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DESIGN_PARITY_MATRIX.md; sourceTree = "<group>"; };
+		23F24451F952E427CB39151E /* verify-project-generation.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "verify-project-generation.sh"; sourceTree = "<group>"; };
+		2881C69D789B172F8E82DDCA /* MediaDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaDetailView.swift; sourceTree = "<group>"; };
+		2933588710802D1328CF18DB /* verify-unsigned-archive.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "verify-unsigned-archive.sh"; sourceTree = "<group>"; };
+		36F11F8991064D4F494F2AA0 /* common.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = common.sh; sourceTree = "<group>"; };
+		3827223857D1C0160CD02242 /* LBTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBTheme.swift; sourceTree = "<group>"; };
+		3A51A26E31349B507044E9C8 /* test.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = test.sh; sourceTree = "<group>"; };
+		3AE212D8ED1211AB0C076D1B /* LeliBrambasCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LeliBrambasCore; path = Packages/LeliBrambasCore; sourceTree = SOURCE_ROOT; };
+		429CFA01D6798022C44BAA0A /* Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Debug.xcconfig; sourceTree = "<group>"; };
+		43E7982FBA738D8D256B1E83 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		444723E52EE81D7033922E1B /* AGE_RATING_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGE_RATING_CHECKLIST.md; sourceTree = "<group>"; };
+		485741C0ED789AACEFD05101 /* CONFIGURATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONFIGURATION.md; sourceTree = "<group>"; };
+		4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeliBrambasTVUITests.swift; sourceTree = "<group>"; };
+		4D0D06D1D059E029B4D33D44 /* PROTECTED_PATHS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PROTECTED_PATHS.md; sourceTree = "<group>"; };
+		4F38FFD1F835A430746FA01C /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Release.xcconfig; sourceTree = "<group>"; };
+		556B40CCB07753E48B9C36DE /* TopShelfWide.svg */ = {isa = PBXFileReference; path = TopShelfWide.svg; sourceTree = "<group>"; };
+		56867EC2BFDB78435988A675 /* assert-repository-isolation.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "assert-repository-isolation.sh"; sourceTree = "<group>"; };
+		5AAD97048EF89D1E57265F3D /* CONTENT_RIGHTS_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = CONTENT_RIGHTS_CHECKLIST.md; sourceTree = "<group>"; };
+		5D50AD8297349C06C92CE9B4 /* generate-project.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "generate-project.sh"; sourceTree = "<group>"; };
+		5F48DAD104359FE4D74303F9 /* MARKETING_ASSET_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MARKETING_ASSET_CHECKLIST.md; sourceTree = "<group>"; };
+		604F25A75BB609E7C7A21545 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		636DC9DF37D6C862C65A2FD0 /* TESTFLIGHT_METADATA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTFLIGHT_METADATA.md; sourceTree = "<group>"; };
+		6D441D700FCF53157BB44F08 /* LBMediaComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBMediaComponents.swift; sourceTree = "<group>"; };
+		6D57545F71BED15752407106 /* UNLISTED_REQUEST_DRAFT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_REQUEST_DRAFT.md; sourceTree = "<group>"; };
+		6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LeliBrambasTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		719C2AFEC74622525A953D1C /* PlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerScreen.swift; sourceTree = "<group>"; };
+		73D7624166CEEFC1504CFC04 /* LBArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBArtwork.swift; sourceTree = "<group>"; };
+		74F98EC721BD523AE093E9D1 /* SUPPORT_PAGE_CONTENT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SUPPORT_PAGE_CONTENT.md; sourceTree = "<group>"; };
+		7898BA3B8FAFBC3698520F6C /* TESTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTING.md; sourceTree = "<group>"; };
+		79E9B548AA1827DFD9430FD9 /* AUTHENTICATION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AUTHENTICATION.md; sourceTree = "<group>"; };
+		7AE39CB450C9F18CCEF55CA8 /* archive.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = archive.sh; sourceTree = "<group>"; };
+		7BA2A09A9C6DFAF4FD4FC989 /* upload-testflight.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "upload-testflight.sh"; sourceTree = "<group>"; };
+		7F620542FEC765DB5F899AD9 /* METADATA_NL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA_NL.md; sourceTree = "<group>"; };
+		82CBD0F52BA4A363B16B0C25 /* resolve-simulator.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "resolve-simulator.sh"; sourceTree = "<group>"; };
+		88A2AA57C079338F74FC1DEF /* AuthenticatedRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticatedRootView.swift; sourceTree = "<group>"; };
+		8C75682CAD482A5ADCD31A2E /* capture-app-store-screenshots.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "capture-app-store-screenshots.sh"; sourceTree = "<group>"; };
+		8F2DD990D6D6E7AD805DC3F4 /* PRIVACY_POLICY_TEXT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PRIVACY_POLICY_TEXT.md; sourceTree = "<group>"; };
+		928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeliBrambasTVApp.swift; sourceTree = "<group>"; };
+		9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceActivationView.swift; sourceTree = "<group>"; };
+		935046B50FE5492A983AB7B3 /* FUTURE_IOS_COMPATIBILITY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FUTURE_IOS_COMPATIBILITY.md; sourceTree = "<group>"; };
+		9425CACC7CAB26F94E31597C /* CollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsView.swift; sourceTree = "<group>"; };
+		961F87CEB7661CA46DC68C31 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		99D3854303949027492739EC /* Secrets.xcconfig.example */ = {isa = PBXFileReference; path = Secrets.xcconfig.example; sourceTree = "<group>"; };
+		9C14ECC43223C1CF217D3C1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A0E8614C5ED2E2EE81024249 /* APP_RECORD_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_RECORD_SETUP.md; sourceTree = "<group>"; };
+		A3B094F859A0CD522479197D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		A5D6D035D96E3394175950CB /* LeliBrambasTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LeliBrambasTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABACF4CC8E45DE3406BD8197 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		ABB3CE5B3053F5792B2E9819 /* SCREENSHOT_PLAN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SCREENSHOT_PLAN.md; sourceTree = "<group>"; };
+		AD4532F4137CCF004B86514A /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		ADE692FA5DC273736F00E9D0 /* cleanup-rental-mac.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cleanup-rental-mac.sh"; sourceTree = "<group>"; };
+		AE741EB66A43FF0AAEB6D982 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		B08522D396348C8BD5C6E7C6 /* UNLISTED_DISTRIBUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_DISTRIBUTION.md; sourceTree = "<group>"; };
+		B22ED2D9601D556B1E978935 /* AppIconMiddle.svg */ = {isa = PBXFileReference; path = AppIconMiddle.svg; sourceTree = "<group>"; };
+		B4E0A6F23B59D7CF2F7D95CC /* bootstrap-mac.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-mac.sh"; sourceTree = "<group>"; };
+		C2097A31664D95B7A4D9D5F0 /* AppStoreIconBackground.svg */ = {isa = PBXFileReference; path = AppStoreIconBackground.svg; sourceTree = "<group>"; };
+		C2C2E6257733F5704537A837 /* AppIconForeground.svg */ = {isa = PBXFileReference; path = AppIconForeground.svg; sourceTree = "<group>"; };
+		C719A7098636678B74512681 /* Signing.xcconfig.example */ = {isa = PBXFileReference; path = Signing.xcconfig.example; sourceTree = "<group>"; };
+		C9AE0BE1029EB1708DA812EF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D6094254E4FF1242603478A1 /* MAC_DAY_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MAC_DAY_RUNBOOK.md; sourceTree = "<group>"; };
+		DBB5D1D9A9D0F0D493DFAA12 /* LBControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBControls.swift; sourceTree = "<group>"; };
+		E0A825D8C9224B3F09828112 /* build-simulator.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-simulator.sh"; sourceTree = "<group>"; };
+		E16BF956B1DAE2D500980A2C /* ASSET_STATUS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ASSET_STATUS.md; sourceTree = "<group>"; };
+		E58312F24024B7E450FF01BA /* select-stable-xcode.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "select-stable-xcode.sh"; sourceTree = "<group>"; };
+		F0C14DE27A0F3F9CF1ADAA7A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F11D920ECBE561930EBDCC87 /* DebugFixtureServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugFixtureServices.swift; sourceTree = "<group>"; };
+		F1954BB11224A2A553D17795 /* TROUBLESHOOTING.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TROUBLESHOOTING.md; sourceTree = "<group>"; };
+		F2DAEF460CA264DDF338D00F /* METADATA_EN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = METADATA_EN.md; sourceTree = "<group>"; };
+		FDA3F54E22E0D76184D23A0E /* AppStoreIconMiddle.svg */ = {isa = PBXFileReference; path = AppStoreIconMiddle.svg; sourceTree = "<group>"; };
+		FEE24D899EEFE36A98D398CA /* EXPORT_COMPLIANCE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = EXPORT_COMPLIANCE.md; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		89240208C77CCA80179BD105 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				631C60091FE29F1CB17B9620 /* LeliBrambasCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9D8EF12DDD1427863FB551E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8220F4CB9C4308321BC4F909 /* LeliBrambasCore in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		084F79F730D9B3AF706357B1 /* TVApp */ = {
+			isa = PBXGroup;
+			children = (
+				9C9055BB6DE2B3AA1C2D2A42 /* App */,
+				48DEC823580BEF434A14E307 /* DesignSystem */,
+				9D3E2F16C8D2041214CF6086 /* Features */,
+				16F045AF8DC9E1FF018D9564 /* Resources */,
+				A3B094F859A0CD522479197D /* Assets.xcassets */,
+			);
+			path = TVApp;
+			sourceTree = "<group>";
+		};
+		0A4B940A5579CA4C6C5D9E57 /* TVAppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */,
+			);
+			path = TVAppUITests;
+			sourceTree = "<group>";
+		};
+		146CA6293E93CB168037E828 /* Docs */ = {
+			isa = PBXGroup;
+			children = (
+				14000B1E807731FDDD0A15CF /* ARCHITECTURE.md */,
+				E16BF956B1DAE2D500980A2C /* ASSET_STATUS.md */,
+				79E9B548AA1827DFD9430FD9 /* AUTHENTICATION.md */,
+				485741C0ED789AACEFD05101 /* CONFIGURATION.md */,
+				1F85AC5FDC75C12E34B40C5B /* DESIGN_PARITY_MATRIX.md */,
+				935046B50FE5492A983AB7B3 /* FUTURE_IOS_COMPATIBILITY.md */,
+				D6094254E4FF1242603478A1 /* MAC_DAY_RUNBOOK.md */,
+				4D0D06D1D059E029B4D33D44 /* PROTECTED_PATHS.md */,
+				051418288DDB40B2854B4076 /* TESTFLIGHT_RUNBOOK.md */,
+				7898BA3B8FAFBC3698520F6C /* TESTING.md */,
+				F1954BB11224A2A553D17795 /* TROUBLESHOOTING.md */,
+			);
+			path = Docs;
+			sourceTree = "<group>";
+		};
+		16F045AF8DC9E1FF018D9564 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F0C14DE27A0F3F9CF1ADAA7A /* Localizable.xcstrings */,
+				CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1CFDE4F59DEEC9AF8ADE75E6 /* Screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				43E7982FBA738D8D256B1E83 /* README.md */,
+			);
+			path = Screenshots;
+			sourceTree = "<group>";
+		};
+		323A5CA66CDC5228F4D8EBEF /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				7AE39CB450C9F18CCEF55CA8 /* archive.sh */,
+				56867EC2BFDB78435988A675 /* assert-repository-isolation.sh */,
+				B4E0A6F23B59D7CF2F7D95CC /* bootstrap-mac.sh */,
+				147C9E1A4AE14235D9034D40 /* bootstrap-xcodegen.sh */,
+				E0A825D8C9224B3F09828112 /* build-simulator.sh */,
+				8C75682CAD482A5ADCD31A2E /* capture-app-store-screenshots.sh */,
+				ADE692FA5DC273736F00E9D0 /* cleanup-rental-mac.sh */,
+				36F11F8991064D4F494F2AA0 /* common.sh */,
+				1DA66EC96AD59283897813D2 /* doctor.sh */,
+				5D50AD8297349C06C92CE9B4 /* generate-project.sh */,
+				82CBD0F52BA4A363B16B0C25 /* resolve-simulator.sh */,
+				E58312F24024B7E450FF01BA /* select-stable-xcode.sh */,
+				3A51A26E31349B507044E9C8 /* test.sh */,
+				7BA2A09A9C6DFAF4FD4FC989 /* upload-testflight.sh */,
+				1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */,
+				23F24451F952E427CB39151E /* verify-project-generation.sh */,
+				2933588710802D1328CF18DB /* verify-unsigned-archive.sh */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
+		44D25E6DCEF06FC2141203D7 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				3AE212D8ED1211AB0C076D1B /* LeliBrambasCore */,
+			);
+			path = Packages;
+			sourceTree = "<group>";
+		};
+		48DEC823580BEF434A14E307 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				73D7624166CEEFC1504CFC04 /* LBArtwork.swift */,
+				DBB5D1D9A9D0F0D493DFAA12 /* LBControls.swift */,
+				6D441D700FCF53157BB44F08 /* LBMediaComponents.swift */,
+				3827223857D1C0160CD02242 /* LBTheme.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
+		68F278BC50918CB80952449E /* Authentication */ = {
+			isa = PBXGroup;
+			children = (
+				9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */,
+			);
+			path = Authentication;
+			sourceTree = "<group>";
+		};
+		6BC6C9781BDCF05CDEA467B1 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				719C2AFEC74622525A953D1C /* PlayerScreen.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		72E0218A65FE817A3A4A9552 /* Browse */ = {
+			isa = PBXGroup;
+			children = (
+				88A2AA57C079338F74FC1DEF /* AuthenticatedRootView.swift */,
+				9425CACC7CAB26F94E31597C /* CollectionsView.swift */,
+				ABACF4CC8E45DE3406BD8197 /* HomeView.swift */,
+				604F25A75BB609E7C7A21545 /* LibraryView.swift */,
+				AE741EB66A43FF0AAEB6D982 /* SearchView.swift */,
+			);
+			path = Browse;
+			sourceTree = "<group>";
+		};
+		7E38360B8441C65B17F59D06 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				AD4532F4137CCF004B86514A /* Base.xcconfig */,
+				429CFA01D6798022C44BAA0A /* Debug.xcconfig */,
+				4F38FFD1F835A430746FA01C /* Release.xcconfig */,
+				99D3854303949027492739EC /* Secrets.xcconfig.example */,
+				0D4C95E5797D4FFF09575990 /* Shared.xcconfig */,
+				C719A7098636678B74512681 /* Signing.xcconfig.example */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		8B38365558F48252D1C42517 /* TVAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				15E191E046436319456D1A05 /* AppModelTests.swift */,
+			);
+			path = TVAppTests;
+			sourceTree = "<group>";
+		};
+		8B3CAD556A260D08A43083A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A5D6D035D96E3394175950CB /* LeliBrambasTV.app */,
+				6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */,
+				1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8D0DC46383D9AAA9CE938CFB /* AppStore */ = {
+			isa = PBXGroup;
+			children = (
+				1CFDE4F59DEEC9AF8ADE75E6 /* Screenshots */,
+				444723E52EE81D7033922E1B /* AGE_RATING_CHECKLIST.md */,
+				009351F35C87D8CD03CC8E11 /* APP_PRIVACY_ANSWERS.md */,
+				A0E8614C5ED2E2EE81024249 /* APP_RECORD_SETUP.md */,
+				1E4F2C95807018A5DAEBAB58 /* APP_REVIEW_NOTES.md */,
+				5AAD97048EF89D1E57265F3D /* CONTENT_RIGHTS_CHECKLIST.md */,
+				FEE24D899EEFE36A98D398CA /* EXPORT_COMPLIANCE.md */,
+				5F48DAD104359FE4D74303F9 /* MARKETING_ASSET_CHECKLIST.md */,
+				F2DAEF460CA264DDF338D00F /* METADATA_EN.md */,
+				7F620542FEC765DB5F899AD9 /* METADATA_NL.md */,
+				8F2DD990D6D6E7AD805DC3F4 /* PRIVACY_POLICY_TEXT.md */,
+				ABB3CE5B3053F5792B2E9819 /* SCREENSHOT_PLAN.md */,
+				74F98EC721BD523AE093E9D1 /* SUPPORT_PAGE_CONTENT.md */,
+				636DC9DF37D6C862C65A2FD0 /* TESTFLIGHT_METADATA.md */,
+				B08522D396348C8BD5C6E7C6 /* UNLISTED_DISTRIBUTION.md */,
+				6D57545F71BED15752407106 /* UNLISTED_REQUEST_DRAFT.md */,
+			);
+			path = AppStore;
+			sourceTree = "<group>";
+		};
+		9C9055BB6DE2B3AA1C2D2A42 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				C9AE0BE1029EB1708DA812EF /* AppModel.swift */,
+				F11D920ECBE561930EBDCC87 /* DebugFixtureServices.swift */,
+				928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		9D3E2F16C8D2041214CF6086 /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				68F278BC50918CB80952449E /* Authentication */,
+				72E0218A65FE817A3A4A9552 /* Browse */,
+				9E53E29716340A3D3E980231 /* Details */,
+				6BC6C9781BDCF05CDEA467B1 /* Player */,
+				CDC4632AB3FE4EB10D27EBA8 /* Settings */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		9E53E29716340A3D3E980231 /* Details */ = {
+			isa = PBXGroup;
+			children = (
+				2881C69D789B172F8E82DDCA /* MediaDetailView.swift */,
+			);
+			path = Details;
+			sourceTree = "<group>";
+		};
+		C51ACB3D84581A4975BA94C5 = {
+			isa = PBXGroup;
+			children = (
+				8D0DC46383D9AAA9CE938CFB /* AppStore */,
+				E1988E4712F4FCE3D9F9C73A /* AssetSources */,
+				7E38360B8441C65B17F59D06 /* Config */,
+				146CA6293E93CB168037E828 /* Docs */,
+				44D25E6DCEF06FC2141203D7 /* Packages */,
+				323A5CA66CDC5228F4D8EBEF /* Scripts */,
+				084F79F730D9B3AF706357B1 /* TVApp */,
+				8B38365558F48252D1C42517 /* TVAppTests */,
+				0A4B940A5579CA4C6C5D9E57 /* TVAppUITests */,
+				9C14ECC43223C1CF217D3C1C /* README.md */,
+				8B3CAD556A260D08A43083A1 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CDC4632AB3FE4EB10D27EBA8 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				961F87CEB7661CA46DC68C31 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		E1988E4712F4FCE3D9F9C73A /* AssetSources */ = {
+			isa = PBXGroup;
+			children = (
+				046DBE424833C47E5B279E2C /* AppIconBackground.svg */,
+				C2C2E6257733F5704537A837 /* AppIconForeground.svg */,
+				B22ED2D9601D556B1E978935 /* AppIconMiddle.svg */,
+				C2097A31664D95B7A4D9D5F0 /* AppStoreIconBackground.svg */,
+				06ECAFF420162BEBE005E63B /* AppStoreIconForeground.svg */,
+				FDA3F54E22E0D76184D23A0E /* AppStoreIconMiddle.svg */,
+				12B916D9B6980AD721314AEC /* TopShelf.svg */,
+				556B40CCB07753E48B9C36DE /* TopShelfWide.svg */,
+			);
+			path = AssetSources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		22A285AB53ABAFA4BA607304 /* LeliBrambasTVTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 77D7C6B4D533307809433294 /* Build configuration list for PBXNativeTarget "LeliBrambasTVTests" */;
+			buildPhases = (
+				561416236F7770946941E175 /* Sources */,
+				89240208C77CCA80179BD105 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CAF3AA9A71AEBF5FE1855493 /* PBXTargetDependency */,
+			);
+			name = LeliBrambasTVTests;
+			packageProductDependencies = (
+				0CF05C60C3746AE6C128480B /* LeliBrambasCore */,
+			);
+			productName = LeliBrambasTVTests;
+			productReference = 6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		75F76294886A2649F93B8E83 /* LeliBrambasTVUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A970B8B5B9D8F7531FDC2547 /* Build configuration list for PBXNativeTarget "LeliBrambasTVUITests" */;
+			buildPhases = (
+				1E211C202087C1D94FDFAAA3 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A04658032E63CE78988D0D0B /* PBXTargetDependency */,
+			);
+			name = LeliBrambasTVUITests;
+			packageProductDependencies = (
+			);
+			productName = LeliBrambasTVUITests;
+			productReference = 1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		CDFD6A6A94A176F0CF0EB88C /* LeliBrambasTV */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D04B13322A050C08DC05718A /* Build configuration list for PBXNativeTarget "LeliBrambasTV" */;
+			buildPhases = (
+				1E25B11EB33AFDC6F818D5DD /* Reject release fixture switches */,
+				E3CD03E64577E5FF5F486B3B /* Sources */,
+				539ECAAD3B5AABFC6B2529AE /* Resources */,
+				9D8EF12DDD1427863FB551E1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LeliBrambasTV;
+			packageProductDependencies = (
+				8A3E3777DABF12BC3DA8F56C /* LeliBrambasCore */,
+			);
+			productName = LeliBrambasTV;
+			productReference = A5D6D035D96E3394175950CB /* LeliBrambasTV.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F3A5438C2BD159E40665E513 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 2600;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					75F76294886A2649F93B8E83 = {
+						TestTargetID = CDFD6A6A94A176F0CF0EB88C;
+					};
+					CDFD6A6A94A176F0CF0EB88C = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9B549F9EAC86931431CBDC4F /* Build configuration list for PBXProject "LeliBrambasTV" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+				nl,
+			);
+			mainGroup = C51ACB3D84581A4975BA94C5;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E141BEC18E4922256B72E1FB /* XCLocalSwiftPackageReference "Packages/LeliBrambasCore" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 8B3CAD556A260D08A43083A1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CDFD6A6A94A176F0CF0EB88C /* LeliBrambasTV */,
+				22A285AB53ABAFA4BA607304 /* LeliBrambasTVTests */,
+				75F76294886A2649F93B8E83 /* LeliBrambasTVUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		539ECAAD3B5AABFC6B2529AE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */,
+				4C9358A28ED980EC8BF90341 /* Localizable.xcstrings in Resources */,
+				432BA582EDCAE64D4024CA4C /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1E25B11EB33AFDC6F818D5DD /* Reject release fixture switches */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/TVApp",
+			);
+			name = "Reject release fixture switches";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|LBAutomaticSignIn|--screenshot-mode|--ui-testing' \"${SRCROOT}/TVApp\"; then\n    echo \"error: Debug fixture switches leaked outside their guarded source.\"\n    exit 1\n  fi\n  for endpoint in \"${API_BASE_URL}\" \"${ACTIVATION_BASE_URL}\"; do\n    case \"${endpoint}\" in\n      \"\"|*example.test*|*localhost*|*127.0.0.1*|*0.0.0.0*)\n        if [ \"${CODE_SIGNING_ALLOWED}\" = \"NO\" ] && [ \"${LB_UNSIGNED_CI_VALIDATION}\" = \"YES\" ]; then\n          echo \"warning: Unsigned CI compilation is using a non-routable endpoint placeholder.\"\n        else\n          echo \"error: Release endpoint is missing or still points to a development placeholder.\"\n          exit 1\n        fi\n        ;;\n    esac\n  done\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1E211C202087C1D94FDFAAA3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				642BF37621DC8D182C1AF45A /* LeliBrambasTVUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		561416236F7770946941E175 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BFCBADA76CA7FB1923080B55 /* AppModelTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E3CD03E64577E5FF5F486B3B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C234315E69B4015D485A49D7 /* AppModel.swift in Sources */,
+				953003CE1CC2A0E6C95E93D4 /* AuthenticatedRootView.swift in Sources */,
+				B1748AA4FBB7DAB91D80C36A /* CollectionsView.swift in Sources */,
+				2762AC45ABFCD85A3F863CDC /* DebugFixtureServices.swift in Sources */,
+				535E154ED5078A16BD3D3ABE /* DeviceActivationView.swift in Sources */,
+				43B9CD5AB8ECF80672180D95 /* HomeView.swift in Sources */,
+				23A4577535EDBD961518D9C9 /* LBArtwork.swift in Sources */,
+				5C193A95CD6042A9FDA95BBC /* LBControls.swift in Sources */,
+				F59A7B6F8ED0BFBDFC58ECA1 /* LBMediaComponents.swift in Sources */,
+				2A3176BF75C723B88D90EA7A /* LBTheme.swift in Sources */,
+				6766B9233F3E456DD52D406D /* LeliBrambasTVApp.swift in Sources */,
+				B3BDE3F1AA6AACC96311E090 /* LibraryView.swift in Sources */,
+				150EDF448F27D0E32A7AB867 /* MediaDetailView.swift in Sources */,
+				84E1CA656FE1F781660DBF1B /* PlayerScreen.swift in Sources */,
+				770743F693A51316D01A18F8 /* SearchView.swift in Sources */,
+				C2724E1E8C2770FF8164B752 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A04658032E63CE78988D0D0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDFD6A6A94A176F0CF0EB88C /* LeliBrambasTV */;
+			targetProxy = D56DA8840BCDEBDD3619791E /* PBXContainerItemProxy */;
+		};
+		CAF3AA9A71AEBF5FE1855493 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CDFD6A6A94A176F0CF0EB88C /* LeliBrambasTV */;
+			targetProxy = 4B13F6CBA3E72BFB13049B7E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		04CB62AAFD6829EC251E1F9B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = TVApp/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_MODULE_NAME = LeliBrambasTV;
+				SDKROOT = appletvos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Release;
+		};
+		233A70D40BEE76E9F9C01C79 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelibrambas.plus.uitests;
+				SDKROOT = appletvos;
+				TEST_TARGET_NAME = LeliBrambasTV;
+			};
+			name = Release;
+		};
+		397B874F2D9162A238778CA5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelibrambas.plus.uitests;
+				SDKROOT = appletvos;
+				TEST_TARGET_NAME = LeliBrambasTV;
+			};
+			name = Debug;
+		};
+		6DFBEC2CBE022505AC244F6C /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4F38FFD1F835A430746FA01C /* Release.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+			};
+			name = Release;
+		};
+		891DDA167CBBA9F27034D2A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 429CFA01D6798022C44BAA0A /* Debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8C002301093D42DD2283001D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = TVApp/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_MODULE_NAME = LeliBrambasTV;
+				SDKROOT = appletvos;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = 3;
+			};
+			name = Debug;
+		};
+		8C1DEA4F3F80597612F566EF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelibrambas.plus.tests;
+				SDKROOT = appletvos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LeliBrambasTV.app/LeliBrambasTV";
+			};
+			name = Debug;
+		};
+		BCE982E5CC671B6F9DE91474 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGNING_ALLOWED = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.lelibrambas.plus.tests;
+				SDKROOT = appletvos;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LeliBrambasTV.app/LeliBrambasTV";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		77D7C6B4D533307809433294 /* Build configuration list for PBXNativeTarget "LeliBrambasTVTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8C1DEA4F3F80597612F566EF /* Debug */,
+				BCE982E5CC671B6F9DE91474 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9B549F9EAC86931431CBDC4F /* Build configuration list for PBXProject "LeliBrambasTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				891DDA167CBBA9F27034D2A4 /* Debug */,
+				6DFBEC2CBE022505AC244F6C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A970B8B5B9D8F7531FDC2547 /* Build configuration list for PBXNativeTarget "LeliBrambasTVUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				397B874F2D9162A238778CA5 /* Debug */,
+				233A70D40BEE76E9F9C01C79 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D04B13322A050C08DC05718A /* Build configuration list for PBXNativeTarget "LeliBrambasTV" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8C002301093D42DD2283001D /* Debug */,
+				04CB62AAFD6829EC251E1F9B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		E141BEC18E4922256B72E1FB /* XCLocalSwiftPackageReference "Packages/LeliBrambasCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Packages/LeliBrambasCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		0CF05C60C3746AE6C128480B /* LeliBrambasCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LeliBrambasCore;
+		};
+		8A3E3777DABF12BC3DA8F56C /* LeliBrambasCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = LeliBrambasCore;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F3A5438C2BD159E40665E513 /* Project object */;
+}
