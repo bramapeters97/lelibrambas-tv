@@ -1,34 +1,6 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "Activation was declined.": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Activation was declined." } },
-        "nl": { "stringUnit": { "state": "translated", "value": "De activering is geweigerd." } }
-      }
-    },
-    "Activation was not completed": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Activation was not completed" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "De activering is niet voltooid" } }
-      }
-    },
-    "Add the secure gateway and activation URLs before using this build.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Add the secure gateway and activation URLs before using this build."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voeg de beveiligde gateway- en activeringsadressen toe voordat je deze build gebruikt."
-          }
-        }
-      }
-    },
     "Check the internet connection and try again.": {
       "localizations": {
         "en": {
@@ -41,22 +13,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Controleer de internetverbinding en probeer het opnieuw."
-          }
-        }
-      }
-    },
-    "No films are available for this account yet.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No films are available for this account yet."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Er zijn nog geen films beschikbaar voor dit account."
           }
         }
       }
@@ -81,79 +37,10 @@
         "nl": { "stringUnit": { "state": "translated", "value": "Afspelen niet beschikbaar" } }
       }
     },
-    "Please sign in again": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Please sign in again" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Log opnieuw in" } }
-      }
-    },
-    "Preparing secure activation…": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Preparing secure activation…" } },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beveiligde activering wordt voorbereid…"
-          }
-        }
-      }
-    },
-    "Request a new code": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Request a new code" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Vraag een nieuwe code aan" } }
-      }
-    },
     "Retry": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "Retry" } },
         "nl": { "stringUnit": { "state": "translated", "value": "Opnieuw proberen" } }
-      }
-    },
-    "Session could not be saved": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Session could not be saved" } },
-        "nl": {
-          "stringUnit": { "state": "translated", "value": "De sessie kon niet worden opgeslagen" }
-        }
-      }
-    },
-    "Setup required": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Setup required" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Configuratie vereist" } }
-      }
-    },
-    "The activation code was not recognized. Request a new code.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The activation code was not recognized. Request a new code."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De activeringscode is niet herkend. Vraag een nieuwe code aan."
-          }
-        }
-      }
-    },
-    "The activation service is temporarily unavailable.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The activation service is temporarily unavailable."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De activeringsservice is tijdelijk niet beschikbaar."
-          }
-        }
       }
     },
     "The archive could not be loaded": {
@@ -182,22 +69,6 @@
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "This film is unavailable" } },
         "nl": { "stringUnit": { "state": "translated", "value": "Deze film is niet beschikbaar" } }
-      }
-    },
-    "Your private session expired. Activate this Apple TV again.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your private session expired. Activate this Apple TV again."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Je privésessie is verlopen. Activeer deze Apple TV opnieuw."
-          }
-        }
       }
     },
     "10 seconds back": {

@@ -11,6 +11,7 @@ The visual reference is the current React viewer in `apps/tv/src/App.tsx`, `Disc
 | Left icon rail | Persistent native navigation rail | Exact web cinema mark, dark/navy rail, Home/Search/Collections/Library hierarchy, local profile initials | Focus expands labels; Settings remains available as a relevant native destination |
 | Search and library | Native search and full library | Same typography, cards, loading, empty, and error language | Native text entry and focus navigation |
 | Movie details | Native detail screen | Aspect-fill art/preview, heavy left and bottom gradients, gold eyebrow, title, metadata, synopsis, white Play action | Circular Back action and predictable Siri Remote dismissal |
+| Home ambient trailer | Muted AVPlayer hero preview | Two-second delay and 40-second target, matching the web Home hero | Stops with the Home hero and respects Reduce Motion |
 | Ambient detail preview | Muted AVPlayer detail preview | One-second delay and 120-second target | Safely clamps for short media, cancels on exit, and respects Reduce Motion |
 | Full playback | AVPlayerViewController | Selected item's exact `stream_video_id` and title | Native play/pause, scrubber, audio, fullscreen, Back, and +/-10-second actions; starts normally at zero |
 | App icon and Top Shelf | Layered tvOS asset catalog | Official root `lelibrambas-studios.png` source | Center-cropped Apple-required sizes; transparent upper layers preserve the valid stack |

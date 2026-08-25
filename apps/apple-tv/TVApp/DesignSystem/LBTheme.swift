@@ -59,7 +59,7 @@ enum LBSpacing {
     static let xLarge: CGFloat = 64
     static let safeHorizontal: CGFloat = 72
     static let safeVertical: CGFloat = 54
-    static let shelfGap: CGFloat = 30
+    static let shelfGap: CGFloat = 15
 }
 
 enum LBRadius {
@@ -69,10 +69,10 @@ enum LBRadius {
 }
 
 enum LBLayout {
-    static let navigationWidth: CGFloat = 94
+    static let navigationWidth: CGFloat = 70
     static let contentMaxWidth: CGFloat = 1700
-    static let mediaCardWidth: CGFloat = 326
-    static let compactMediaCardWidth: CGFloat = 300
+    static let mediaCardWidth: CGFloat = 250
+    static let gridMediaCardWidth: CGFloat = 300
     static let cardAspectRatio: CGFloat = 16 / 9
     static let backdropAspectRatio: CGFloat = 16 / 9
     static let focusScale: CGFloat = 1.045
@@ -126,13 +126,19 @@ struct LBBackground: View {
 
 struct LBWordmark: View {
     var compact = false
+    var size: CGFloat?
+
+    init(compact: Bool = false, size: CGFloat? = nil) {
+        self.compact = compact
+        self.size = size
+    }
 
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: compact ? 2 : 5) {
             Text("LELIBRAMBAS")
-                .font(LBTypography.display(size: compact ? 24 : 58, weight: .heavy))
+                .font(LBTypography.display(size: size ?? (compact ? 24 : 58), weight: .heavy))
             Text("+")
-                .font(LBTypography.display(size: compact ? 26 : 62, weight: .black))
+                .font(LBTypography.display(size: size ?? (compact ? 26 : 62), weight: .black))
                 .foregroundStyle(LBColor.cyan)
                 .shadow(color: LBColor.cyan.opacity(0.7), radius: compact ? 5 : 14)
         }
@@ -152,7 +158,7 @@ struct LBLogo: View {
             .renderingMode(.template)
             .scaledToFit()
             .foregroundStyle(LBColor.navigationGold)
-            .padding(size * 0.17)
+            .padding(size * 0.205)
         .frame(width: size, height: size)
         .background(LBColor.surfaceRaised.opacity(0.001), in: RoundedRectangle(cornerRadius: size * 0.25, style: .continuous))
         .shadow(color: LBColor.gold.opacity(0.38), radius: size * 0.2)
@@ -160,14 +166,72 @@ struct LBLogo: View {
     }
 }
 
+enum LBSectionIconName {
+    case collections
+    case trending
+    case jeugdfilms
+    case vakantiefilms
+    case events
+    case others
+    case movies
+
+    static func forLabel(_ label: String) -> LBSectionIconName {
+        switch label.trimmingCharacters(in: .whitespacesAndNewlines).uppercased() {
+        case "COLLECTIONS": return .collections
+        case "CURRENTLY TRENDING": return .trending
+        case "JEUGDFILMS": return .jeugdfilms
+        case "VAKANTIEFILMS": return .vakantiefilms
+        case "EVENTS": return .events
+        case "OTHERS": return .others
+        default: return .movies
+        }
+    }
+
+    var assetName: String {
+        switch self {
+        case .collections: return "WebSectionCollections"
+        case .trending: return "WebSectionTrending"
+        case .jeugdfilms: return "WebSectionJeugdfilms"
+        case .vakantiefilms: return "WebSectionVakantiefilms"
+        case .events: return "WebSectionEvents"
+        case .others: return "WebSectionOthers"
+        case .movies: return "WebSectionMovies"
+        }
+    }
+}
+
 struct LBSectionTitle: View {
     let title: String
+    let icon: LBSectionIconName
+    var countText: String?
+
+    init(title: String, icon: LBSectionIconName? = nil, countText: String? = nil) {
+        self.title = title
+        self.icon = icon ?? .forLabel(title)
+        self.countText = countText
+    }
 
     var body: some View {
-        Text(title)
-            .font(LBTypography.title(size: 31, weight: .bold))
-            .foregroundStyle(LBColor.text)
-            .lineLimit(1)
-            .accessibilityAddTraits(.isHeader)
+        HStack(alignment: .center, spacing: 10) {
+            Image(icon.assetName)
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 23, height: 23)
+                .foregroundStyle(LBColor.text.opacity(0.92))
+                .accessibilityHidden(true)
+            Text(title)
+                .font(LBTypography.title(size: 31, weight: .bold))
+                .foregroundStyle(LBColor.text)
+                .lineLimit(1)
+                .accessibilityAddTraits(.isHeader)
+            if let countText {
+                Text(countText)
+                    .font(LBTypography.caption(size: 16, weight: .medium))
+                    .foregroundStyle(LBColor.textMuted)
+                    .lineLimit(1)
+                    .padding(.leading, 8)
+            }
+        }
     }
 }

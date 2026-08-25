@@ -18,49 +18,70 @@ struct LBMediaCard: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 0) {
-                ZStack(alignment: .bottomTrailing) {
-                    LBArtwork(item: item, kind: .poster)
-                        .frame(width: width, height: width / LBLayout.cardAspectRatio)
-                    LinearGradient(
-                        colors: [.clear, LBColor.canvas.opacity(0.34)],
-                        startPoint: .center,
-                        endPoint: .bottom
-                    )
-                    rankingOverlay
-                }
+        Button(action: action) { cardContent }
+            .buttonStyle(.plain)
+            .focusEffectDisabled()
+            .accessibilityLabel(accessibilityLabel)
+            .accessibilityHint("Open details")
+            .accessibilityIdentifier("media-card-\(item.id)")
+    }
 
-                VStack(alignment: .leading, spacing: 7) {
-                    Text(item.title)
-                        .font(LBTypography.title(size: 18, weight: .semibold))
-                        .foregroundStyle(LBColor.text)
-                        .lineLimit(1)
-                    Text(metadata)
-                        .font(LBTypography.caption(size: 14, weight: .medium))
-                        .foregroundStyle(LBColor.textMuted)
-                        .lineLimit(1)
-                }
-                .padding(.horizontal, 15)
-                .padding(.vertical, 13)
-                .frame(width: width, minHeight: 68, alignment: .topLeading)
-            }
-            .frame(width: width, alignment: .leading)
-            .background(LBColor.surface)
-            .clipShape(RoundedRectangle(cornerRadius: LBRadius.small, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: LBRadius.small, style: .continuous)
-                    .stroke(isFocused ? LBColor.text : LBColor.text.opacity(0.09), lineWidth: isFocused ? 3 : 1)
-            }
-            .scaleEffect(isFocused ? LBLayout.focusScale : 1)
-            .shadow(color: isFocused ? LBColor.gold.opacity(0.24) : .black.opacity(0.3), radius: isFocused ? 24 : 15, y: 14)
-            .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+    private var cardContent: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            artworkPanel
+            cardCopy
         }
-        .buttonStyle(.plain)
-        .focusEffectDisabled()
-        .accessibilityLabel(accessibilityLabel)
-        .accessibilityHint("Open details")
-        .accessibilityIdentifier("media-card-\(item.id)")
+        .frame(width: width, alignment: .leading)
+        .background(LBColor.surface)
+        .clipShape(cardShape)
+        .overlay { focusBorder }
+        .scaleEffect(isFocused ? LBLayout.focusScale : 1)
+        .shadow(
+            color: isFocused ? LBColor.gold.opacity(0.24) : .black.opacity(0.3),
+            radius: isFocused ? 24 : 15,
+            y: 14
+        )
+        .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+    }
+
+    private var artworkPanel: some View {
+        ZStack(alignment: .bottomTrailing) {
+            LBArtwork(item: item, kind: .poster)
+                .frame(width: width, height: width / LBLayout.cardAspectRatio)
+            LinearGradient(
+                colors: [.clear, LBColor.canvas.opacity(0.34)],
+                startPoint: .center,
+                endPoint: .bottom
+            )
+            rankingOverlay
+        }
+    }
+
+    private var cardCopy: some View {
+        VStack(alignment: .leading, spacing: 7) {
+            Text(item.title)
+                .font(LBTypography.title(size: 18, weight: .semibold))
+                .foregroundStyle(LBColor.text)
+                .lineLimit(1)
+            Text(metadata)
+                .font(LBTypography.caption(size: 14, weight: .medium))
+                .foregroundStyle(LBColor.textMuted)
+                .lineLimit(1)
+        }
+        .padding(.horizontal, 15)
+        .padding(.vertical, 13)
+        .frame(width: width, minHeight: 68, alignment: .topLeading)
+    }
+
+    private var cardShape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: LBRadius.small, style: .continuous)
+    }
+
+    private var focusBorder: some View {
+        cardShape.stroke(
+            isFocused ? LBColor.text : LBColor.text.opacity(0.09),
+            lineWidth: isFocused ? 3 : 1
+        )
     }
 
     @ViewBuilder
@@ -76,9 +97,8 @@ struct LBMediaCard: View {
     }
 
     private var metadata: String {
-        [item.year.map(String.init), item.category]
-            .compactMap { $0 }
-            .joined(separator: "  -  ")
+        guard let year = item.year else { return item.category }
+        return "\(year)  -  \(item.category)"
     }
 
     private var accessibilityLabel: String {
@@ -94,7 +114,10 @@ struct LBMediaShelf: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            LBSectionTitle(title: section.title)
+            LBSectionTitle(
+                title: section.title,
+                countText: "\(section.items.count) titles"
+            )
                 .padding(.horizontal, LBSpacing.safeHorizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
@@ -113,14 +136,37 @@ struct LBMediaShelf: View {
 }
 
 struct LBHero: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     let item: MediaItem
+    let previewURL: URL?
+    let onPreviewStopped: () -> Void
     let onPlay: () -> Void
     let onDetails: () -> Void
 
+    @State private var previewIsPlaying = false
+
     var body: some View {
         ZStack(alignment: .leading) {
-            LBStudioArtwork()
-                .frame(width: 1420, height: 680)
+            heroBackground
+            heroCopy
+            pagination
+        }
+        .frame(height: 713)
+        .clipped()
+        .onChange(of: previewURL) { _, _ in previewIsPlaying = false }
+        .onDisappear {
+            previewIsPlaying = false
+            onPreviewStopped()
+        }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
+        .accessibilityIdentifier("home-hero")
+    }
+
+    private var heroBackground: some View {
+        ZStack {
+            heroArtwork
+                .frame(width: 1420, height: 780)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
                 .offset(x: 28)
                 .saturation(0.88)
@@ -134,88 +180,133 @@ struct LBHero: View {
                         endRadius: 940
                     )
                 }
+            leadingScrim
+            bottomScrim
+        }
+    }
 
-            LinearGradient(
-                stops: [
-                    .init(color: LBColor.canvas, location: 0),
-                    .init(color: LBColor.canvas.opacity(0.95), location: 0.18),
-                    .init(color: LBColor.canvas.opacity(0.5), location: 0.52),
-                    .init(color: .clear, location: 0.78),
-                ],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            LinearGradient(
-                colors: [.clear, LBColor.canvas.opacity(0.3), LBColor.canvas],
-                startPoint: .top,
-                endPoint: .bottom
-            )
+    private var leadingScrim: some View {
+        LinearGradient(
+            stops: [
+                .init(color: LBColor.canvas, location: 0),
+                .init(color: LBColor.canvas.opacity(0.95), location: 0.18),
+                .init(color: LBColor.canvas.opacity(0.5), location: 0.52),
+                .init(color: .clear, location: 0.78),
+            ],
+            startPoint: .leading,
+            endPoint: .trailing
+        )
+    }
 
-            VStack(alignment: .leading, spacing: 0) {
-                Text(item.category.uppercased())
-                    .font(LBTypography.eyebrow(size: 17))
-                    .tracking(4.4)
-                    .foregroundStyle(LBColor.gold)
-                    .padding(.bottom, 18)
+    private var bottomScrim: some View {
+        LinearGradient(
+            stops: [
+                .init(color: .clear, location: 0.58),
+                .init(color: LBColor.canvas.opacity(0.82), location: 0.82),
+                .init(color: LBColor.canvas, location: 1),
+            ],
+            startPoint: .top,
+            endPoint: .bottom
+        )
+    }
 
-                heroTitle
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.78)
-                    .frame(maxWidth: 930, alignment: .leading)
+    private var heroCopy: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(item.category.uppercased())
+                .font(LBTypography.eyebrow(size: 17))
+                .tracking(4.4)
+                .foregroundStyle(LBColor.gold)
+                .padding(.bottom, 18)
 
-                LBMetadataRow(
-                    values: [item.year.map(String.init), item.category, item.category].compactMap { $0 }
-                )
+            heroTitle
+                .lineLimit(1)
+                .minimumScaleFactor(0.78)
+                .frame(maxWidth: 930, alignment: .leading)
+
+            LBMetadataRow(values: heroMetadata)
                 .padding(.top, 22)
 
-                Text(item.description.isEmpty ? "A film from the private family archive." : item.description)
-                    .font(LBTypography.body(size: 23))
-                    .foregroundStyle(LBColor.textSecondary)
-                    .lineSpacing(6)
-                    .lineLimit(3)
-                    .frame(maxWidth: 790, alignment: .leading)
-                    .padding(.top, 20)
+            Text(heroDescription)
+                .font(LBTypography.body(size: 23))
+                .foregroundStyle(LBColor.textSecondary)
+                .lineSpacing(6)
+                .lineLimit(3)
+                .frame(maxWidth: 790, alignment: .leading)
+                .padding(.top, 20)
 
-                HStack(spacing: 18) {
-                    LBPrimaryButton(action: onPlay) {
-                        Label("Play Trailer", systemImage: "play.fill")
-                    }
-                    .accessibilityIdentifier("hero-play")
-                    LBSecondaryButton(action: onDetails) {
-                        Label("More information", systemImage: "info.circle")
-                    }
-                    .accessibilityIdentifier("hero-details")
-                }
+            heroActions
                 .padding(.top, 28)
-            }
-            .padding(.leading, LBSpacing.safeHorizontal)
-            .padding(.top, 74)
-            .padding(.bottom, 72)
-
-            HStack(spacing: 8) {
-                Capsule().fill(Color.white).frame(width: 30, height: 7)
-                Circle().fill(Color.white.opacity(0.3)).frame(width: 7, height: 7)
-                Circle().fill(Color.white.opacity(0.3)).frame(width: 7, height: 7)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-            .padding(.trailing, 70)
-            .padding(.bottom, 42)
         }
-        .frame(height: 650)
-        .clipped()
-        .accessibilityIdentifier("home-hero")
+        .padding(.leading, LBSpacing.safeHorizontal)
+        .padding(.top, 74)
+        .padding(.bottom, 72)
+    }
+
+    private var heroActions: some View {
+        HStack(spacing: 18) {
+            LBPrimaryButton(action: onPlay) {
+                Text("Play Trailer")
+            }
+            .accessibilityIdentifier("hero-play")
+            LBSecondaryButton(action: onDetails) {
+                Text("More information")
+            }
+            .accessibilityIdentifier("hero-details")
+        }
+    }
+
+    private var pagination: some View {
+        HStack(spacing: 8) {
+            Capsule().fill(Color.white).frame(width: 30, height: 7)
+            Circle().fill(Color.white.opacity(0.3)).frame(width: 7, height: 7)
+            Circle().fill(Color.white.opacity(0.3)).frame(width: 7, height: 7)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
+        .padding(.trailing, 70)
+        .padding(.bottom, 42)
+    }
+
+    private var heroMetadata: [String] {
+        [item.year.map(String.init), item.category, item.category].compactMap { $0 }
+    }
+
+    private var heroDescription: String {
+        item.description.isEmpty ? "A film from the private family archive." : item.description
+    }
+
+    private var heroArtwork: some View {
+        ZStack {
+            LBStudioArtwork()
+                .opacity(previewIsPlaying ? 0 : 1)
+
+            if let previewURL {
+                LBMutedPreview(
+                    url: previewURL,
+                    targetStartSeconds: LBHeroPreviewPolicy.targetStartSeconds,
+                    onPlaying: { previewIsPlaying = true },
+                    onStopped: {
+                        previewIsPlaying = false
+                        onPreviewStopped()
+                    }
+                )
+                .opacity(previewIsPlaying ? 1 : 0)
+                .id(previewURL)
+            }
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 
     private var heroTitle: Text {
         Text("LELIBRAMBAS")
             .foregroundColor(LBColor.text)
-            .font(LBTypography.display(size: 78, weight: .heavy))
+            .font(LBTypography.display(size: 90, weight: .heavy))
         + Text("+")
             .foregroundColor(LBColor.cyan)
-            .font(LBTypography.display(size: 78, weight: .black))
+            .font(LBTypography.display(size: 90, weight: .black))
         + Text(" Trailer")
             .foregroundColor(LBColor.text)
-            .font(LBTypography.display(size: 78, weight: .heavy))
+            .font(LBTypography.display(size: 90, weight: .heavy))
     }
 }
 

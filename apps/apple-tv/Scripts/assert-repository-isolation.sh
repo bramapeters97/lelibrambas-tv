@@ -6,7 +6,7 @@ SCRIPT_DIR="$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common.sh
 source "$SCRIPT_DIR/common.sh"
 
-readonly RECORDED_BASE_COMMIT="744491eeffeb9f64eead66397c8df59466f8b16e"
+readonly RECORDED_BASE_COMMIT="5a9af32c60fc8c83641247cf67898b4cc9f11955"
 base_ref="${1:-${BASE_REF:-$RECORDED_BASE_COMMIT}}"
 if [[ "$base_ref" =~ ^0+$ ]]; then
   base_ref="$RECORDED_BASE_COMMIT"

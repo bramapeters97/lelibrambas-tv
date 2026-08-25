@@ -21,6 +21,8 @@ It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launchin
 | `1920x1080/04-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
 | `1920x1080/05-collections.png`       | Collections feature view          | Four-card grouping, margins, focus order                      |
 | `1920x1080/06-settings.png`          | Settings                          | Version, bundled-content status, focus order                   |
+| `1920x1080/07-search.png`            | Search                            | Web hierarchy, default field focus, suggestions and grid       |
+| `1920x1080/08-full-library.png`      | Full Library                      | Catalogue hierarchy, title count, landscape grid and spacing   |
 
 Before upload:
 

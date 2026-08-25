@@ -9,7 +9,7 @@
 ./Scripts/assert-repository-isolation.sh
 ```
 
-The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, and the official studio brand resource. Unit tests verify local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, one-second/120-second preview policy, fallback artwork, distinct item video sources, and direct playback resolution. UI tests verify production launch shows the local profile selector and that selecting a profile reaches Home without activation.
+The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, and the official studio brand resource. Unit tests verify local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, the Home two-second/40-second and detail one-second/120-second preview policies, fallback artwork, distinct item video sources, direct playback resolution, Search suggestions, and player retry. UI tests verify production launch shows the local profile selector, selecting a profile reaches Home without activation, and the Search/Full Library hierarchies render in deterministic fixture mode.
 
 ## GitHub Actions
 
@@ -22,4 +22,4 @@ The simulator and unsigned-archive commands validate that the resulting app bund
 - HLS/MP4/Cloudflare playback, play/pause, +/-10-second seek, scrub, audio, interruption, and error recovery.
 - Focus order and Back behavior on every screen.
 - 1080p and 4K layout, overscan/safe areas, and text readability.
-- Detail preview delay, muted playback near 120 seconds, cancellation, and full playback from the start.
+- Home ambient preview after two seconds near 40 seconds, detail preview after one second near 120 seconds, cancellation, and full playback from the start.

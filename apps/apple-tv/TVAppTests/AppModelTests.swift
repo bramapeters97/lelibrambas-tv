@@ -32,12 +32,44 @@ final class AppModelTests: XCTestCase {
 
     func testMediaCardsUseTheWebLandscapeAspectRatio() {
         XCTAssertEqual(LBLayout.cardAspectRatio, 16.0 / 9.0, accuracy: 0.000_001)
+        XCTAssertEqual(LBLayout.mediaCardWidth, 250)
+        XCTAssertEqual(LBLayout.gridMediaCardWidth, 300)
+        XCTAssertEqual(LBSpacing.shelfGap, 15)
+    }
+
+    func testSearchMatchesYearAndLimitsEmptySuggestionsToEight() {
+        let searchItems = (0..<10).map { index in
+            MediaItem(
+                id: 100 + index,
+                title: "Synthetic film \(index)",
+                year: 2000 + index,
+                description: index == 9 ? "A gold archive memory" : "Synthetic description",
+                category: index.isMultiple(of: 2) ? "EVENTS" : "OTHERS",
+                posterURL: "artwork/generic_cinema_2.png"
+            )
+        }
+
+        XCTAssertEqual(LBSearchIndex.results(in: searchItems, query: "").map(\.id), Array(100..<108))
+        XCTAssertEqual(LBSearchIndex.results(in: searchItems, query: "2007").map(\.id), [107])
+        XCTAssertEqual(LBSearchIndex.results(in: searchItems, query: "gold").map(\.id), [109])
+        XCTAssertEqual(LBSearchIndex.results(in: searchItems, query: "events").count, 5)
     }
 
     func testPreviewPolicyWaitsOneSecondAndTargetsTwoMinutes() {
         XCTAssertEqual(LBPreviewPolicy.delayNanoseconds, 1_000_000_000)
         XCTAssertEqual(LBPreviewPolicy.delaySeconds, 1, accuracy: 0.000_001)
         XCTAssertEqual(LBPreviewPolicy.targetStartSeconds, 120, accuracy: 0.000_001)
+    }
+
+    func testHomeAmbientPreviewMatchesTheWebDelayAndStartPoint() {
+        XCTAssertEqual(LBHeroPreviewPolicy.delayNanoseconds, 2_000_000_000)
+        XCTAssertEqual(LBHeroPreviewPolicy.delaySeconds, 2, accuracy: 0.000_001)
+        XCTAssertEqual(LBHeroPreviewPolicy.targetStartSeconds, 40, accuracy: 0.000_001)
+        XCTAssertEqual(
+            LBMediaPreviewTiming.startSeconds(target: 40, durationSeconds: 30),
+            29,
+            accuracy: 0.000_001
+        )
     }
 
     func testPreviewPolicyClampsShortMediaAndSafelyFallsBackForUnknownDuration() {
@@ -138,6 +170,46 @@ final class AppModelTests: XCTestCase {
         let controller = PlayerController(session: session)
 
         XCTAssertEqual(controller.player.currentTime().seconds, 0, accuracy: 0.000_001)
+        controller.stop()
+    }
+
+    func testMidstreamFailureRetryRebuildsTheSameDirectURLAtZero() async throws {
+        let item = MediaItem(
+            id: 41,
+            title: "Synthetic Retry Playback",
+            year: 2026,
+            description: "Synthetic test data.",
+            category: "OTHERS",
+            posterURL: "artwork/generic_cinema_2.png",
+            streamURL: "https://media.example.test/retry-playback.m3u8"
+        )
+        let streamURL = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("synthetic-retry-playback.mp4")
+        let session = PlaybackSession(item: item, url: streamURL)
+        let notificationCenter = NotificationCenter()
+        let controller = PlayerController(session: session, notificationCenter: notificationCenter)
+        let originalItem = try XCTUnwrap(controller.player.currentItem)
+
+        notificationCenter.post(
+            name: .AVPlayerItemFailedToPlayToEndTime,
+            object: originalItem
+        )
+        await Task.yield()
+
+        XCTAssertEqual(
+            controller.errorMessage,
+            "The stream stopped unexpectedly. Check the connection and retry."
+        )
+        XCTAssertFalse(controller.isReady)
+
+        controller.retry()
+
+        let retriedItem = try XCTUnwrap(controller.player.currentItem)
+        let retriedAsset = try XCTUnwrap(retriedItem.asset as? AVURLAsset)
+        XCTAssertFalse(originalItem === retriedItem)
+        XCTAssertEqual(retriedAsset.url, streamURL)
+        XCTAssertEqual(controller.player.currentTime().seconds, 0, accuracy: 0.000_001)
+        XCTAssertNil(controller.errorMessage)
         controller.stop()
     }
 

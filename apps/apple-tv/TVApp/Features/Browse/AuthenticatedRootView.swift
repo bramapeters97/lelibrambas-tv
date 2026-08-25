@@ -15,25 +15,24 @@ enum BrowseSection: String, CaseIterable, Identifiable {
         case .home: return "Home"
         case .search: return "Search"
         case .collections: return "Collections"
-        case .library: return "Library"
+        case .library: return "Full Library"
         case .settings: return "Settings"
         }
     }
 
-    var symbol: String {
+    var iconAssetName: String? {
         switch self {
-        case .home: return "house.fill"
-        case .search: return "magnifyingglass"
-        case .collections: return "square.grid.2x2.fill"
-        case .library: return "film.stack.fill"
-        case .settings: return "gearshape.fill"
+        case .home: return "WebNavHome"
+        case .search: return "WebNavSearch"
+        case .collections: return "WebNavCollections"
+        case .library: return "WebNavLibrary"
+        case .settings: return nil
         }
     }
 }
 
 enum BrowseRoute: Hashable {
     case details(Int)
-    case collection(String)
 }
 
 struct BrowseRootView: View {
@@ -45,6 +44,7 @@ struct BrowseRootView: View {
     @State private var path: [BrowseRoute] = []
     @State private var playbackSession: PlaybackSession?
     @State private var isPreparingPlayback = false
+    @State private var selectedCollectionID: String?
 
     init(model: AppModel, profile: ViewerProfile, onSwitchProfile: @escaping () -> Void) {
         self.model = model
@@ -52,6 +52,10 @@ struct BrowseRootView: View {
         self.onSwitchProfile = onSwitchProfile
 #if DEBUG
         switch DebugLaunchOptions.screenshotScreen {
+        case "search":
+            _section = State(initialValue: .search)
+        case "library":
+            _section = State(initialValue: .library)
         case "details":
             _path = State(initialValue: [.details(1)])
         case "playback-ready":
@@ -102,14 +106,18 @@ struct BrowseRootView: View {
                 featured: LBContentSelection.hero(in: model.items),
                 sections: model.sections,
                 startAtShelves: startsAtShelves,
+                preparePreview: { await model.preparePreview(for: $0) },
                 onPlay: preparePlayback,
                 onSelect: { path.append(.details($0.id)) },
-                onOpenCollection: { path.append(.collection($0.id)) }
+                onOpenCollection: showCollection
             )
         case .search:
             SearchView(items: model.items) { path.append(.details($0.id)) }
         case .collections:
-            CollectionsView(sections: model.sections) { path.append(.collection($0.id)) }
+            CollectionsView(
+                sections: model.sections,
+                initialSelectionID: selectedCollectionID
+            ) { path.append(.details($0.id)) }
         case .library:
             LibraryView(items: model.items) { path.append(.details($0.id)) }
         case .settings:
@@ -139,12 +147,6 @@ struct BrowseRootView: View {
             } else {
                 LBEmptyState(title: "Film not found", message: "This film is no longer in the available archive.")
             }
-        case let .collection(id):
-            if let collection = model.sections.first(where: { $0.id == id }) {
-                CollectionDetailView(section: collection) { path.append(.details($0.id)) }
-            } else {
-                LBEmptyState(title: "Collection not found", message: "This collection is no longer available.")
-            }
         }
     }
 
@@ -162,6 +164,12 @@ struct BrowseRootView: View {
             isPreparingPlayback = false
         }
     }
+
+    private func showCollection(_ collection: CatalogSection) {
+        selectedCollectionID = collection.id
+        path.removeAll()
+        section = .collections
+    }
 }
 
 private struct MainNavigationRail: View {
@@ -171,9 +179,9 @@ private struct MainNavigationRail: View {
     let onSwitchProfile: () -> Void
 
     var body: some View {
-        VStack(spacing: 18) {
-            LBLogo(size: 48)
-                .padding(.bottom, 18)
+        VStack(spacing: 9) {
+            LBLogo(size: 46)
+                .padding(.bottom, 17)
             ForEach(BrowseSection.allCases) { item in
                 NavigationRailButton(item: item, selected: item == selection) {
                     onSelect(item)
@@ -182,10 +190,17 @@ private struct MainNavigationRail: View {
             Spacer(minLength: 12)
             ProfileRailButton(profile: profile, action: onSwitchProfile)
         }
-        .padding(.vertical, LBSpacing.safeVertical)
+        .padding(.top, 32)
+        .padding(.bottom, 26)
         .frame(width: LBLayout.navigationWidth)
         .frame(maxHeight: .infinity)
-        .background(LBColor.canvas.opacity(0.93))
+        .background {
+            LinearGradient(
+                colors: [LBColor.canvas.opacity(0.98), LBColor.canvas.opacity(0.84)],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+        }
         .overlay(alignment: .trailing) {
             Rectangle().fill(LBColor.text.opacity(0.06)).frame(width: 1)
         }
@@ -205,10 +220,8 @@ private struct NavigationRailButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 15) {
-                Image(systemName: item.symbol)
-                    .font(.system(size: 25, weight: .medium))
-                    .frame(width: 28)
+            HStack(spacing: 14) {
+                navigationIcon
                 if isFocused {
                     Text(item.title)
                         .font(LBTypography.caption(size: 18, weight: .semibold))
@@ -216,19 +229,19 @@ private struct NavigationRailButton: View {
                         .transition(.opacity)
                 }
             }
-            .padding(.leading, 18)
+            .padding(.leading, 14)
             .foregroundStyle(selected ? LBColor.text : LBColor.textMuted)
-            .frame(width: isFocused ? 176 : 60, height: 58, alignment: .leading)
+            .frame(width: isFocused ? 176 : 52, height: 47, alignment: .leading)
             .background(
                 (isFocused ? LBColor.surfaceRaised : selected ? LBColor.text.opacity(0.09) : .clear),
-                in: RoundedRectangle(cornerRadius: LBRadius.medium, style: .continuous)
+                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
             .overlay {
-                RoundedRectangle(cornerRadius: LBRadius.medium, style: .continuous)
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .stroke(isFocused ? LBColor.text : .clear, lineWidth: 3)
             }
-            .offset(x: isFocused ? 42 : 0)
-            .scaleEffect(isFocused ? 1.03 : 1)
+            .offset(x: isFocused ? 52 : 0)
+            .scaleEffect(isFocused ? 1.035 : 1)
             .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }
         .buttonStyle(.plain)
@@ -237,6 +250,22 @@ private struct NavigationRailButton: View {
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier("nav-\(item.rawValue)")
     }
+
+    @ViewBuilder
+    private var navigationIcon: some View {
+        if let assetName = item.iconAssetName {
+            Image(assetName)
+                .resizable()
+                .renderingMode(.template)
+                .scaledToFit()
+                .frame(width: 26, height: 26)
+        } else {
+            Image(systemName: "gearshape")
+                .font(.system(size: 25, weight: .regular))
+                .frame(width: 26, height: 26)
+        }
+    }
+
 }
 
 private struct ProfileRailButton: View {
@@ -249,15 +278,20 @@ private struct ProfileRailButton: View {
     var body: some View {
         Button(action: action) {
             Text(profile.initials)
-                .font(LBTypography.caption(size: 17, weight: .bold))
+                .font(LBTypography.caption(size: 14, weight: .bold))
                 .foregroundStyle(LBColor.text)
-                .frame(width: 46, height: 46)
+                .frame(width: 44, height: 44)
                 .background(LBColor.surfaceRaised, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
                 .overlay {
                     RoundedRectangle(cornerRadius: 13, style: .continuous)
-                        .stroke(profile.accent, lineWidth: isFocused ? 4 : 2)
+                        .stroke(profile.accent, lineWidth: 2)
                 }
-                .scaleEffect(isFocused ? 1.06 : 1)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 13, style: .continuous)
+                        .stroke(isFocused ? LBColor.text : .clear, lineWidth: 3)
+                        .padding(-4)
+                }
+                .scaleEffect(isFocused ? 1.055 : 1)
                 .shadow(color: isFocused ? profile.accent.opacity(0.36) : .clear, radius: 15)
                 .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }

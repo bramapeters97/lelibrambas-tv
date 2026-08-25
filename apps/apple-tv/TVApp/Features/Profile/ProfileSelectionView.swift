@@ -14,7 +14,7 @@ struct ProfileSelectionView: View {
                 .mask(LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom))
 
             VStack(spacing: 0) {
-                LBWordmark()
+                LBWordmark(size: 77)
 
                 VStack(spacing: 14) {
                     Text("WELCOME TO THE FAMILY ARCHIVE")
@@ -28,7 +28,7 @@ struct ProfileSelectionView: View {
                 .padding(.top, 52)
                 .padding(.bottom, 58)
 
-                HStack(alignment: .top, spacing: 62) {
+                HStack(alignment: .top, spacing: 48) {
                     ForEach(profiles) { profile in
                         ProfileButton(profile: profile) {
                             onSelect(profile)

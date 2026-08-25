@@ -1,3 +1,4 @@
+import AVFoundation
 import LeliBrambasCore
 import SwiftUI
 import UIKit
@@ -5,6 +6,14 @@ import UIKit
 enum LBArtworkKind {
     case poster
     case backdrop
+}
+
+enum LBMediaPreviewTiming {
+    static func startSeconds(target: Double, durationSeconds: Double?) -> Double {
+        guard let durationSeconds, durationSeconds.isFinite else { return target }
+        guard durationSeconds > 1 else { return 0 }
+        return min(target, durationSeconds - 1)
+    }
 }
 
 enum BundledArtworkResolver {
@@ -37,6 +46,8 @@ enum BundledArtworkResolver {
 }
 
 struct LBArtwork: View {
+    private static let imageCache = NSCache<NSString, UIImage>()
+
     let item: MediaItem
     let kind: LBArtworkKind
 
@@ -66,7 +77,11 @@ struct LBArtwork: View {
 
     private var bundledImage: UIImage? {
         guard let url = BundledArtworkResolver.url(for: source) else { return nil }
-        return UIImage(contentsOfFile: url.path)
+        let cacheKey = url.path as NSString
+        if let cached = Self.imageCache.object(forKey: cacheKey) { return cached }
+        guard let image = UIImage(contentsOfFile: url.path) else { return nil }
+        Self.imageCache.setObject(image, forKey: cacheKey)
+        return image
     }
 
     private var placeholder: some View {
@@ -104,6 +119,8 @@ struct LBArtwork: View {
 }
 
 struct LBStudioArtwork: View {
+    private static let imageCache = NSCache<NSString, UIImage>()
+
     var body: some View {
         Group {
             if let image = bundledImage {
@@ -122,6 +139,166 @@ struct LBStudioArtwork: View {
         guard let url = Bundle.main.url(forResource: "lelibrambas-studios", withExtension: "png") else {
             return nil
         }
-        return UIImage(contentsOfFile: url.path)
+        let cacheKey = url.path as NSString
+        if let cached = Self.imageCache.object(forKey: cacheKey) { return cached }
+        guard let image = UIImage(contentsOfFile: url.path) else { return nil }
+        Self.imageCache.setObject(image, forKey: cacheKey)
+        return image
+    }
+}
+
+final class LBPreviewSurface: UIView {
+    override class var layerClass: AnyClass { AVPlayerLayer.self }
+    var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
+}
+
+struct LBMutedPreview: UIViewRepresentable {
+    let url: URL
+    let targetStartSeconds: Double
+    var onPlaying: (() -> Void)?
+    var onStopped: (() -> Void)?
+
+    final class Coordinator {
+        var player: AVPlayer?
+        var item: AVPlayerItem?
+        var itemStatusObservation: NSKeyValueObservation?
+        var playbackObservation: NSKeyValueObservation?
+        var endObserver: NSObjectProtocol?
+        var failureObserver: NSObjectProtocol?
+        var hasPrepared = false
+        var hasReportedPlayback = false
+        var isActive = false
+
+        func configure(
+            player: AVPlayer,
+            item: AVPlayerItem,
+            targetStartSeconds: Double,
+            onPlaying: (() -> Void)?,
+            onStopped: (() -> Void)?
+        ) {
+            self.player = player
+            self.item = item
+            hasPrepared = false
+            hasReportedPlayback = false
+            isActive = true
+            itemStatusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
+                DispatchQueue.main.async {
+                    guard let self, self.isCurrent(player: player, item: item) else { return }
+                    if item.status == .failed {
+                        self.isActive = false
+                        onStopped?()
+                        return
+                    }
+                    guard !self.hasPrepared, item.status == .readyToPlay else { return }
+                    self.hasPrepared = true
+                    let startSeconds = LBMediaPreviewTiming.startSeconds(
+                        target: targetStartSeconds,
+                        durationSeconds: item.duration.seconds
+                    )
+                    guard startSeconds > 0 else {
+                        player.play()
+                        return
+                    }
+                    player.seek(
+                        to: CMTime(seconds: startSeconds, preferredTimescale: 600),
+                        toleranceBefore: .zero,
+                        toleranceAfter: .zero
+                    ) { [weak self, weak player, weak item] finished in
+                        DispatchQueue.main.async {
+                            guard finished,
+                                  let self,
+                                  let player,
+                                  let item,
+                                  self.isCurrent(player: player, item: item) else { return }
+                            player.play()
+                        }
+                    }
+                }
+            }
+            playbackObservation = player.observe(\.timeControlStatus, options: [.new]) { [weak self] player, _ in
+                DispatchQueue.main.async {
+                    guard let self,
+                          self.isCurrent(player: player, item: item),
+                          !self.hasReportedPlayback,
+                          player.timeControlStatus == .playing else { return }
+                    self.hasReportedPlayback = true
+                    onPlaying?()
+                }
+            }
+            endObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemDidPlayToEndTime,
+                object: item,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self, self.isCurrent(player: player, item: item) else { return }
+                self.isActive = false
+                onStopped?()
+            }
+            failureObserver = NotificationCenter.default.addObserver(
+                forName: .AVPlayerItemFailedToPlayToEndTime,
+                object: item,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self, self.isCurrent(player: player, item: item) else { return }
+                self.isActive = false
+                onStopped?()
+            }
+        }
+
+        func stop() {
+            isActive = false
+            item?.cancelPendingSeeks()
+            player?.cancelPendingPrerolls()
+            itemStatusObservation?.invalidate()
+            itemStatusObservation = nil
+            playbackObservation?.invalidate()
+            playbackObservation = nil
+            if let endObserver {
+                NotificationCenter.default.removeObserver(endObserver)
+                self.endObserver = nil
+            }
+            if let failureObserver {
+                NotificationCenter.default.removeObserver(failureObserver)
+                self.failureObserver = nil
+            }
+            player?.pause()
+            player?.replaceCurrentItem(with: nil)
+            player = nil
+            item = nil
+            hasPrepared = false
+            hasReportedPlayback = false
+        }
+
+        private func isCurrent(player: AVPlayer, item: AVPlayerItem) -> Bool {
+            isActive && self.player === player && self.item === item
+        }
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator() }
+
+    func makeUIView(context: Context) -> LBPreviewSurface {
+        let view = LBPreviewSurface()
+        view.backgroundColor = UIColor.black
+        view.playerLayer.videoGravity = .resizeAspectFill
+        let item = AVPlayerItem(url: url)
+        let player = AVPlayer(playerItem: item)
+        player.isMuted = true
+        player.actionAtItemEnd = .pause
+        view.playerLayer.player = player
+        context.coordinator.configure(
+            player: player,
+            item: item,
+            targetStartSeconds: targetStartSeconds,
+            onPlaying: onPlaying,
+            onStopped: onStopped
+        )
+        return view
+    }
+
+    func updateUIView(_ uiView: LBPreviewSurface, context: Context) {}
+
+    static func dismantleUIView(_ uiView: LBPreviewSurface, coordinator: Coordinator) {
+        coordinator.stop()
+        uiView.playerLayer.player = nil
     }
 }

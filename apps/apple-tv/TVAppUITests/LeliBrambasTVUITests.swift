@@ -60,6 +60,48 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Sign out"].exists)
     }
 
+    func testFixtureSearchMatchesWebHierarchyAndDefaultsToTheField() throws {
+        let app = fixtureApplication(screen: "search")
+        app.launch()
+
+        XCTAssertTrue(identified("search-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(app.staticTexts["Search the archive"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["TITLES, FOLDER GROUPS, YEARS AND COLLECTIONS"].exists)
+        XCTAssertTrue(app.staticTexts["SUGGESTED FOR YOU"].exists)
+        XCTAssertTrue(app.staticTexts["Start with a familiar shelf"].exists)
+        XCTAssertTrue(app.staticTexts["6 results"].exists)
+        let searchField = identified("search-field", in: app)
+        XCTAssertTrue(searchField.waitForExistence(timeout: 5))
+        XCTAssertTrue(searchField.hasFocus)
+    }
+
+    func testFixtureFullLibraryMatchesWebHierarchy() throws {
+        let app = fixtureApplication(screen: "library")
+        app.launch()
+
+        XCTAssertTrue(identified("library-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(app.staticTexts["Full Library"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["EVERY FILM IN THE PRIVATE ARCHIVE"].exists)
+        XCTAssertTrue(app.staticTexts["COMPLETE CATALOGUE"].exists)
+        XCTAssertTrue(app.staticTexts["All movies"].exists)
+        XCTAssertTrue(app.staticTexts["6 titles"].exists)
+    }
+
+    func testFixtureCollectionsUpdatesResultsInline() throws {
+        let app = fixtureApplication(screen: "playback-ready")
+        app.launch()
+
+        XCTAssertTrue(identified("collections-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(identified("collection-results-jeugdfilms", in: app).waitForExistence(timeout: 5))
+
+        let holidayCollection = app.buttons["collection-vakantiefilms"]
+        XCTAssertTrue(holidayCollection.waitForExistence(timeout: 5))
+        holidayCollection.tap()
+
+        XCTAssertTrue(identified("collection-results-vakantiefilms", in: app).waitForExistence(timeout: 5))
+        XCTAssertTrue(identified("collections-screen", in: app).exists)
+    }
+
     private func fixtureApplication(screen: String) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [

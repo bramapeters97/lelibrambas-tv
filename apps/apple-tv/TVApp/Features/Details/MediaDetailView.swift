@@ -1,7 +1,5 @@
-import AVFoundation
 import LeliBrambasCore
 import SwiftUI
-import UIKit
 
 enum LBPreviewPolicy {
     static let delayNanoseconds: UInt64 = 1_000_000_000
@@ -9,9 +7,10 @@ enum LBPreviewPolicy {
     static let targetStartSeconds: Double = 120
 
     static func startSeconds(for durationSeconds: Double?) -> Double {
-        guard let durationSeconds, durationSeconds.isFinite else { return targetStartSeconds }
-        guard durationSeconds > 1 else { return 0 }
-        return min(targetStartSeconds, durationSeconds - 1)
+        LBMediaPreviewTiming.startSeconds(
+            target: targetStartSeconds,
+            durationSeconds: durationSeconds
+        )
     }
 }
 
@@ -25,6 +24,8 @@ struct MediaDetailView: View {
     let onPlay: (MediaItem) -> Void
 
     @State private var previewURL: URL?
+    @State private var previewIsPlaying = false
+    @State private var previewRequestGeneration = 0
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -76,7 +77,7 @@ struct MediaDetailView: View {
                     .padding(.top, 13)
 
                 LBMetadataRow(
-                    values: [item.year.map(String.init), item.category, item.category].compactMap { $0 }
+                    values: [item.year.map(String.init), item.category, "16:9"].compactMap { $0 }
                 )
                 .padding(.top, 17)
 
@@ -88,14 +89,14 @@ struct MediaDetailView: View {
                     .frame(maxWidth: 820, alignment: .leading)
                     .padding(.top, 20)
 
-                LBPrimaryButton(action: { onPlay(item) }) {
+                LBPrimaryButton(action: startFullPlayback) {
                     if isPreparingPlayback {
                         HStack(spacing: 14) {
                             ProgressView().tint(LBColor.canvas)
                             Text("Preparing…")
                         }
                     } else {
-                        Label("Play", systemImage: "play.fill")
+                        Text("Play")
                     }
                 }
                 .disabled(isPreparingPlayback)
@@ -110,15 +111,18 @@ struct MediaDetailView: View {
         .ignoresSafeArea()
         .task(id: item.id) {
             previewURL = nil
+            previewIsPlaying = false
+            previewRequestGeneration += 1
+            let generation = previewRequestGeneration
             guard previewsBackdrop, !reduceMotion else { return }
             try? await Task.sleep(nanoseconds: LBPreviewPolicy.delayNanoseconds)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, previewRequestGeneration == generation else { return }
             let preparedURL = await model.preparePreview(for: item)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, previewRequestGeneration == generation else { return }
             previewURL = preparedURL
         }
-        .onDisappear { previewURL = nil }
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewURL)
+        .onDisappear { stopPreview() }
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
         .accessibilityIdentifier("details-screen")
     }
 
@@ -132,15 +136,34 @@ struct MediaDetailView: View {
 
     @ViewBuilder
     private var backdrop: some View {
-        if let previewURL {
-            LBMutedPreview(url: previewURL)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .id(previewURL)
-                .transition(.opacity)
-        } else {
+        ZStack {
             LBArtwork(item: item, kind: .backdrop)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(previewIsPlaying ? 0 : 1)
+
+            if let previewURL {
+                LBMutedPreview(
+                    url: previewURL,
+                    targetStartSeconds: LBPreviewPolicy.targetStartSeconds,
+                    onPlaying: { previewIsPlaying = true },
+                    onStopped: stopPreview
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .opacity(previewIsPlaying ? 1 : 0)
+                .id(previewURL)
+            }
         }
+    }
+
+    private func startFullPlayback() {
+        stopPreview()
+        onPlay(item)
+    }
+
+    private func stopPreview() {
+        previewRequestGeneration += 1
+        previewIsPlaying = false
+        previewURL = nil
     }
 }
 
@@ -166,72 +189,5 @@ private struct DetailBackButton: View {
         .focusEffectDisabled()
         .accessibilityLabel("Back")
         .accessibilityIdentifier("details-back")
-    }
-}
-
-private final class PreviewSurface: UIView {
-    override class var layerClass: AnyClass { AVPlayerLayer.self }
-    var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
-}
-
-private struct LBMutedPreview: UIViewRepresentable {
-    let url: URL
-
-    final class Coordinator {
-        var player: AVPlayer?
-        var statusObservation: NSKeyValueObservation?
-        var hasStarted = false
-
-        func configure(player: AVPlayer, item: AVPlayerItem) {
-            self.player = player
-            statusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
-                DispatchQueue.main.async {
-                    guard let self, !self.hasStarted, item.status == .readyToPlay else { return }
-                    self.hasStarted = true
-                    let start = LBPreviewPolicy.startSeconds(for: item.duration.seconds)
-                    guard start > 0 else {
-                        player.play()
-                        return
-                    }
-                    player.seek(
-                        to: CMTime(seconds: start, preferredTimescale: 600),
-                        toleranceBefore: .zero,
-                        toleranceAfter: .zero
-                    ) { _ in
-                        player.play()
-                    }
-                }
-            }
-        }
-
-        func stop() {
-            statusObservation?.invalidate()
-            statusObservation = nil
-            player?.pause()
-            player?.replaceCurrentItem(with: nil)
-            player = nil
-        }
-    }
-
-    func makeCoordinator() -> Coordinator { Coordinator() }
-
-    func makeUIView(context: Context) -> PreviewSurface {
-        let view = PreviewSurface()
-        view.backgroundColor = UIColor.black
-        view.playerLayer.videoGravity = .resizeAspectFill
-        let item = AVPlayerItem(url: url)
-        let player = AVPlayer(playerItem: item)
-        player.isMuted = true
-        player.actionAtItemEnd = .pause
-        view.playerLayer.player = player
-        context.coordinator.configure(player: player, item: item)
-        return view
-    }
-
-    func updateUIView(_ uiView: PreviewSurface, context: Context) {}
-
-    static func dismantleUIView(_ uiView: PreviewSurface, coordinator: Coordinator) {
-        coordinator.stop()
-        uiView.playerLayer.player = nil
     }
 }

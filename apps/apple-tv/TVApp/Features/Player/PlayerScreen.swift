@@ -5,10 +5,16 @@ import SwiftUI
 import UIKit
 
 struct PlayerScreen: View {
+    private enum ErrorAction: Hashable {
+        case retry
+        case dismiss
+    }
+
     let session: PlaybackSession
     let onDismiss: () -> Void
 
     @StateObject private var controller: PlayerController
+    @FocusState private var focusedErrorAction: ErrorAction?
 
     init(session: PlaybackSession, onDismiss: @escaping () -> Void) {
         self.session = session
@@ -19,8 +25,11 @@ struct PlayerScreen: View {
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            NativePlayerView(controller: controller)
-                .ignoresSafeArea()
+
+            if controller.errorMessage == nil {
+                NativePlayerView(controller: controller)
+                    .ignoresSafeArea()
+            }
 
             if !controller.isReady, controller.errorMessage == nil {
                 VStack(spacing: LBSpacing.medium) {
@@ -42,11 +51,26 @@ struct PlayerScreen: View {
                     Text(message)
                         .font(LBTypography.body(size: 24))
                         .foregroundStyle(LBColor.textSecondary)
-                    LBPrimaryButton(action: onDismiss) { Text("Return to details") }
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 760)
+                    HStack(spacing: LBSpacing.medium) {
+                        LBPrimaryButton(action: controller.retry) {
+                            Label("Retry", systemImage: "arrow.clockwise")
+                        }
+                        .focused($focusedErrorAction, equals: .retry)
+                        .accessibilityIdentifier("player-retry")
+
+                        LBSecondaryButton(action: onDismiss) {
+                            Text("Return to details")
+                        }
+                        .focused($focusedErrorAction, equals: .dismiss)
+                        .accessibilityIdentifier("player-return")
+                    }
                 }
                 .foregroundStyle(.white)
                 .padding(50)
                 .background(LBColor.surface.opacity(0.96), in: RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous))
+                .defaultFocus($focusedErrorAction, .retry)
                 .accessibilityIdentifier("player-error")
             }
         }
@@ -64,45 +88,37 @@ final class PlayerController: ObservableObject {
 
     let player: AVPlayer
     let title: String
+    private let streamURL: URL
+    private let notificationCenter: NotificationCenter
     private var statusObservation: NSKeyValueObservation?
+    private var failedToEndObservation: NSObjectProtocol?
 
-    init(session: PlaybackSession) {
+    init(session: PlaybackSession, notificationCenter: NotificationCenter = .default) {
         title = session.item.title
-        let item = AVPlayerItem(url: session.url)
-        player = AVPlayer(playerItem: item)
+        streamURL = session.url
+        self.notificationCenter = notificationCenter
+        player = AVPlayer()
         player.automaticallyWaitsToMinimizeStalling = true
+        installNewItem(autoplay: false)
+    }
 
-        let titleMetadata = AVMutableMetadataItem()
-        titleMetadata.identifier = .commonIdentifierTitle
-        titleMetadata.value = session.item.title as NSString
-        titleMetadata.extendedLanguageTag = "und"
-        item.externalMetadata = [titleMetadata]
-
-        statusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
-            Task { @MainActor in
-                guard let self else { return }
-                switch item.status {
-                case .readyToPlay:
-                    self.isReady = true
-                    self.errorMessage = nil
-                case .failed:
-                    self.isReady = false
-                    self.errorMessage = "The stream could not be played. Check the connection and try again."
-                case .unknown:
-                    self.isReady = false
-                @unknown default:
-                    self.isReady = false
-                    self.errorMessage = "The player returned an unexpected state."
-                }
-            }
+    func play() {
+        if player.currentItem == nil {
+            installNewItem(autoplay: true)
+        } else {
+            player.play()
         }
     }
 
-    func play() { player.play() }
+    func retry() {
+        installNewItem(autoplay: true)
+    }
 
     func stop() {
+        removeItemObservers()
         player.pause()
         player.replaceCurrentItem(with: nil)
+        isReady = false
     }
 
     func seek(by offset: Double) {
@@ -116,6 +132,82 @@ final class PlayerController: ObservableObject {
             toleranceBefore: .zero,
             toleranceAfter: .zero
         )
+    }
+
+    private func installNewItem(autoplay: Bool) {
+        removeItemObservers()
+        player.pause()
+        isReady = false
+        errorMessage = nil
+
+        let item = makePlayerItem()
+        player.replaceCurrentItem(with: item)
+        observe(item)
+
+        if autoplay {
+            player.play()
+        }
+    }
+
+    private func makePlayerItem() -> AVPlayerItem {
+        let item = AVPlayerItem(url: streamURL)
+
+        let titleMetadata = AVMutableMetadataItem()
+        titleMetadata.identifier = .commonIdentifierTitle
+        titleMetadata.value = title as NSString
+        titleMetadata.extendedLanguageTag = "und"
+        item.externalMetadata = [titleMetadata]
+
+        return item
+    }
+
+    private func observe(_ item: AVPlayerItem) {
+        statusObservation = item.observe(\.status, options: [.initial, .new]) { [weak self] item, _ in
+            Task { @MainActor in
+                guard let self, self.player.currentItem === item else { return }
+                switch item.status {
+                case .readyToPlay:
+                    self.isReady = true
+                    self.errorMessage = nil
+                case .failed:
+                    self.showPlaybackFailure(
+                        "The stream could not be played. Check the connection and try again."
+                    )
+                case .unknown:
+                    self.isReady = false
+                @unknown default:
+                    self.showPlaybackFailure("The player returned an unexpected state.")
+                }
+            }
+        }
+
+        failedToEndObservation = notificationCenter.addObserver(
+            forName: .AVPlayerItemFailedToPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { [weak self, weak item] _ in
+            Task { @MainActor in
+                guard let self, let item, self.player.currentItem === item else { return }
+                self.showPlaybackFailure(
+                    "The stream stopped unexpectedly. Check the connection and retry."
+                )
+            }
+        }
+    }
+
+    private func showPlaybackFailure(_ message: String) {
+        player.pause()
+        isReady = false
+        errorMessage = message
+    }
+
+    private func removeItemObservers() {
+        statusObservation?.invalidate()
+        statusObservation = nil
+        if let failedToEndObservation {
+            notificationCenter.removeObserver(failedToEndObservation)
+            self.failedToEndObservation = nil
+        }
     }
 }
 
