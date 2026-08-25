@@ -8,6 +8,7 @@ struct CollectionsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedID: String?
+    @FocusState private var focusedCollectionID: String?
 
     private let columns = Array(
         repeating: GridItem(.flexible(), spacing: LBLayout.collectionGap),
@@ -63,6 +64,7 @@ struct CollectionsView: View {
                             }
                             .scaleEffect(isSelected ? 1.025 : 1)
                             .animation(reduceMotion ? nil : LBMotion.standard, value: isSelected)
+                            .focused($focusedCollectionID, equals: section.id)
                             .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
@@ -73,9 +75,11 @@ struct CollectionsView: View {
             .padding(.horizontal, LBSpacing.safeHorizontal)
             .padding(.vertical, LBSpacing.safeVertical)
         }
+        .onAppear { focusedCollectionID = selectedID }
         .onChange(of: initialSelectionID) { _, requestedID in
             guard let requestedID, sections.contains(where: { $0.id == requestedID }) else { return }
             selectedID = requestedID
+            focusedCollectionID = requestedID
         }
         .accessibilityIdentifier("collections-screen")
     }

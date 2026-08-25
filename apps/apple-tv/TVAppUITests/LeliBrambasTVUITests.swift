@@ -42,7 +42,8 @@ final class LeliBrambasTVUITests: XCTestCase {
 
         let profile = app.buttons["profile-bart-astrid"]
         XCTAssertTrue(profile.waitForExistence(timeout: 15))
-        profile.tap()
+        XCTAssertTrue(waitForFocus(on: profile))
+        XCUIRemote.shared.press(.select)
 
         XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(identified("browse-root", in: app).exists)
@@ -94,9 +95,14 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(identified("collections-screen", in: app).waitForExistence(timeout: 12))
         XCTAssertTrue(identified("collection-results-jeugdfilms", in: app).waitForExistence(timeout: 5))
 
+        let childhoodCollection = app.buttons["collection-jeugdfilms"]
         let holidayCollection = app.buttons["collection-vakantiefilms"]
+        XCTAssertTrue(childhoodCollection.waitForExistence(timeout: 5))
         XCTAssertTrue(holidayCollection.waitForExistence(timeout: 5))
-        holidayCollection.tap()
+        XCTAssertTrue(waitForFocus(on: childhoodCollection))
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(waitForFocus(on: holidayCollection))
+        XCUIRemote.shared.press(.select)
 
         XCTAssertTrue(identified("collection-results-vakantiefilms", in: app).waitForExistence(timeout: 5))
         XCTAssertTrue(identified("collections-screen", in: app).exists)
@@ -121,5 +127,13 @@ final class LeliBrambasTVUITests: XCTestCase {
 
     private func identified(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
         app.descendants(matching: .any).matching(identifier: identifier).firstMatch
+    }
+
+    private func waitForFocus(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let predicate = NSPredicate { object, _ in
+            (object as? XCUIElement)?.hasFocus == true
+        }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
+        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
     }
 }
