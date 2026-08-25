@@ -19,7 +19,7 @@ struct LBMediaCard: View {
 
     var body: some View {
         Button(action: action) { cardContent }
-            .buttonStyle(.plain)
+            .buttonStyle(LBPlainButtonStyle())
             .focusEffectDisabled()
             .accessibilityLabel(accessibilityLabel)
             .accessibilityHint("Open details")

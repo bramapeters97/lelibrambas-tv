@@ -93,14 +93,7 @@ struct SearchView: View {
                     .accessibilityLabel("Search the archive")
                     .accessibilityIdentifier("search-field")
                 if !query.isEmpty {
-                    Button(action: clearSearch) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 28))
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("Clear search")
-                    .accessibilityHint("Show suggested titles")
-                    .accessibilityIdentifier("search-clear")
+                    ClearSearchButton(action: clearSearch)
                 }
             }
             .padding(.horizontal, 28)
@@ -154,5 +147,33 @@ struct SearchView: View {
             notification: .announcement,
             argument: "Search cleared. Showing \(min(items.count, LBSearchIndex.suggestionLimit)) suggested titles."
         )
+    }
+}
+
+private struct ClearSearchButton: View {
+    let action: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.isFocused) private var isFocused
+
+    var body: some View {
+        Button(action: action) {
+            Image(systemName: "xmark")
+                .font(.system(size: 18, weight: .bold))
+                .foregroundStyle(isFocused ? LBColor.canvas : LBColor.textSecondary)
+                .frame(width: 42, height: 42)
+                .background(isFocused ? LBColor.cyan : LBColor.text.opacity(0.08), in: Circle())
+                .overlay {
+                    Circle()
+                        .stroke(isFocused ? LBColor.text.opacity(0.72) : LBColor.text.opacity(0.12), lineWidth: 1)
+                }
+                .scaleEffect(isFocused ? 1.06 : 1)
+                .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+        }
+        .buttonStyle(LBPlainButtonStyle())
+        .focusEffectDisabled()
+        .accessibilityLabel("Clear search")
+        .accessibilityHint("Show suggested titles")
+        .accessibilityIdentifier("search-clear")
     }
 }

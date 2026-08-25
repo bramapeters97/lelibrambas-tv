@@ -244,7 +244,7 @@ private struct NavigationRailButton: View {
             .scaleEffect(isFocused ? 1.035 : 1)
             .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel(item.title)
         .accessibilityAddTraits(selected ? .isSelected : [])
@@ -295,7 +295,7 @@ private struct ProfileRailButton: View {
                 .shadow(color: isFocused ? profile.accent.opacity(0.36) : .clear, radius: 15)
                 .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel("Switch profile, currently \(profile.name)")
         .accessibilityIdentifier("switch-profile")

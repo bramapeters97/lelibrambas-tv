@@ -100,7 +100,7 @@ private struct ProfileButton: View {
             .scaleEffect(isFocused ? 1.04 : 1)
             .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(profile.name)

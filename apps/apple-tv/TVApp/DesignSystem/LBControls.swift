@@ -1,5 +1,12 @@
 import SwiftUI
 
+struct LBPlainButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .opacity(configuration.isPressed ? 0.84 : 1)
+    }
+}
+
 private struct LBButtonChrome: ViewModifier {
     @Environment(\.isFocused) private var isFocused
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

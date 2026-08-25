@@ -185,7 +185,7 @@ private struct DetailBackButton: View {
                 .shadow(color: isFocused ? LBColor.gold.opacity(0.25) : .black.opacity(0.25), radius: 16)
                 .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel("Back")
         .accessibilityIdentifier("details-back")

@@ -86,7 +86,7 @@ struct LBCollectionCard: View {
 
     var body: some View {
         Button(action: action) { cardContent }
-        .buttonStyle(.plain)
+        .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel("\(section.title), \(section.items.count) films")
         .accessibilityHint(style == .compact ? "Show collection" : "Show titles in this collection")
