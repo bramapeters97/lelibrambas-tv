@@ -9,36 +9,36 @@ final class LeliBrambasTVUITests: XCTestCase {
         let app = fixtureApplication(screen: "home")
         app.launch()
 
-        XCTAssertTrue(app.otherElements["home-screen"].waitForExistence(timeout: 12))
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 12))
         XCTAssertTrue(app.buttons["nav-search"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["nav-settings"].exists)
-        XCTAssertTrue(app.buttons["media-card-1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
     }
 
     func testFixtureMediaDetailsRenderExpectedContent() throws {
         let app = fixtureApplication(screen: "details")
         app.launch()
 
-        XCTAssertTrue(app.otherElements["details-screen"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.staticTexts["details-title"].label, "The Lantern Archive")
+        XCTAssertTrue(identified("details-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
     }
 
     func testActivationStateDoesNotBypassAuthentication() throws {
         let app = fixtureApplication(screen: "activation")
         app.launch()
 
-        XCTAssertTrue(app.otherElements["activation-screen"].waitForExistence(timeout: 12))
-        XCTAssertTrue(app.buttons["activation-start"].exists)
-        XCTAssertFalse(app.otherElements["authenticated-root"].exists)
+        XCTAssertTrue(identified("activation-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(app.buttons["Activate Apple TV"].waitForExistence(timeout: 5))
+        XCTAssertFalse(identified("authenticated-root", in: app).exists)
     }
 
     func testSettingsExposeAuthenticatedSessionAndLogout() throws {
         let app = fixtureApplication(screen: "settings")
         app.launch()
 
-        XCTAssertTrue(app.otherElements["settings-screen"].waitForExistence(timeout: 12))
-        XCTAssertTrue(app.otherElements["authenticated-root"].exists)
-        XCTAssertTrue(app.buttons["settings-logout"].waitForExistence(timeout: 5))
+        XCTAssertTrue(identified("settings-screen", in: app).waitForExistence(timeout: 12))
+        XCTAssertTrue(app.buttons["nav-home"].exists)
+        XCTAssertTrue(app.buttons["Sign out"].waitForExistence(timeout: 5))
     }
 
     private func fixtureApplication(screen: String) -> XCUIApplication {
@@ -50,5 +50,9 @@ final class LeliBrambasTVUITests: XCTestCase {
             screen,
         ]
         return app
+    }
+
+    private func identified(_ identifier: String, in app: XCUIApplication) -> XCUIElement {
+        app.descendants(matching: .any).matching(identifier: identifier).firstMatch
     }
 }

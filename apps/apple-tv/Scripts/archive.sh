@@ -48,6 +48,7 @@ xcodebuild_args=(
   -destination 'generic/platform=tvOS'
   -archivePath "$archive_path"
   -derivedDataPath "$DERIVED_DATA_PATH"
+  -allowProvisioningUpdates
   DEVELOPMENT_TEAM="$team_id"
   CODE_SIGN_STYLE=Automatic
   MARKETING_VERSION="$version"

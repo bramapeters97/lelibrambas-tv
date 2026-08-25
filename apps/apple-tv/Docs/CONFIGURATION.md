@@ -21,4 +21,4 @@ export APPLE_TV_ACTIVATION_BASE_URL="https://REPLACE_WITH_ACTIVATION_HOST"
 ./Scripts/archive.sh --version 1.0.0 --build-number 1
 ```
 
-The archive script validates HTTPS, rejects localhost and placeholder domains, rejects fixture/debug/reviewer compilation conditions, and refuses to overwrite an existing archive. Debug fixture arguments are compile-time guarded and unavailable in Release.
+The archive script validates HTTPS, rejects localhost and placeholder domains, rejects fixture/debug/reviewer compilation conditions, and refuses to overwrite an existing archive. It passes Xcode's supported provisioning-update flag so automatic signing can obtain the selected team's profile after the operator signs in. Debug fixture arguments are compile-time guarded and unavailable in Release.

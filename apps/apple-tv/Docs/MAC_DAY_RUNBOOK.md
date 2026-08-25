@@ -52,7 +52,7 @@ export APPLE_TV_ACTIVATION_BASE_URL="https://REPLACE_WITH_ACTIVATION_HOST"
 ```
 
 5. Visually review every generated screenshot. Confirm no private names, emails, codes, media, paths, tokens, or unlicensed artwork appear.
-6. Choose a new monotonically increasing build number, archive, and open Organizer:
+6. Choose a new monotonically increasing build number, archive, and open Organizer. The archive command allows Xcode to obtain or refresh the required automatic-signing profile for the selected account and team:
 
 ```bash
 ./Scripts/archive.sh --version 1.0.0 --build-number <NEW_BUILD_NUMBER>

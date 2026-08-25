@@ -68,13 +68,21 @@ struct MediaDetailView: View {
         .ignoresSafeArea()
         .task(id: item.id) {
             previewURL = nil
-            guard !reduceMotion else { return }
+            guard previewsBackdrop, !reduceMotion else { return }
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             guard !Task.isCancelled else { return }
             previewURL = await model.preparePreview(for: item)
         }
         .onDisappear { previewURL = nil }
         .accessibilityIdentifier("details-screen")
+    }
+
+    private var previewsBackdrop: Bool {
+#if DEBUG
+        !DebugLaunchOptions.fixtureMode
+#else
+        true
+#endif
     }
 
     @ViewBuilder
