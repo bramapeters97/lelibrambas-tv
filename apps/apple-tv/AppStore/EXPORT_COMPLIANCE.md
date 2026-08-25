@@ -1,6 +1,6 @@
 # Export compliance worksheet
 
-The native app uses Apple’s URL Loading System/TLS for HTTPS, Security.framework Keychain Services for local session storage, and system media frameworks. It implements no proprietary encryption algorithm, VPN, secure-messaging product, or cryptocurrency feature. The optional gateway uses Web Crypto SHA-256/HMAC for hashing/signing and HTTPS for transport.
+The native app uses Apple’s URL Loading System/TLS for HTTPS video playback and system media frameworks. It implements no proprietary encryption algorithm, VPN, secure-messaging product, cryptocurrency feature, account system, or authentication gateway.
 
 This technical inventory often supports an exempt/non-proprietary encryption position, but the repository does not make a legal export declaration. Before upload, the Account Holder must:
 

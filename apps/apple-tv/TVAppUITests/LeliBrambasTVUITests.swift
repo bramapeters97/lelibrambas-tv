@@ -23,22 +23,25 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
     }
 
-    func testActivationStateDoesNotBypassAuthentication() throws {
-        let app = fixtureApplication(screen: "activation")
+    func testProductionLaunchGoesDirectlyToBundledHome() throws {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ApplePersistenceIgnoreState", "YES"]
         app.launch()
 
-        XCTAssertTrue(identified("activation-screen", in: app).waitForExistence(timeout: 12))
-        XCTAssertTrue(app.buttons["Activate Apple TV"].waitForExistence(timeout: 5))
-        XCTAssertFalse(identified("authenticated-root", in: app).exists)
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(identified("browse-root", in: app).exists)
+        XCTAssertFalse(identified("activation-screen", in: app).exists)
+        XCTAssertFalse(app.buttons["Activate Apple TV"].exists)
     }
 
-    func testSettingsExposeAuthenticatedSessionAndLogout() throws {
+    func testSettingsDescribeBundledContentWithoutLoginControls() throws {
         let app = fixtureApplication(screen: "settings")
         app.launch()
 
         XCTAssertTrue(identified("settings-screen", in: app).waitForExistence(timeout: 12))
         XCTAssertTrue(app.buttons["nav-home"].exists)
-        XCTAssertTrue(app.buttons["Sign out"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Bundled catalogue and artwork"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Sign out"].exists)
     }
 
     private func fixtureApplication(screen: String) -> XCUIApplication {

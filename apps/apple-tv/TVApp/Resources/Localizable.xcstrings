@@ -225,12 +225,6 @@
         }
       }
     },
-    "Activate Apple TV": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Activate Apple TV" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Activeer Apple TV" } }
-      }
-    },
     "Back": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "Back" } },
@@ -347,38 +341,10 @@
         "nl": { "stringUnit": { "state": "translated", "value": "Zoeken" } }
       }
     },
-    "Secure activation": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Secure activation" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Beveiligde activering" } }
-      }
-    },
     "Settings": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "Settings" } },
         "nl": { "stringUnit": { "state": "translated", "value": "Instellingen" } }
-      }
-    },
-    "Sign out": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Sign out" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Uitloggen" } }
-      }
-    },
-    "The secure session will be removed from this device.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The secure session will be removed from this device."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "De beveiligde sessie wordt van dit apparaat verwijderd."
-          }
-        }
       }
     },
     "Try again": {
@@ -398,12 +364,6 @@
             "value": "Probeer een andere titel of collectienaam."
           }
         }
-      }
-    },
-    "Waiting for approval…": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Waiting for approval…" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Wachten op goedkeuring…" } }
       }
     },
     "Your private cinema, on the biggest screen.": {

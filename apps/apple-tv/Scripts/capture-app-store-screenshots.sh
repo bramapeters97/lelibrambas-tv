@@ -87,7 +87,7 @@ capture home 01-home.png
 capture shelves 02-content-shelves.png
 capture details 03-media-details.png
 capture playback-ready 04-collections.png
-capture activation 05-device-activation.png
+capture settings 05-settings.png
 
 log "The tvOS shell preview is ready at $home_target."
 log "App screenshots are ready for human visual review at $output_directory. Do not submit them without checking focus, text, artwork rights, and private-data exposure."

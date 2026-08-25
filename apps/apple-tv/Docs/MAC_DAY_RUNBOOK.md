@@ -10,12 +10,10 @@ Complete from a trusted browser/Windows machine:
 2. Accept current developer and App Store Connect agreements; verify the intended user has Account Holder/Admin/App Manager access as needed.
 3. Reserve explicit App ID `com.lelibrambas.plus`. Confirm this is intentionally distinct from any pre-existing prototype identifier.
 4. Create the tvOS App Store Connect record using `../AppStore/APP_RECORD_SETUP.md`; record its Apple ID privately.
-5. Prepare a temporary dedicated App Review account/activation path and put it only in App Store Connect review fields.
-6. Deploy and security-review the isolated Apple TV gateway through a separate approved change; confirm real HTTPS API and activation URLs.
-7. Finalize support contact/URLs, privacy decisions, content-rights confirmations, rating answers, icon/top-shelf art, metadata, and screenshots.
-8. Confirm the latest `.github/workflows/tvos-ci.yml` run is green. A workflow file merely present in Git is not proof.
-9. Install TestFlight on the physical Apple TV and prepare the Apple ID invitation/redeem route.
-10. Have Apple two-factor authentication and recovery access available; never paste credentials into the repository or shell history.
+5. Finalize support contact/URLs, privacy decisions, content-rights confirmations, rating answers, icon/top-shelf art, metadata, and screenshots.
+6. Confirm the latest `.github/workflows/tvos-ci.yml` run is green. A workflow file merely present in Git is not proof.
+7. Install TestFlight on the physical Apple TV and prepare the Apple ID invitation/redeem route.
+8. Have Apple two-factor authentication and recovery access available; never paste credentials into the repository or shell history.
 
 ## On the rented Mac
 
@@ -32,12 +30,10 @@ Then:
 
 1. Open Xcode **Settings > Accounts** and sign in to the Apple Developer account.
 2. Open `LeliBrambasTV.xcodeproj`, select the `LeliBrambasTV` target, and verify automatic signing sees the intended team and bundle ID. Do not alter targets/build phases manually; regenerate from `project.yml` if needed.
-3. Fill ignored local configuration or use ephemeral environment variables:
+3. Configure only the Apple Developer team. The catalogue and artwork are app resources; no gateway or activation environment variables are needed:
 
 ```bash
 export APPLE_DEVELOPMENT_TEAM="REPLACE_WITH_10_CHARACTER_TEAM_ID"
-export APPLE_TV_API_BASE_URL="https://REPLACE_WITH_GATEWAY_HOST"
-export APPLE_TV_ACTIVATION_BASE_URL="https://REPLACE_WITH_ACTIVATION_HOST"
 ./Scripts/doctor.sh --release
 ```
 

@@ -4,12 +4,14 @@ on:
   pull_request:
     paths:
       - 'apps/apple-tv/**'
-      - 'services/apple-tv-gateway/**'
+      - 'data/media_catalog.json'
+      - 'artwork/**'
       - '.github/workflows/tvos-ci.yml'
   push:
     paths:
       - 'apps/apple-tv/**'
-      - 'services/apple-tv-gateway/**'
+      - 'data/media_catalog.json'
+      - 'artwork/**'
       - '.github/workflows/tvos-ci.yml'
   workflow_dispatch:
 
@@ -21,37 +23,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gateway-check:
-    name: Validate isolated Apple TV gateway
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    defaults:
-      run:
-        shell: bash
-        working-directory: services/apple-tv-gateway
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Select Node 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: services/apple-tv-gateway/package-lock.json
-
-      - name: Install locked gateway dependencies
-        run: npm ci --workspaces=false
-
-      - name: Typecheck, test, and dry-run build gateway
-        run: npm run check
-
   build-and-test:
     name: Build and test native tvOS
     runs-on: macos-26
     timeout-minutes: 50
-    needs: gateway-check
     defaults:
       run:
         shell: bash
@@ -91,6 +66,7 @@ jobs:
         run: bash Scripts/verify-project-generation.sh
 
       - name: Package generated Xcode project
+        if: always()
         run: |
           mkdir -p BuildArtifacts/GeneratedProject
           ditto -c -k --keepParent LeliBrambasTV.xcodeproj BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip

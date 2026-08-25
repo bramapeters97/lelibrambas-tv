@@ -49,6 +49,11 @@ targets:
         excludes:
           - Info.plist
         buildPhase: resources
+      - path: ../../data/media_catalog.json
+        buildPhase: resources
+      - path: ../../artwork
+        type: folder
+        buildPhase: resources
     dependencies:
       - package: LeliBrambasCore
     settings:
@@ -66,22 +71,14 @@ targets:
           - $(SRCROOT)/TVApp
         script: |
           if [ "${CONFIGURATION}" = "Release" ]; then
-            if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|LBAutomaticSignIn|--screenshot-mode|--ui-testing' "${SRCROOT}/TVApp"; then
+            if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|--screenshot-mode|--ui-testing' "${SRCROOT}/TVApp"; then
               echo "error: Debug fixture switches leaked outside their guarded source."
               exit 1
             fi
-            for endpoint in "${API_BASE_URL}" "${ACTIVATION_BASE_URL}"; do
-              case "${endpoint}" in
-                ""|*example.test*|*localhost*|*127.0.0.1*|*0.0.0.0*)
-                  if [ "${CODE_SIGNING_ALLOWED}" = "NO" ] && [ "${LB_UNSIGNED_CI_VALIDATION}" = "YES" ]; then
-                    echo "warning: Unsigned CI compilation is using a non-routable endpoint placeholder."
-                  else
-                    echo "error: Release endpoint is missing or still points to a development placeholder."
-                    exit 1
-                  fi
-                  ;;
-              esac
-            done
+            if grep -R -n -E 'device/authorizations|API_BASE_URL|ACTIVATION_BASE_URL|gateway\.example\.test' "${SRCROOT}/TVApp" "${SRCROOT}/Config"; then
+              echo "error: Obsolete activation or gateway configuration leaked into the production target."
+              exit 1
+            fi
           fi
 
   LeliBrambasTVTests:

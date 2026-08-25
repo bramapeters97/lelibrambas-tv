@@ -30,4 +30,6 @@ xcodebuild \
   archive | tee "$LOGS_PATH/archive-unsigned.log"
 
 [[ -d "$archive_path" ]] || fail "Unsigned archive validation did not produce $archive_path"
+app_path="$archive_path/Products/Applications/LeliBrambasTV.app"
+"$SCRIPT_DIR/validate-bundled-content.sh" --bundle "$app_path"
 log "Unsigned archive validation passed: $archive_path"

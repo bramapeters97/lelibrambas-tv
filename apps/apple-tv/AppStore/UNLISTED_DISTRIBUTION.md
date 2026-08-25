@@ -13,6 +13,6 @@ Recommended long-term route: validate through TestFlight, pass normal App Review
 7. If approved, verify App Store Connect shows **Unlisted App** and test the generated direct link.
 8. Share the direct link only through the intended private channel, while assuming it can be forwarded.
 
-Apple states that unlisted apps do not appear in search, charts, categories, or recommendations, but anyone with the link can reach the store page. In-app device activation therefore remains mandatory. See [Apple’s unlisted distribution guidance](https://developer.apple.com/support/unlisted-app-distribution/) and [distribution-method instructions](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/set-distribution-methods).
+Apple states that unlisted apps do not appear in search, charts, categories, or recommendations, but anyone with the link can reach the store page. The current tvOS app has no in-app authentication, so the owner must accept that distribution risk. See [Apple’s unlisted distribution guidance](https://developer.apple.com/support/unlisted-app-distribution/) and [distribution-method instructions](https://developer.apple.com/help/app-store-connect/manage-your-apps-availability/set-distribution-methods).
 
 Do not choose **Private** Apple Business/School Manager distribution for this route unless the intended audience is managed through those programs; Apple documents that switching private/public later can require a new app record.

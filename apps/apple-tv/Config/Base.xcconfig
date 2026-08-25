@@ -1,3 +1,2 @@
 #include "Shared.xcconfig"
 #include? "Signing.xcconfig"
-#include? "Secrets.xcconfig"

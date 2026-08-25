@@ -19,49 +19,20 @@ private struct RootView: View {
     var body: some View {
         ZStack {
             LBBackground()
-            switch model.authenticationState {
-            case .requesting:
-                LBLoadingView(message: "Preparing secure activation…")
-            case let .awaitingApproval(challenge):
-                DeviceActivationView(
-                    challenge: challenge,
-                    isWorking: model.isWorking,
-                    error: model.presentedError,
-                    onStart: { Task { await model.beginActivation() } },
-                    onCancel: model.cancelActivation
+            if model.isLoadingCatalog {
+                LaunchView(message: "Opening the family archive…")
+            } else if let error = model.presentedError, model.items.isEmpty {
+                LBErrorView(error: error) { Task { await model.reloadCatalog() } }
+            } else if model.items.isEmpty {
+                LBEmptyState(
+                    title: "The archive is quiet",
+                    message: "No films are available in the bundled catalogue."
                 )
-            case let .authorized(session):
-                if model.isLoadingCatalog {
-                    LaunchView(message: "Opening the family archive…")
-                } else if let error = model.presentedError, model.items.isEmpty {
-                    LBErrorView(error: error) { Task { await model.reloadCatalog() } }
-                } else if model.items.isEmpty {
-                    LBEmptyState(
-                        title: "The archive is quiet",
-                        message: "No films are available for this account yet."
-                    )
-                } else {
-                    AuthenticatedRootView(model: model, session: session)
-                }
-            case let .failed(failure):
-                DeviceActivationView(
-                    challenge: nil,
-                    isWorking: model.isWorking,
-                    error: AppError.authentication(failure),
-                    onStart: { Task { await model.beginActivation() } },
-                    onCancel: model.cancelActivation
-                )
-            case .signedOut:
-                DeviceActivationView(
-                    challenge: nil,
-                    isWorking: model.isWorking,
-                    error: model.presentedError,
-                    onStart: { Task { await model.beginActivation() } },
-                    onCancel: model.cancelActivation
-                )
+            } else {
+                BrowseRootView(model: model)
             }
         }
-        .animation(LBMotion.standard, value: model.authenticationState)
+        .animation(LBMotion.standard, value: model.isLoadingCatalog)
         .alert(
             "Playback unavailable",
             isPresented: $model.showPlaybackError,

@@ -6,23 +6,23 @@ Open Xcode once, accept the license, install a stable tvOS platform/runtime in X
 
 ## XcodeGen checksum mismatch
 
-Stop. Do not bypass the checksum. Confirm the repository still pins version 2.46.0 and compare the official release asset. A changed archive requires a reviewed checksum update; never accept an unexpected binary on a rented Mac.
+Stop. Do not bypass the checksum. Confirm the repository still pins version 2.46.0 and compare the official release asset. A changed archive requires a reviewed checksum update.
 
 ## Release configuration failure
 
-Signed archives require real HTTPS gateway and activation endpoints through `APPLE_TV_API_BASE_URL` and `APPLE_TV_ACTIVATION_BASE_URL`. Placeholder, `.invalid`, `.example`, localhost, HTTP, fixture, reviewer, debug-menu, or auth-bypass settings are intentionally rejected.
+Run `./Scripts/validate-bundled-content.sh`. Release requires the tracked `data/media_catalog.json`, every referenced PNG under `artwork/`, and `artwork/generic_cinema_2.png`. It does not require an API or activation endpoint.
 
 ## Signing failure
 
 Sign into Xcode, ensure the Account Holder has accepted current agreements, reserve `com.lelibrambas.plus`, select the correct team, and confirm automatic signing can create a tvOS App Store profile. Do not download certificates from untrusted sources or commit signing files.
 
-## Activation never completes
+## Catalogue or poster fails to load
 
-Check the expiry and polling response, then inspect gateway logs using only redacted request IDs. Do not log the device code, session token, email, signed playback URL, or authorization headers. Request a new code after expiry.
+Regenerate the Xcode project and run `./Scripts/build-simulator.sh`. The build validates that `media_catalog.json` and `artwork/generic_cinema_2.png` are present in the app bundle. Missing item artwork intentionally falls back to `generic_cinema_2.png`.
 
 ## Video fails on a physical Apple TV
 
-Confirm the returned URL is HTTPS and resolves to the repository’s supported HLS or MP4 media. Verify the session is current and that signed playback URLs have not expired. Reproduce with one synthetic fixture before inspecting private content.
+Confirm the selected item’s `stream_video_id` is HTTPS and resolves to supported HLS, MP4, or Cloudflare Stream playback. There is no gateway request between selection and AVPlayer.
 
 ## Screenshot dimensions are rejected
 

@@ -36,18 +36,16 @@ enum BrowseRoute: Hashable {
     case collection(String)
 }
 
-struct AuthenticatedRootView: View {
+struct BrowseRootView: View {
     @ObservedObject var model: AppModel
-    let session: SessionRecord
 
     @State private var section: BrowseSection = .home
     @State private var path: [BrowseRoute] = []
     @State private var playbackSession: PlaybackSession?
     @State private var isPreparingPlayback = false
 
-    init(model: AppModel, session: SessionRecord) {
+    init(model: AppModel) {
         self.model = model
-        self.session = session
 #if DEBUG
         switch DebugLaunchOptions.screenshotScreen {
         case "details":
@@ -72,7 +70,6 @@ struct AuthenticatedRootView: View {
             HStack(spacing: 0) {
                 MainNavigationRail(
                     selection: section,
-                    email: session.email,
                     onSelect: selectSection
                 )
                 NavigationStack(path: $path) {
@@ -88,7 +85,7 @@ struct AuthenticatedRootView: View {
                 playbackSession = nil
             }
         }
-        .accessibilityIdentifier("authenticated-root")
+        .accessibilityIdentifier("browse-root")
     }
 
     @ViewBuilder
@@ -109,7 +106,7 @@ struct AuthenticatedRootView: View {
         case .library:
             LibraryView(items: model.items) { path.append(.details($0.id)) }
         case .settings:
-            SettingsView(session: session, onLogout: model.logout)
+            SettingsView()
         }
     }
 
@@ -162,7 +159,6 @@ struct AuthenticatedRootView: View {
 
 private struct MainNavigationRail: View {
     let selection: BrowseSection
-    let email: String?
     let onSelect: (BrowseSection) -> Void
 
     var body: some View {
@@ -175,14 +171,6 @@ private struct MainNavigationRail: View {
                 }
             }
             Spacer(minLength: 12)
-            if let initial = email?.first {
-                Text(String(initial).uppercased())
-                    .font(.system(size: 25, weight: .bold, design: .rounded))
-                    .foregroundStyle(LBColor.canvas)
-                    .frame(width: 52, height: 52)
-                    .background(LBColor.aurora, in: Circle())
-                    .accessibilityHidden(true)
-            }
         }
         .padding(.vertical, LBSpacing.safeVertical)
         .frame(width: LBLayout.navigationWidth)

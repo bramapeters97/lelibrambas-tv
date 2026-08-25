@@ -19,7 +19,7 @@ It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launchin
 | `1920x1080/02-content-shelves.png`   | Multiple collection/media shelves | Card crop, spacing, synthetic labels, focus visibility        |
 | `1920x1080/03-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
 | `1920x1080/04-collections.png`       | Collections feature view          | Distinct grouping, synthetic/cleared artwork, focus order     |
-| `1920x1080/05-device-activation.png` | Optional activation               | Synthetic/non-live code and placeholder-safe domain only      |
+| `1920x1080/05-settings.png`          | Settings                          | Version, bundled-content status, focus order                   |
 
 Before upload:
 

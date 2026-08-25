@@ -20,14 +20,12 @@ cd apps/apple-tv
 ./Scripts/bootstrap-mac.sh
 ```
 
-`bootstrap-mac.sh` creates ignored local `Config/Signing.xcconfig` and `Config/Secrets.xcconfig` files only when absent; it never overwrites populated local configuration. The Debug simulator build uses synthetic fixture content only when launched with test-only arguments. Release builds have no authentication bypass.
+`bootstrap-mac.sh` creates ignored local signing configuration only when absent; it never overwrites populated local configuration. The Debug simulator build uses synthetic fixture content only when launched with test-only arguments. Release loads `../../data/media_catalog.json` and `../../artwork/` from the app bundle and launches directly to Home. No gateway, account, activation, session, or token configuration is required.
 
-Before a signed archive, set local team and production gateway values, then run:
+Before a signed archive, set only the local Apple Developer team, then run:
 
 ```bash
 export APPLE_DEVELOPMENT_TEAM="REPLACE_WITH_TEAM_ID"
-export APPLE_TV_API_BASE_URL="https://REPLACE_WITH_GATEWAY_HOST"
-export APPLE_TV_ACTIVATION_BASE_URL="https://REPLACE_WITH_ACTIVATION_HOST"
 ./Scripts/doctor.sh --release
 ./Scripts/archive.sh --version 1.0.0 --build-number 1
 ./Scripts/upload-testflight.sh "BuildArtifacts/Archives/LeliBrambasTV-1.0.0-1.xcarchive"

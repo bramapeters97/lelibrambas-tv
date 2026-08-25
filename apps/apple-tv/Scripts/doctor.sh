@@ -63,8 +63,9 @@ check "Base.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Base.xcconfig"
 check "Debug.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Debug.xcconfig"
 check "Release.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Release.xcconfig"
 check "Signing template exists" test -f "$APPLE_TV_ROOT/Config/Signing.xcconfig.example"
-check "Secrets template exists" test -f "$APPLE_TV_ROOT/Config/Secrets.xcconfig.example"
 check "Privacy manifest exists" test -f "$APPLE_TV_ROOT/TVApp/Resources/PrivacyInfo.xcprivacy"
+check "bundled production catalogue exists" test -f "$REPOSITORY_ROOT/data/media_catalog.json"
+check "bundled poster fallback exists" test -f "$REPOSITORY_ROOT/artwork/generic_cinema_2.png"
 
 generator="$(xcodegen_binary || true)"
 if [[ -n "$generator" && "$($generator --version 2>/dev/null || true)" == *"2.46.0"* ]]; then
@@ -98,15 +99,6 @@ if [[ "${APPLE_DEVELOPMENT_TEAM:-}" =~ ^[A-Z0-9]{10}$ ]] || { [[ -f "$APPLE_TV_R
   printf 'PASS  local signing team is configured\n'
 else
   notice "local signing team is not configured in Config/Signing.xcconfig"
-  $strict_release && failures=$((failures + 1))
-fi
-
-if [[ "${APPLE_TV_API_BASE_URL:-}" == https://* && "${APPLE_TV_ACTIVATION_BASE_URL:-}" == https://* ]] && ! printf '%s\n%s\n' "$APPLE_TV_API_BASE_URL" "$APPLE_TV_ACTIVATION_BASE_URL" | grep -Eiq '(example\.|\.invalid|localhost|127\.0\.0\.1|REPLACE_)'; then
-  printf 'PASS  endpoint configuration is supplied through release environment values\n'
-elif [[ -f "$APPLE_TV_ROOT/Config/Secrets.xcconfig" ]] && ! grep -Eiq '(example\.|\.invalid|localhost|127\.0\.0\.1|REPLACE_)' "$APPLE_TV_ROOT/Config/Secrets.xcconfig"; then
-  printf 'PASS  local endpoint configuration does not contain obvious placeholders\n'
-else
-  notice "local endpoint configuration is absent or still contains placeholders"
   $strict_release && failures=$((failures + 1))
 fi
 

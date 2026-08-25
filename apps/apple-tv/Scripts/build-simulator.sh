@@ -24,3 +24,7 @@ xcodebuild \
   -derivedDataPath "$DERIVED_DATA_PATH" \
   CODE_SIGNING_ALLOWED=NO \
   build | tee "$LOGS_PATH/build-simulator.log"
+
+app_path="$(find "$DERIVED_DATA_PATH/Build/Products" -type d -name 'LeliBrambasTV.app' -path '*Debug-appletvsimulator*' -print -quit)"
+[[ -n "$app_path" ]] || fail "The simulator app bundle was not produced."
+"$SCRIPT_DIR/validate-bundled-content.sh" --bundle "$app_path"

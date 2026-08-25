@@ -1,12 +1,6 @@
-import LeliBrambasCore
 import SwiftUI
 
 struct SettingsView: View {
-    let session: SessionRecord
-    let onLogout: () -> Void
-
-    @State private var confirmsLogout = false
-
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
@@ -16,54 +10,22 @@ struct SettingsView: View {
                     .accessibilityAddTraits(.isHeader)
 
                 settingsCard
-
-                LBSecondaryButton {
-                    confirmsLogout = true
-                } label: {
-                    Label("Sign out", systemImage: "rectangle.portrait.and.arrow.right")
-                }
-                .accessibilityIdentifier("settings-logout")
             }
             .padding(.horizontal, LBSpacing.safeHorizontal)
             .padding(.vertical, LBSpacing.safeVertical)
             .frame(maxWidth: 980, alignment: .leading)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .confirmationDialog("Sign out of this Apple TV?", isPresented: $confirmsLogout, titleVisibility: .visible) {
-            Button("Sign out", role: .destructive, action: onLogout)
-                .accessibilityIdentifier("confirm-logout")
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("The secure session will be removed from this device.")
-        }
         .accessibilityIdentifier("settings-screen")
     }
 
     private var settingsCard: some View {
         VStack(spacing: 0) {
-            SettingsRow(
-                icon: "person.crop.circle.fill",
-                title: "Signed in as",
-                value: session.email ?? "Authorized family member"
-            )
+            SettingsRow(icon: "apple.logo", title: "Application", value: "LeliBrambas+ for Apple TV")
             Divider().overlay(LBColor.text.opacity(0.1))
-            SettingsRow(
-                icon: "apple.logo",
-                title: "Application",
-                value: "LeliBrambas+ for Apple TV"
-            )
+            SettingsRow(icon: "number", title: "Version", value: versionLabel)
             Divider().overlay(LBColor.text.opacity(0.1))
-            SettingsRow(
-                icon: "number",
-                title: "Version",
-                value: versionLabel
-            )
-            Divider().overlay(LBColor.text.opacity(0.1))
-            SettingsRow(
-                icon: "lock.shield.fill",
-                title: "Session protection",
-                value: "Stored in the tvOS Keychain"
-            )
+            SettingsRow(icon: "shippingbox.fill", title: "Content", value: "Bundled catalogue and artwork")
         }
         .background(LBColor.surface.opacity(0.9), in: RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous))
         .overlay {

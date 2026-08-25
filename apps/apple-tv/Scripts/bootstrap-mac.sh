@@ -9,7 +9,7 @@ source "$SCRIPT_DIR/common.sh"
 require_macos
 "$SCRIPT_DIR/bootstrap-xcodegen.sh"
 
-for name in Signing Secrets; do
+for name in Signing; do
   local_file="$APPLE_TV_ROOT/Config/${name}.xcconfig"
   example_file="$APPLE_TV_ROOT/Config/${name}.xcconfig.example"
   [[ -f "$example_file" ]] || fail "Missing configuration template: $example_file"
@@ -26,4 +26,4 @@ xcodebuild -resolvePackageDependencies -project "$PROJECT_PATH" -scheme "$SCHEME
 "$SCRIPT_DIR/build-simulator.sh"
 "$SCRIPT_DIR/test.sh"
 
-log "Mac bootstrap completed. Signing and production endpoint values remain local and must be completed before archive."
+log "Mac bootstrap completed. Only the signing team remains local and must be completed before archive."

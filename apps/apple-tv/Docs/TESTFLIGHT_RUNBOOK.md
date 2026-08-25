@@ -16,7 +16,7 @@ TestFlight is the beta and physical-device validation route, not the intended pe
 1. Under **TestFlight > Additional > Test Information**, paste the reviewed fields from `../AppStore/TESTFLIGHT_METADATA.md`; replace every placeholder.
 2. Start with an **internal testing** group containing only trusted App Store Connect users. Add the processed tvOS build to that group.
 3. For a non-App-Store-Connect family tester, create an external group, provide Beta App Review information, and submit the first build for TestFlight App Review when prompted.
-4. Do not expose a public invitation link unless its broader sharing risk is understood. In-app device activation remains mandatory regardless of invitation method.
+4. Do not expose a public invitation link unless its broader sharing risk is understood.
 
 ## 3. Install on Apple TV
 
@@ -40,11 +40,11 @@ Apple publishes these tvOS-specific steps at [testflight.apple.com](https://test
 
 ## 4. Physical-device acceptance
 
-- Activate through the production gateway, including denial and expiry tests.
-- Relaunch to verify Keychain session restoration; invalidate the session and verify fail-closed reactivation.
-- Load real authorized catalog and artwork without logging private values.
+- Confirm launch goes directly to Home without an activation screen or startup network request.
+- Relaunch and confirm the bundled production catalogue opens again without account or session state.
+- Confirm bundled PNG artwork loads and a missing poster uses `generic_cinema_2.png`.
 - Play supported HLS/MP4 content; test play/pause, ±10-second seeking, scrubber, volume/audio routing, interruption, Back, and error recovery.
 - Check focus, safe areas, typography, and crop at 1080p and 4K where devices permit.
 - Email tester feedback to the configured feedback address; tvOS does not provide the same screenshot feedback flow as all other platforms.
 
-After validation, expire or retire obsolete beta builds and proceed through normal App Review plus the unlisted-distribution request. Never treat TestFlight access or the eventual unlisted link as authentication.
+After validation, expire or retire obsolete beta builds and proceed through normal App Review plus the unlisted-distribution request.

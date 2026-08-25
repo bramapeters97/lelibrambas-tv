@@ -1,5 +1,4 @@
-// Shared non-secret tvOS build settings. Endpoint values deliberately use the
-// reserved example.test domain and must be overridden by an authorized build.
+// Shared non-secret tvOS build settings.
 
 PRODUCT_BUNDLE_IDENTIFIER = com.lelibrambas.plus
 MARKETING_VERSION = 1.0.0
@@ -14,10 +13,6 @@ GENERATE_INFOPLIST_FILE = NO
 INFOPLIST_FILE = TVApp/Resources/Info.plist
 ASSETCATALOG_COMPILER_APPICON_NAME = App Icon & Top Shelf Image
 ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor
-
-// $() safely inserts the second slash because // starts a comment in xcconfig.
-API_BASE_URL = https:/$()/gateway.example.test
-ACTIVATION_BASE_URL = https:/$()/activate.example.test
 
 CLANG_ENABLE_MODULES = YES
 ENABLE_USER_SCRIPT_SANDBOXING = YES

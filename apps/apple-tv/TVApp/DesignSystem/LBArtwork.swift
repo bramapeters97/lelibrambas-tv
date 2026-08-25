@@ -1,9 +1,39 @@
-import SwiftUI
 import LeliBrambasCore
+import SwiftUI
+import UIKit
 
 enum LBArtworkKind {
     case poster
     case backdrop
+}
+
+enum BundledArtworkResolver {
+    static let fallbackPath = "artwork/generic_cinema_2.png"
+
+    static func url(for source: String, bundle: Bundle = .main) -> URL? {
+        if source.hasPrefix("fixture://") { return nil }
+        return resourceURL(for: source, bundle: bundle)
+            ?? resourceURL(for: fallbackPath, bundle: bundle)
+    }
+
+    private static func resourceURL(for source: String, bundle: Bundle) -> URL? {
+        let normalized = source.replacingOccurrences(of: "\\", with: "/")
+        guard !normalized.isEmpty,
+              !normalized.hasPrefix("/"),
+              !normalized.contains("../"),
+              URL(string: normalized)?.scheme == nil else {
+            return nil
+        }
+
+        let relative = normalized.hasPrefix("artwork/")
+            ? String(normalized.dropFirst("artwork/".count))
+            : normalized
+        let component = relative as NSString
+        let fileName = component.deletingPathExtension
+        let fileExtension = component.pathExtension
+        guard !fileName.isEmpty, !fileExtension.isEmpty else { return nil }
+        return bundle.url(forResource: fileName, withExtension: fileExtension, subdirectory: "artwork")
+    }
 }
 
 struct LBArtwork: View {
@@ -21,23 +51,9 @@ struct LBArtwork: View {
 
     var body: some View {
         Group {
-            if let url = secureRemoteURL {
-                AsyncImage(url: url, transaction: Transaction(animation: LBMotion.relaxed)) { phase in
-                    switch phase {
-                    case let .success(image):
-                        image.resizable().transition(.opacity)
-                    case .empty:
-                        placeholder.overlay { ProgressView().tint(LBColor.textSecondary) }
-                    case .failure:
-                        placeholder.overlay {
-                            Image(systemName: "film")
-                                .font(.system(size: kind == .poster ? 44 : 70, weight: .light))
-                                .foregroundStyle(LBColor.text.opacity(0.72))
-                        }
-                    @unknown default:
-                        placeholder
-                    }
-                }
+            if let image = bundledImage {
+                Image(uiImage: image)
+                    .resizable()
             } else {
                 placeholder
             }
@@ -47,9 +63,9 @@ struct LBArtwork: View {
         .accessibilityHidden(true)
     }
 
-    private var secureRemoteURL: URL? {
-        guard let url = URL(string: source), url.scheme?.lowercased() == "https" else { return nil }
-        return url
+    private var bundledImage: UIImage? {
+        guard let url = BundledArtworkResolver.url(for: source) else { return nil }
+        return UIImage(contentsOfFile: url.path)
     }
 
     private var placeholder: some View {

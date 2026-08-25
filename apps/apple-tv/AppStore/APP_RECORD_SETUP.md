@@ -27,7 +27,7 @@ Create this record manually; no repository script creates or mutates App Store C
 
 - Reviewed English/Dutch metadata, 1–10 compliant tvOS screenshots, final app icon and top-shelf assets.
 - Public HTTPS support URL and privacy-policy URL. Draft page content exists in this directory, but nothing is deployed.
-- App Review contact and dedicated activation credentials/instructions stored only in App Store Connect.
+- App Review contact and the no-login review path from `APP_REVIEW_NOTES.md`.
 - Complete App Privacy answers, age rating, export-compliance decision, content-rights declaration, pricing, territories, and release option.
 - A processed signed build whose bundle ID/version/build match the record.
 

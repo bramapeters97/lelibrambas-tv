@@ -54,12 +54,6 @@ xcodebuild_args=(
   MARKETING_VERSION="$version"
   CURRENT_PROJECT_VERSION="$build_number"
 )
-if [[ -n "${APPLE_TV_API_BASE_URL:-}" ]]; then
-  xcodebuild_args+=("API_BASE_URL=$APPLE_TV_API_BASE_URL")
-fi
-if [[ -n "${APPLE_TV_ACTIVATION_BASE_URL:-}" ]]; then
-  xcodebuild_args+=("ACTIVATION_BASE_URL=$APPLE_TV_ACTIVATION_BASE_URL")
-fi
 xcodebuild "${xcodebuild_args[@]}" archive | tee "$LOGS_PATH/archive-${version}-${build_number}.log"
 
 [[ -d "$archive_path" ]] || fail "Xcode did not produce the expected archive."

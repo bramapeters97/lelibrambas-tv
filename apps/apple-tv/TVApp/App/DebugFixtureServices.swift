@@ -20,44 +20,11 @@ enum DebugLaunchOptions {
         return arguments[flag + 1]
     }()
 
-    static let automaticFixtureSignIn = arguments.contains("-LBAutomaticSignIn")
-        || (fixtureMode && screenshotScreen != "activation")
 }
 
-struct FixtureDeviceAuthService: DeviceAuthorizing {
-    func begin(deviceName: String) async throws -> ActivationChallenge {
-        ActivationChallenge(
-            deviceCode: "debug-device-code",
-            userCode: "MEMORY",
-            verificationURL: URL(string: "https://activate.example.test")!,
-            verificationURLComplete: URL(string: "https://activate.example.test/?code=MEMORY")!,
-            expiresAt: Date().addingTimeInterval(600),
-            intervalSeconds: 2
-        )
-    }
-
-    func poll(deviceCode: String) async throws -> ActivationPollResponse {
-        ActivationPollResponse(
-            status: .approved,
-            sessionToken: "debug-fixture-token",
-            email: "reviewer@example.test",
-            expiresAt: Date().addingTimeInterval(3_600)
-        )
-    }
-}
-
-struct FixtureCatalogService: CatalogServing {
-    func loadCatalog(sessionToken: String) async throws -> [MediaItem] {
+struct FixtureCatalogLoader: CatalogLoading {
+    func loadCatalog() async throws -> [MediaItem] {
         FixtureCatalog.items
-    }
-}
-
-struct FixturePlaybackService: PlaybackServing {
-    func playbackURL(for item: MediaItem, sessionToken: String) async throws -> URL {
-        if let localURL = Bundle.main.url(forResource: "archive-16x9", withExtension: "mp4") {
-            return localURL
-        }
-        return try PlaybackURLResolver.resolve("https://example.test/fixture/movie.m3u8")
     }
 }
 

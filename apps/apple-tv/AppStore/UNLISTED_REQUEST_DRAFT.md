@@ -18,7 +18,7 @@ LeliBrambas+ is a native Apple TV viewer for a small, predefined family audience
 
 **How users obtain and use the app**
 
-The direct App Store link will be sent only through the family’s controlled communication channel. Possession of the link does not grant archive access. Every installation must complete a short-lived device-code activation in a separately authenticated browser, and the gateway allows only approved account identities. Sessions are scoped, expiring, revocable, and fail closed.
+The direct App Store link will be sent only through the family’s controlled communication channel. The tvOS app intentionally has no account or activation system; the owner accepts that anyone who obtains the unlisted link may be able to install it.
 
 **Audience size and relationship:** `<NUMBER_AND_FAMILY_RELATIONSHIP_DESCRIPTION>`
 

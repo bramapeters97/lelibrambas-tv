@@ -51,7 +51,7 @@ for target in "$DERIVED_DATA_PATH" "$LOGS_PATH" "$RESULTS_PATH" "$EXPORTS_PATH" 
   esac
 done
 rm -f -- "$APPLE_TV_ROOT/BuildArtifacts/LeliBrambasTV-unsigned-simulator.zip"
-rm -f -- "$APPLE_TV_ROOT/Config/Signing.xcconfig" "$APPLE_TV_ROOT/Config/Secrets.xcconfig"
+rm -f -- "$APPLE_TV_ROOT/Config/Signing.xcconfig"
 if [[ -d "$APPLE_TV_ROOT/AppStore/Screenshots" ]]; then
   find "$APPLE_TV_ROOT/AppStore/Screenshots" -type f -name '*.png' -delete
 fi
