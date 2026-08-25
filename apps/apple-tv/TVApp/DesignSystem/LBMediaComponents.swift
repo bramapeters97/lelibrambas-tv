@@ -70,7 +70,7 @@ struct LBMediaCard: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 13)
-        .frame(width: width, minHeight: 68, alignment: .topLeading)
+        .frame(minWidth: width, maxWidth: width, minHeight: 68, alignment: .topLeading)
     }
 
     private var cardShape: RoundedRectangle {
