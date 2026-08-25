@@ -20,7 +20,7 @@ cd apps/apple-tv
 ./Scripts/bootstrap-mac.sh
 ```
 
-`bootstrap-mac.sh` creates ignored local signing configuration only when absent; it never overwrites populated local configuration. The Debug simulator build uses synthetic fixture content only when launched with test-only arguments. Release loads `../../data/media_catalog.json` and `../../artwork/` from the app bundle and launches directly to Home. No gateway, account, activation, session, or token configuration is required.
+`bootstrap-mac.sh` creates ignored local signing configuration only when absent; it never overwrites populated local configuration. The Debug simulator build uses synthetic fixture content only when launched with test-only arguments. Release loads `../../data/media_catalog.json`, `../../artwork/`, and the official root studio image from the app bundle, presents the three local profiles, and then opens Home. No gateway, account, activation, remote session, or token configuration is required.
 
 Before a signed archive, set only the local Apple Developer team, then run:
 

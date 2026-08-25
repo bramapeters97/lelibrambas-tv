@@ -7,6 +7,7 @@ struct HomeView: View {
     var startAtShelves = false
     let onPlay: (MediaItem) -> Void
     let onSelect: (MediaItem) -> Void
+    let onOpenCollection: (CatalogSection) -> Void
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -19,6 +20,9 @@ struct HomeView: View {
                             onDetails: { onSelect(featured) }
                         )
                         .id("hero")
+                    }
+                    if !sections.isEmpty {
+                        homeCollections
                     }
                     ForEach(sections) { section in
                         LBMediaShelf(section: section, onSelect: onSelect)
@@ -35,5 +39,26 @@ struct HomeView: View {
         }
         .ignoresSafeArea(edges: .top)
         .accessibilityIdentifier("home-screen")
+    }
+
+    private var homeCollections: some View {
+        VStack(alignment: .leading, spacing: 15) {
+            LBSectionTitle(title: "Collections")
+                .padding(.horizontal, LBSpacing.safeHorizontal)
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 24) {
+                    ForEach(Array(sections.enumerated()), id: \.element.id) { index, section in
+                        LBCollectionCard(section: section, index: index, style: .compact) {
+                            onOpenCollection(section)
+                        }
+                        .frame(width: 340)
+                    }
+                }
+                .padding(.horizontal, LBSpacing.safeHorizontal)
+                .padding(.vertical, 18)
+            }
+            .scrollClipDisabled()
+        }
+        .accessibilityIdentifier("home-collections")
     }
 }

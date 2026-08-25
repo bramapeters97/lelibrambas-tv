@@ -11,12 +11,17 @@ enum LBColor {
     static let cyan = Color(red: 112 / 255, green: 216 / 255, blue: 255 / 255)
     static let indigo = Color(red: 130 / 255, green: 117 / 255, blue: 255 / 255)
     static let gold = Color(red: 233 / 255, green: 199 / 255, blue: 120 / 255)
+    static let navigationGold = Color(red: 1, green: 228 / 255, blue: 168 / 255)
     static let rose = Color(red: 197 / 255, green: 109 / 255, blue: 114 / 255)
 
     static let background = LinearGradient(
-        colors: [canvasRaised, canvas],
-        startPoint: .top,
-        endPoint: .bottom
+        stops: [
+            .init(color: canvasRaised, location: 0),
+            .init(color: Color(red: 4 / 255, green: 7 / 255, blue: 13 / 255), location: 0.38),
+            .init(color: canvas, location: 0.78),
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
     )
 
     static let aurora = LinearGradient(
@@ -52,24 +57,49 @@ enum LBSpacing {
     static let medium: CGFloat = 24
     static let large: CGFloat = 38
     static let xLarge: CGFloat = 64
-    static let safeHorizontal: CGFloat = 80
+    static let safeHorizontal: CGFloat = 72
     static let safeVertical: CGFloat = 54
-    static let shelfGap: CGFloat = 28
+    static let shelfGap: CGFloat = 30
 }
 
 enum LBRadius {
     static let small: CGFloat = 10
-    static let medium: CGFloat = 16
+    static let medium: CGFloat = 13
     static let large: CGFloat = 24
 }
 
 enum LBLayout {
-    static let navigationWidth: CGFloat = 132
+    static let navigationWidth: CGFloat = 94
     static let contentMaxWidth: CGFloat = 1700
-    static let posterWidth: CGFloat = 250
-    static let posterAspectRatio: CGFloat = 2 / 3
+    static let mediaCardWidth: CGFloat = 326
+    static let compactMediaCardWidth: CGFloat = 300
+    static let cardAspectRatio: CGFloat = 16 / 9
     static let backdropAspectRatio: CGFloat = 16 / 9
-    static let focusScale: CGFloat = 1.055
+    static let focusScale: CGFloat = 1.045
+    static let collectionGap: CGFloat = 32
+    static let collectionHeight: CGFloat = 188
+}
+
+enum LBTypography {
+    static func display(size: CGFloat, weight: Font.Weight = .bold) -> Font {
+        .system(size: size, weight: weight, design: .default)
+    }
+
+    static func title(size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+        .system(size: size, weight: weight, design: .default)
+    }
+
+    static func body(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .default)
+    }
+
+    static func caption(size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .default)
+    }
+
+    static func eyebrow(size: CGFloat) -> Font {
+        .system(size: size, weight: .bold, design: .default)
+    }
 }
 
 enum LBMotion {
@@ -84,16 +114,10 @@ struct LBBackground: View {
         ZStack {
             LBColor.background
             RadialGradient(
-                colors: [LBColor.indigo.opacity(0.13), .clear],
-                center: UnitPoint(x: 0.72, y: 0.12),
+                colors: [Color(red: 32 / 255, green: 48 / 255, blue: 78 / 255).opacity(0.09), .clear],
+                center: UnitPoint(x: 0.82, y: 0),
                 startRadius: 20,
                 endRadius: 820
-            )
-            RadialGradient(
-                colors: [LBColor.cyan.opacity(0.08), .clear],
-                center: UnitPoint(x: 0.2, y: 0.68),
-                startRadius: 20,
-                endRadius: 680
             )
         }
         .ignoresSafeArea()
@@ -106,10 +130,9 @@ struct LBWordmark: View {
     var body: some View {
         HStack(alignment: .firstTextBaseline, spacing: compact ? 2 : 5) {
             Text("LELIBRAMBAS")
-                .font(.system(size: compact ? 24 : 58, weight: .heavy, design: .rounded))
-                .tracking(-1.4)
+                .font(LBTypography.display(size: compact ? 24 : 58, weight: .heavy))
             Text("+")
-                .font(.system(size: compact ? 26 : 62, weight: .black, design: .rounded))
+                .font(LBTypography.display(size: compact ? 26 : 62, weight: .black))
                 .foregroundStyle(LBColor.cyan)
                 .shadow(color: LBColor.cyan.opacity(0.7), radius: compact ? 5 : 14)
         }
@@ -124,15 +147,15 @@ struct LBLogo: View {
     var size: CGFloat = 58
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: size * 0.23, style: .continuous)
-                .fill(LBColor.aurora)
-            Image(systemName: "movieclapper.fill")
-                .font(.system(size: size * 0.46, weight: .black))
-                .foregroundStyle(LBColor.canvas)
-        }
+        Image("WebNavigationMark")
+            .resizable()
+            .renderingMode(.template)
+            .scaledToFit()
+            .foregroundStyle(LBColor.navigationGold)
+            .padding(size * 0.17)
         .frame(width: size, height: size)
-        .shadow(color: LBColor.cyan.opacity(0.34), radius: size * 0.22)
+        .background(LBColor.surfaceRaised.opacity(0.001), in: RoundedRectangle(cornerRadius: size * 0.25, style: .continuous))
+        .shadow(color: LBColor.gold.opacity(0.38), radius: size * 0.2)
         .accessibilityHidden(true)
     }
 }
@@ -142,7 +165,7 @@ struct LBSectionTitle: View {
 
     var body: some View {
         Text(title)
-            .font(.system(size: 34, weight: .bold, design: .rounded))
+            .font(LBTypography.title(size: 31, weight: .bold))
             .foregroundStyle(LBColor.text)
             .lineLimit(1)
             .accessibilityAddTraits(.isHeader)

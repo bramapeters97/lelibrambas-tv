@@ -15,11 +15,12 @@ It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launchin
 
 | Filename                             | Scene                             | Required review                                               |
 | ------------------------------------ | --------------------------------- | ------------------------------------------------------------- |
-| `1920x1080/01-home.png`              | Branded hero/home                 | Final wordmark, focus, backdrop crop, no private title/person |
-| `1920x1080/02-content-shelves.png`   | Multiple collection/media shelves | Card crop, spacing, synthetic labels, focus visibility        |
-| `1920x1080/03-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
-| `1920x1080/04-collections.png`       | Collections feature view          | Distinct grouping, synthetic/cleared artwork, focus order     |
-| `1920x1080/05-settings.png`          | Settings                          | Version, bundled-content status, focus order                   |
+| `1920x1080/01-profile-selector.png`  | Local three-profile selector      | Exact names/colors, wordmark, and focus visibility            |
+| `1920x1080/02-home.png`              | Branded trailer hero/home         | Official studio art, hierarchy, focus, and safe-area crop     |
+| `1920x1080/03-content-shelves.png`   | Multiple collection/media shelves | 16:9 crop, spacing, synthetic labels, focus visibility        |
+| `1920x1080/04-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
+| `1920x1080/05-collections.png`       | Collections feature view          | Four-card grouping, margins, focus order                      |
+| `1920x1080/06-settings.png`          | Settings                          | Version, bundled-content status, focus order                   |
 
 Before upload:
 

@@ -54,11 +54,12 @@ struct LBArtwork: View {
             if let image = bundledImage {
                 Image(uiImage: image)
                     .resizable()
+                    .scaledToFill()
             } else {
                 placeholder
             }
         }
-        .aspectRatio(kind == .poster ? LBLayout.posterAspectRatio : LBLayout.backdropAspectRatio, contentMode: .fill)
+        .aspectRatio(kind == .poster ? LBLayout.cardAspectRatio : LBLayout.backdropAspectRatio, contentMode: .fill)
         .clipped()
         .accessibilityHidden(true)
     }
@@ -82,7 +83,7 @@ struct LBArtwork: View {
                 Image(systemName: "play.rectangle.fill")
                     .font(.system(size: kind == .poster ? 42 : 74, weight: .semibold))
                 Text(item.title)
-                    .font(.system(size: kind == .poster ? 20 : 34, weight: .bold, design: .rounded))
+                    .font(LBTypography.title(size: kind == .poster ? 20 : 34, weight: .bold))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .padding(.horizontal)
@@ -99,5 +100,28 @@ struct LBArtwork: View {
         case 3: return [Color(red: 0.08, green: 0.16, blue: 0.27), Color(red: 0.26, green: 0.23, blue: 0.52)]
         default: return [Color(red: 0.10, green: 0.23, blue: 0.19), Color(red: 0.33, green: 0.29, blue: 0.17)]
         }
+    }
+}
+
+struct LBStudioArtwork: View {
+    var body: some View {
+        Group {
+            if let image = bundledImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                LBBackground()
+            }
+        }
+        .clipped()
+        .accessibilityHidden(true)
+    }
+
+    private var bundledImage: UIImage? {
+        guard let url = Bundle.main.url(forResource: "lelibrambas-studios", withExtension: "png") else {
+            return nil
+        }
+        return UIImage(contentsOfFile: url.path)
     }
 }

@@ -15,11 +15,16 @@ struct LeliBrambasTVApp: App {
 
 private struct RootView: View {
     @ObservedObject var model: AppModel
+    @State private var selectedProfile: ViewerProfile?
 
     var body: some View {
         ZStack {
             LBBackground()
-            if model.isLoadingCatalog {
+            if activeProfile == nil {
+                ProfileSelectionView(profiles: ViewerProfile.all) { profile in
+                    selectedProfile = profile
+                }
+            } else if model.isLoadingCatalog {
                 LaunchView(message: "Opening the family archive…")
             } else if let error = model.presentedError, model.items.isEmpty {
                 LBErrorView(error: error) { Task { await model.reloadCatalog() } }
@@ -28,8 +33,12 @@ private struct RootView: View {
                     title: "The archive is quiet",
                     message: "No films are available in the bundled catalogue."
                 )
-            } else {
-                BrowseRootView(model: model)
+            } else if let profile = activeProfile {
+                BrowseRootView(
+                    model: model,
+                    profile: profile,
+                    onSwitchProfile: { selectedProfile = nil }
+                )
             }
         }
         .animation(LBMotion.standard, value: model.isLoadingCatalog)
@@ -42,5 +51,15 @@ private struct RootView: View {
         } message: { error in
             Text(error.message)
         }
+    }
+
+    private var activeProfile: ViewerProfile? {
+        if let selectedProfile { return selectedProfile }
+#if DEBUG
+        if DebugLaunchOptions.fixtureMode, DebugLaunchOptions.screenshotScreen != "profiles" {
+            return ViewerProfile.all.first
+        }
+#endif
+        return nil
     }
 }

@@ -21,7 +21,7 @@ struct SearchView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
                 Text("Search")
-                    .font(.system(size: 56, weight: .heavy, design: .rounded))
+                    .font(LBTypography.display(size: 54, weight: .heavy))
                     .foregroundStyle(LBColor.text)
                     .accessibilityAddTraits(.isHeader)
 
@@ -30,7 +30,7 @@ struct SearchView: View {
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundStyle(LBColor.textMuted)
                     TextField("Titles, collections and memories", text: $query)
-                        .font(.system(size: 28, weight: .medium, design: .rounded))
+                        .font(LBTypography.body(size: 26, weight: .medium))
                         .textFieldStyle(.plain)
                         .accessibilityIdentifier("search-field")
                     if !query.isEmpty {

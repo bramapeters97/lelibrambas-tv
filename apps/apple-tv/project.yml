@@ -54,6 +54,8 @@ targets:
       - path: ../../artwork
         type: folder
         buildPhase: resources
+      - path: ../../lelibrambas-studios.png
+        buildPhase: resources
     dependencies:
       - package: LeliBrambasCore
     settings:

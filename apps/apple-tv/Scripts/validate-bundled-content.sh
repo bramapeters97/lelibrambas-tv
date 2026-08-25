@@ -17,9 +17,11 @@ fi
 catalog="$REPOSITORY_ROOT/data/media_catalog.json"
 artwork_root="$REPOSITORY_ROOT/artwork"
 fallback="$artwork_root/generic_cinema_2.png"
+studio_brand="$REPOSITORY_ROOT/lelibrambas-studios.png"
 
 [[ -f "$catalog" ]] || fail "Production catalogue is missing: $catalog"
 [[ -f "$fallback" ]] || fail "Poster fallback is missing: $fallback"
+[[ -f "$studio_brand" ]] || fail "Official studio brand source is missing: $studio_brand"
 
 stream_count="$(sed -nE 's/.*"stream_video_id"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog" | sort -u | wc -l | tr -d ' ')"
 [[ "$stream_count" -gt 1 ]] || fail "Production catalogue must contain multiple distinct stream_video_id values."
@@ -42,7 +44,9 @@ if [[ -n "$bundle_path" ]]; then
   [[ -d "$bundle_path" ]] || fail "App bundle does not exist: $bundle_path"
   [[ -f "$bundle_path/media_catalog.json" ]] || fail "Built app is missing media_catalog.json."
   [[ -f "$bundle_path/artwork/generic_cinema_2.png" ]] || fail "Built app is missing artwork/generic_cinema_2.png."
+  [[ -f "$bundle_path/lelibrambas-studios.png" ]] || fail "Built app is missing lelibrambas-studios.png."
   cmp -s "$catalog" "$bundle_path/media_catalog.json" || fail "Built app catalogue differs from data/media_catalog.json."
+  cmp -s "$studio_brand" "$bundle_path/lelibrambas-studios.png" || fail "Built app studio brand differs from the root source."
 fi
 
 log "Bundled catalogue and artwork validation passed ($stream_count distinct video sources)."

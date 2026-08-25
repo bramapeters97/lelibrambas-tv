@@ -9,11 +9,11 @@ struct LibraryView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
                 Text("Library")
-                    .font(.system(size: 56, weight: .heavy, design: .rounded))
+                    .font(LBTypography.display(size: 54, weight: .heavy))
                     .foregroundStyle(LBColor.text)
                     .accessibilityAddTraits(.isHeader)
                 Text("Every available film, ordered as in the web archive.")
-                    .font(.system(size: 24, design: .rounded))
+                    .font(LBTypography.body(size: 22))
                     .foregroundStyle(LBColor.textSecondary)
                 LBMediaGrid(items: items, onSelect: onSelect)
             }
@@ -28,12 +28,23 @@ struct LBMediaGrid: View {
     let items: [MediaItem]
     let onSelect: (MediaItem) -> Void
 
-    private let columns = [GridItem(.adaptive(minimum: 238, maximum: 270), spacing: 32, alignment: .top)]
+    private let columns = [
+        GridItem(
+            .adaptive(
+                minimum: LBLayout.compactMediaCardWidth,
+                maximum: LBLayout.mediaCardWidth
+            ),
+            spacing: LBSpacing.shelfGap,
+            alignment: .top
+        ),
+    ]
 
     var body: some View {
-        LazyVGrid(columns: columns, alignment: .leading, spacing: 46) {
-            ForEach(items) { item in
-                LBMediaCard(item: item, width: 238) { onSelect(item) }
+        LazyVGrid(columns: columns, alignment: .leading, spacing: 36) {
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                LBMediaCard(item: item, width: LBLayout.compactMediaCardWidth, index: index) {
+                    onSelect(item)
+                }
             }
         }
         .padding(.vertical, 20)

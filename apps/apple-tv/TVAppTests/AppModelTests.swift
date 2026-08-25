@@ -1,9 +1,55 @@
+import AVFoundation
 import XCTest
 @testable import LeliBrambasTV
 import LeliBrambasCore
 
 @MainActor
 final class AppModelTests: XCTestCase {
+    func testViewerProfilesMatchTheWebViewerExactly() {
+        XCTAssertEqual(ViewerProfile.all.map(\.id), ["bart-astrid", "bram-edvin", "eline-luca"])
+        XCTAssertEqual(ViewerProfile.all.map(\.name), ["Bart & Astrid", "Bram & Edvin", "Eline & Luca"])
+        XCTAssertEqual(ViewerProfile.all.map(\.initials), ["BA", "BE", "EL"])
+        XCTAssertEqual(ViewerProfile.all.map(\.accentHex), ["#70D8FF", "#8275FF", "#E9C778"])
+    }
+
+    func testContentSelectionPrefersTheLeliBrambasTrailer() {
+        let trailer = MediaItem(
+            id: 36,
+            title: "Lelibrambas+ Trailer",
+            year: 2026,
+            description: "A synthetic trailer used to verify deterministic hero selection.",
+            category: "EVENTS",
+            posterURL: "artwork/generic_cinema_2.png",
+            streamURL: "https://media.example.test/trailer.m3u8"
+        )
+
+        XCTAssertEqual(LBContentSelection.hero(in: Self.items + [trailer])?.id, trailer.id)
+    }
+
+    func testContentSelectionFallsBackToTheCatalogFeaturedItem() {
+        XCTAssertEqual(LBContentSelection.hero(in: Self.items)?.id, 10)
+    }
+
+    func testMediaCardsUseTheWebLandscapeAspectRatio() {
+        XCTAssertEqual(LBLayout.cardAspectRatio, 16.0 / 9.0, accuracy: 0.000_001)
+    }
+
+    func testPreviewPolicyWaitsOneSecondAndTargetsTwoMinutes() {
+        XCTAssertEqual(LBPreviewPolicy.delayNanoseconds, 1_000_000_000)
+        XCTAssertEqual(LBPreviewPolicy.delaySeconds, 1, accuracy: 0.000_001)
+        XCTAssertEqual(LBPreviewPolicy.targetStartSeconds, 120, accuracy: 0.000_001)
+    }
+
+    func testPreviewPolicyClampsShortMediaAndSafelyFallsBackForUnknownDuration() {
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: nil), 120)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: .nan), 120)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 1), 0)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 60), 59, accuracy: 0.000_001)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 120), 119, accuracy: 0.000_001)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 121), 120, accuracy: 0.000_001)
+        XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 600), 120, accuracy: 0.000_001)
+    }
+
     func testStartLoadsAndOrganizesBundledItemsWithoutAuthentication() async {
         let model = AppModel(catalogLoader: StubCatalogLoader(items: Self.items))
 
@@ -72,6 +118,27 @@ final class AppModelTests: XCTestCase {
             playback?.url.absoluteString,
             "https://customer-example.cloudflarestream.com/synthetic-id/manifest/video.m3u8"
         )
+    }
+
+    func testFullPlaybackControllerStartsAtTheBeginning() {
+        let item = MediaItem(
+            id: 40,
+            title: "Synthetic Full Playback",
+            year: 2026,
+            description: "Synthetic test data.",
+            category: "OTHERS",
+            posterURL: "artwork/generic_cinema_2.png",
+            streamURL: "https://media.example.test/full-playback.m3u8"
+        )
+        let session = PlaybackSession(
+            item: item,
+            url: URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent("synthetic-full-playback.mp4")
+        )
+        let controller = PlayerController(session: session)
+
+        XCTAssertEqual(controller.player.currentTime().seconds, 0, accuracy: 0.000_001)
+        controller.stop()
     }
 
     func testReleaseBundleContainsProductionCatalogAndDistinctStreams() async throws {

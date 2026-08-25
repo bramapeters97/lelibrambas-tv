@@ -26,7 +26,7 @@ struct PlayerScreen: View {
                 VStack(spacing: LBSpacing.medium) {
                     ProgressView().tint(.white).scaleEffect(1.5)
                     Text("Preparing \(session.item.title)…")
-                        .font(.system(size: 24, weight: .medium, design: .rounded))
+                        .font(LBTypography.body(size: 24, weight: .medium))
                         .foregroundStyle(.white)
                 }
                 .accessibilityIdentifier("player-loading")
@@ -38,9 +38,9 @@ struct PlayerScreen: View {
                         .font(.system(size: 56))
                         .foregroundStyle(LBColor.gold)
                     Text("Playback stopped")
-                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                        .font(LBTypography.display(size: 42, weight: .bold))
                     Text(message)
-                        .font(.system(size: 24, design: .rounded))
+                        .font(LBTypography.body(size: 24))
                         .foregroundStyle(LBColor.textSecondary)
                     LBPrimaryButton(action: onDismiss) { Text("Return to details") }
                 }

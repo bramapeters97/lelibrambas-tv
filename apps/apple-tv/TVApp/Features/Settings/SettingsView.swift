@@ -5,7 +5,7 @@ struct SettingsView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
                 Text("Settings")
-                    .font(.system(size: 56, weight: .heavy, design: .rounded))
+                    .font(LBTypography.display(size: 54, weight: .heavy))
                     .foregroundStyle(LBColor.text)
                     .accessibilityAddTraits(.isHeader)
 
@@ -54,10 +54,10 @@ private struct SettingsRow: View {
                 .frame(width: 42)
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
-                    .font(.system(size: 19, weight: .medium, design: .rounded))
+                    .font(LBTypography.caption(size: 18, weight: .medium))
                     .foregroundStyle(LBColor.textMuted)
                 Text(value)
-                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                    .font(LBTypography.body(size: 24, weight: .semibold))
                     .foregroundStyle(LBColor.text)
                     .lineLimit(2)
             }

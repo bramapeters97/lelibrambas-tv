@@ -9,16 +9,16 @@ private struct LBButtonChrome: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .font(.system(size: 25, weight: .bold, design: .rounded))
+            .font(LBTypography.title(size: 22, weight: .bold))
             .foregroundStyle(primary ? LBColor.canvas : LBColor.text)
-            .padding(.horizontal, 30)
-            .frame(minHeight: 66)
+            .padding(.horizontal, 27)
+            .frame(minHeight: 58)
             .background {
                 RoundedRectangle(cornerRadius: LBRadius.medium, style: .continuous)
                     .fill(primary ? AnyShapeStyle(LBColor.text) : AnyShapeStyle(LBColor.surfaceRaised.opacity(0.94)))
                     .overlay {
                         RoundedRectangle(cornerRadius: LBRadius.medium, style: .continuous)
-                            .stroke(isFocused ? LBColor.text : LBColor.text.opacity(primary ? 0 : 0.16), lineWidth: 3)
+                            .stroke(isFocused ? LBColor.text : LBColor.text.opacity(primary ? 0 : 0.16), lineWidth: isFocused ? 3 : 1)
                     }
             }
             .scaleEffect(pressed ? 0.985 : (isFocused ? LBLayout.focusScale : 1))
@@ -86,7 +86,7 @@ struct LBMetadataRow: View {
                     .lineLimit(1)
             }
         }
-        .font(.system(size: 22, weight: .semibold, design: .rounded))
+        .font(LBTypography.caption(size: 20, weight: .semibold))
         .foregroundStyle(LBColor.textSecondary)
         .accessibilityElement(children: .combine)
     }
@@ -103,7 +103,7 @@ struct LBLoadingView: View {
                 .tint(LBColor.cyan)
                 .scaleEffect(1.6)
             Text(message)
-                .font(.system(size: 25, weight: .medium, design: .rounded))
+                .font(LBTypography.body(size: 25, weight: .medium))
                 .foregroundStyle(LBColor.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -122,10 +122,10 @@ struct LBErrorView: View {
                 .font(.system(size: 54, weight: .semibold))
                 .foregroundStyle(LBColor.gold)
             Text(error.title)
-                .font(.system(size: 42, weight: .bold, design: .rounded))
+                .font(LBTypography.display(size: 42, weight: .bold))
                 .foregroundStyle(LBColor.text)
             Text(error.message)
-                .font(.system(size: 25, weight: .regular, design: .rounded))
+                .font(LBTypography.body(size: 25))
                 .foregroundStyle(LBColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 760)
@@ -150,10 +150,10 @@ struct LBEmptyState: View {
                 .font(.system(size: 64, weight: .light))
                 .foregroundStyle(LBColor.cyan)
             Text(title)
-                .font(.system(size: 42, weight: .bold, design: .rounded))
+                .font(LBTypography.display(size: 42, weight: .bold))
                 .foregroundStyle(LBColor.text)
             Text(message)
-                .font(.system(size: 25, design: .rounded))
+                .font(LBTypography.body(size: 25))
                 .foregroundStyle(LBColor.textSecondary)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

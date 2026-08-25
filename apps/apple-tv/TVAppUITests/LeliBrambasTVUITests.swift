@@ -23,15 +23,31 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
     }
 
-    func testProductionLaunchGoesDirectlyToBundledHome() throws {
-        let app = XCUIApplication()
-        app.launchArguments = ["-ApplePersistenceIgnoreState", "YES"]
+    func testProductionLaunchShowsTheLocalProfileSelector() throws {
+        let app = productionApplication()
         app.launch()
+
+        XCTAssertTrue(identified("profile-selector", in: app).waitForExistence(timeout: 15))
+        XCTAssertTrue(app.buttons["profile-bart-astrid"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["profile-bram-edvin"].exists)
+        XCTAssertTrue(app.buttons["profile-eline-luca"].exists)
+        XCTAssertFalse(identified("browse-root", in: app).exists)
+        XCTAssertFalse(identified("activation-screen", in: app).exists)
+        XCTAssertFalse(app.buttons["Activate Apple TV"].exists)
+    }
+
+    func testProductionProfileSelectionOpensBundledHome() throws {
+        let app = productionApplication()
+        app.launch()
+
+        let profile = app.buttons["profile-bart-astrid"]
+        XCTAssertTrue(profile.waitForExistence(timeout: 15))
+        profile.tap()
 
         XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(identified("browse-root", in: app).exists)
+        XCTAssertTrue(app.buttons["switch-profile"].waitForExistence(timeout: 5))
         XCTAssertFalse(identified("activation-screen", in: app).exists)
-        XCTAssertFalse(app.buttons["Activate Apple TV"].exists)
     }
 
     func testSettingsDescribeBundledContentWithoutLoginControls() throws {
@@ -52,6 +68,12 @@ final class LeliBrambasTVUITests: XCTestCase {
             "--screenshot-screen",
             screen,
         ]
+        return app
+    }
+
+    private func productionApplication() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments = ["-ApplePersistenceIgnoreState", "YES"]
         return app
     }
 

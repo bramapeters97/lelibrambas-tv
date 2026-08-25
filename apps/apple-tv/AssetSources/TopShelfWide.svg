@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2320" height="720" viewBox="0 0 2320 720">
-  <defs><linearGradient id="bg" x1="0" y1="0" x2="2320" y2="720" gradientUnits="userSpaceOnUse"><stop stop-color="#17294A"/><stop offset="0.48" stop-color="#090E1C"/><stop offset="1" stop-color="#03050B"/></linearGradient><radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(1780 160) rotate(150) scale(850 440)" gradientUnits="userSpaceOnUse"><stop stop-color="#70D8FF" stop-opacity="0.22"/><stop offset="1" stop-color="#70D8FF" stop-opacity="0"/></radialGradient></defs>
-  <rect width="2320" height="720" fill="url(#bg)"/><rect width="2320" height="720" fill="url(#glow)"/>
-  <path d="M0 612c336-128 589-24 850-164 270-145 500-78 739-181 221-96 455-88 731-6v459H0V612Z" fill="#E9C778" opacity="0.08"/>
-  <text x="190" y="365" fill="#F7F9FE" font-family="Arial, Helvetica, sans-serif" font-size="156" font-weight="800" letter-spacing="6">LELIBRAMBAS</text>
-  <path d="M1400 180h42v67h67v42h-67v67h-42v-67h-67v-42h67v-67Z" fill="#70D8FF"/>
-  <text x="197" y="450" fill="#E9C778" font-family="Arial, Helvetica, sans-serif" font-size="33" font-weight="700" letter-spacing="12">PRIVATE FAMILY ARCHIVE · DEVELOPMENT ART</text>
-</svg>
