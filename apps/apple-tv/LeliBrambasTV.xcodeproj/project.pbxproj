@@ -10,19 +10,21 @@
 		0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B094F859A0CD522479197D /* Assets.xcassets */; };
 		150EDF448F27D0E32A7AB867 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881C69D789B172F8E82DDCA /* MediaDetailView.swift */; };
 		23A4577535EDBD961518D9C9 /* LBArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D7624166CEEFC1504CFC04 /* LBArtwork.swift */; };
+		263F331D6A6319FEB24DFE70 /* BundledCatalogLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA32944B740AC724196F9E4C /* BundledCatalogLoader.swift */; };
 		2762AC45ABFCD85A3F863CDC /* DebugFixtureServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11D920ECBE561930EBDCC87 /* DebugFixtureServices.swift */; };
 		2A3176BF75C723B88D90EA7A /* LBTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3827223857D1C0160CD02242 /* LBTheme.swift */; };
 		432BA582EDCAE64D4024CA4C /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */; };
 		43B9CD5AB8ECF80672180D95 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABACF4CC8E45DE3406BD8197 /* HomeView.swift */; };
 		4C9358A28ED980EC8BF90341 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F0C14DE27A0F3F9CF1ADAA7A /* Localizable.xcstrings */; };
-		535E154ED5078A16BD3D3ABE /* DeviceActivationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */; };
 		5C193A95CD6042A9FDA95BBC /* LBControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB5D1D9A9D0F0D493DFAA12 /* LBControls.swift */; };
 		631C60091FE29F1CB17B9620 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF05C60C3746AE6C128480B /* LeliBrambasCore */; };
 		642BF37621DC8D182C1AF45A /* LeliBrambasTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */; };
 		6766B9233F3E456DD52D406D /* LeliBrambasTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */; };
+		68BABE70D806C83AF589A5E8 /* media_catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = D0F49FA460C3211AC0D761CF /* media_catalog.json */; };
 		770743F693A51316D01A18F8 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE741EB66A43FF0AAEB6D982 /* SearchView.swift */; };
 		8220F4CB9C4308321BC4F909 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8A3E3777DABF12BC3DA8F56C /* LeliBrambasCore */; };
 		84E1CA656FE1F781660DBF1B /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719C2AFEC74622525A953D1C /* PlayerScreen.swift */; };
+		8A72F6AD1A8D2EF92A78A7C0 /* artwork in Resources */ = {isa = PBXBuildFile; fileRef = BC21A39EC5B37CF1D6E2C359 /* artwork */; };
 		953003CE1CC2A0E6C95E93D4 /* AuthenticatedRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2AA57C079338F74FC1DEF /* AuthenticatedRootView.swift */; };
 		B1748AA4FBB7DAB91D80C36A /* CollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9425CACC7CAB26F94E31597C /* CollectionsView.swift */; };
 		B3BDE3F1AA6AACC96311E090 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604F25A75BB609E7C7A21545 /* LibraryView.swift */; };
@@ -102,11 +104,9 @@
 		8C75682CAD482A5ADCD31A2E /* capture-app-store-screenshots.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "capture-app-store-screenshots.sh"; sourceTree = "<group>"; };
 		8F2DD990D6D6E7AD805DC3F4 /* PRIVACY_POLICY_TEXT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = PRIVACY_POLICY_TEXT.md; sourceTree = "<group>"; };
 		928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeliBrambasTVApp.swift; sourceTree = "<group>"; };
-		9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceActivationView.swift; sourceTree = "<group>"; };
 		935046B50FE5492A983AB7B3 /* FUTURE_IOS_COMPATIBILITY.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FUTURE_IOS_COMPATIBILITY.md; sourceTree = "<group>"; };
 		9425CACC7CAB26F94E31597C /* CollectionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionsView.swift; sourceTree = "<group>"; };
 		961F87CEB7661CA46DC68C31 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		99D3854303949027492739EC /* Secrets.xcconfig.example */ = {isa = PBXFileReference; path = Secrets.xcconfig.example; sourceTree = "<group>"; };
 		9C14ECC43223C1CF217D3C1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A0E8614C5ED2E2EE81024249 /* APP_RECORD_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_RECORD_SETUP.md; sourceTree = "<group>"; };
 		A3B094F859A0CD522479197D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -119,12 +119,16 @@
 		B08522D396348C8BD5C6E7C6 /* UNLISTED_DISTRIBUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_DISTRIBUTION.md; sourceTree = "<group>"; };
 		B22ED2D9601D556B1E978935 /* AppIconMiddle.svg */ = {isa = PBXFileReference; path = AppIconMiddle.svg; sourceTree = "<group>"; };
 		B4E0A6F23B59D7CF2F7D95CC /* bootstrap-mac.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-mac.sh"; sourceTree = "<group>"; };
+		BC21A39EC5B37CF1D6E2C359 /* artwork */ = {isa = PBXFileReference; lastKnownFileType = folder; name = artwork; path = ../../artwork; sourceTree = SOURCE_ROOT; };
 		C2097A31664D95B7A4D9D5F0 /* AppStoreIconBackground.svg */ = {isa = PBXFileReference; path = AppStoreIconBackground.svg; sourceTree = "<group>"; };
 		C2C2E6257733F5704537A837 /* AppIconForeground.svg */ = {isa = PBXFileReference; path = AppIconForeground.svg; sourceTree = "<group>"; };
 		C719A7098636678B74512681 /* Signing.xcconfig.example */ = {isa = PBXFileReference; path = Signing.xcconfig.example; sourceTree = "<group>"; };
 		C9AE0BE1029EB1708DA812EF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		CA32944B740AC724196F9E4C /* BundledCatalogLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledCatalogLoader.swift; sourceTree = "<group>"; };
 		CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D0F49FA460C3211AC0D761CF /* media_catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = media_catalog.json; sourceTree = "<group>"; };
 		D6094254E4FF1242603478A1 /* MAC_DAY_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MAC_DAY_RUNBOOK.md; sourceTree = "<group>"; };
+		D8E62CE6782F749EEE326C2E /* validate-bundled-content.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "validate-bundled-content.sh"; sourceTree = "<group>"; };
 		DBB5D1D9A9D0F0D493DFAA12 /* LBControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBControls.swift; sourceTree = "<group>"; };
 		E0A825D8C9224B3F09828112 /* build-simulator.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-simulator.sh"; sourceTree = "<group>"; };
 		E16BF956B1DAE2D500980A2C /* ASSET_STATUS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ASSET_STATUS.md; sourceTree = "<group>"; };
@@ -175,6 +179,16 @@
 				4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */,
 			);
 			path = TVAppUITests;
+			sourceTree = "<group>";
+		};
+		13BC971C4870D57DC93A9712 /* lelibrambas-tv */ = {
+			isa = PBXGroup;
+			children = (
+				5E330C5C5F4F0C4B37C1443E /* data */,
+				BC21A39EC5B37CF1D6E2C359 /* artwork */,
+			);
+			name = "lelibrambas-tv";
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		146CA6293E93CB168037E828 /* Docs */ = {
@@ -230,6 +244,7 @@
 				E58312F24024B7E450FF01BA /* select-stable-xcode.sh */,
 				3A51A26E31349B507044E9C8 /* test.sh */,
 				7BA2A09A9C6DFAF4FD4FC989 /* upload-testflight.sh */,
+				D8E62CE6782F749EEE326C2E /* validate-bundled-content.sh */,
 				1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */,
 				23F24451F952E427CB39151E /* verify-project-generation.sh */,
 				2933588710802D1328CF18DB /* verify-unsigned-archive.sh */,
@@ -256,12 +271,12 @@
 			path = DesignSystem;
 			sourceTree = "<group>";
 		};
-		68F278BC50918CB80952449E /* Authentication */ = {
+		5E330C5C5F4F0C4B37C1443E /* data */ = {
 			isa = PBXGroup;
 			children = (
-				9324824EF7098A53E8D6CC78 /* DeviceActivationView.swift */,
+				D0F49FA460C3211AC0D761CF /* media_catalog.json */,
 			);
-			path = Authentication;
+			path = data;
 			sourceTree = "<group>";
 		};
 		6BC6C9781BDCF05CDEA467B1 /* Player */ = {
@@ -290,7 +305,6 @@
 				AD4532F4137CCF004B86514A /* Base.xcconfig */,
 				429CFA01D6798022C44BAA0A /* Debug.xcconfig */,
 				4F38FFD1F835A430746FA01C /* Release.xcconfig */,
-				99D3854303949027492739EC /* Secrets.xcconfig.example */,
 				0D4C95E5797D4FFF09575990 /* Shared.xcconfig */,
 				C719A7098636678B74512681 /* Signing.xcconfig.example */,
 			);
@@ -342,6 +356,7 @@
 			isa = PBXGroup;
 			children = (
 				C9AE0BE1029EB1708DA812EF /* AppModel.swift */,
+				CA32944B740AC724196F9E4C /* BundledCatalogLoader.swift */,
 				F11D920ECBE561930EBDCC87 /* DebugFixtureServices.swift */,
 				928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */,
 			);
@@ -351,7 +366,6 @@
 		9D3E2F16C8D2041214CF6086 /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				68F278BC50918CB80952449E /* Authentication */,
 				72E0218A65FE817A3A4A9552 /* Browse */,
 				9E53E29716340A3D3E980231 /* Details */,
 				6BC6C9781BDCF05CDEA467B1 /* Player */,
@@ -375,6 +389,7 @@
 				E1988E4712F4FCE3D9F9C73A /* AssetSources */,
 				7E38360B8441C65B17F59D06 /* Config */,
 				146CA6293E93CB168037E828 /* Docs */,
+				13BC971C4870D57DC93A9712 /* lelibrambas-tv */,
 				44D25E6DCEF06FC2141203D7 /* Packages */,
 				323A5CA66CDC5228F4D8EBEF /* Scripts */,
 				084F79F730D9B3AF706357B1 /* TVApp */,
@@ -521,6 +536,8 @@
 				0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */,
 				4C9358A28ED980EC8BF90341 /* Localizable.xcstrings in Resources */,
 				432BA582EDCAE64D4024CA4C /* PrivacyInfo.xcprivacy in Resources */,
+				8A72F6AD1A8D2EF92A78A7C0 /* artwork in Resources */,
+				68BABE70D806C83AF589A5E8 /* media_catalog.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,7 +562,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|LBAutomaticSignIn|--screenshot-mode|--ui-testing' \"${SRCROOT}/TVApp\"; then\n    echo \"error: Debug fixture switches leaked outside their guarded source.\"\n    exit 1\n  fi\n  for endpoint in \"${API_BASE_URL}\" \"${ACTIVATION_BASE_URL}\"; do\n    case \"${endpoint}\" in\n      \"\"|*example.test*|*localhost*|*127.0.0.1*|*0.0.0.0*)\n        if [ \"${CODE_SIGNING_ALLOWED}\" = \"NO\" ] && [ \"${LB_UNSIGNED_CI_VALIDATION}\" = \"YES\" ]; then\n          echo \"warning: Unsigned CI compilation is using a non-routable endpoint placeholder.\"\n        else\n          echo \"error: Release endpoint is missing or still points to a development placeholder.\"\n          exit 1\n        fi\n        ;;\n    esac\n  done\nfi\n";
+			shellScript = "if [ \"${CONFIGURATION}\" = \"Release\" ]; then\n  if grep -R -n --exclude='DebugFixtureServices.swift' -E 'LBFixtureMode|--screenshot-mode|--ui-testing' \"${SRCROOT}/TVApp\"; then\n    echo \"error: Debug fixture switches leaked outside their guarded source.\"\n    exit 1\n  fi\n  if grep -R -n -E 'device/authorizations|API_BASE_URL|ACTIVATION_BASE_URL|gateway\\.example\\.test' \"${SRCROOT}/TVApp\" \"${SRCROOT}/Config\"; then\n    echo \"error: Obsolete activation or gateway configuration leaked into the production target.\"\n    exit 1\n  fi\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -572,9 +589,9 @@
 			files = (
 				C234315E69B4015D485A49D7 /* AppModel.swift in Sources */,
 				953003CE1CC2A0E6C95E93D4 /* AuthenticatedRootView.swift in Sources */,
+				263F331D6A6319FEB24DFE70 /* BundledCatalogLoader.swift in Sources */,
 				B1748AA4FBB7DAB91D80C36A /* CollectionsView.swift in Sources */,
 				2762AC45ABFCD85A3F863CDC /* DebugFixtureServices.swift in Sources */,
-				535E154ED5078A16BD3D3ABE /* DeviceActivationView.swift in Sources */,
 				43B9CD5AB8ECF80672180D95 /* HomeView.swift in Sources */,
 				23A4577535EDBD961518D9C9 /* LBArtwork.swift in Sources */,
 				5C193A95CD6042A9FDA95BBC /* LBControls.swift in Sources */,
