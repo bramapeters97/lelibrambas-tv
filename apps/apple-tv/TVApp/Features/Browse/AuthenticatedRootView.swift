@@ -56,6 +56,8 @@ struct AuthenticatedRootView: View {
             // A deterministic, meaningful feature view is safer for App Store capture
             // than a remote stream whose readiness depends on network timing.
             _section = State(initialValue: .collections)
+        case "settings":
+            _section = State(initialValue: .settings)
         case "shelves":
             _section = State(initialValue: .home)
         default:
