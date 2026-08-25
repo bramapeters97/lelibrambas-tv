@@ -90,6 +90,11 @@ jobs:
       - name: Verify deterministic Xcode project generation
         run: bash Scripts/verify-project-generation.sh
 
+      - name: Package generated Xcode project
+        run: |
+          mkdir -p BuildArtifacts/GeneratedProject
+          ditto -c -k --sequesterRsrc --keepParent LeliBrambasTV.xcodeproj BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip
+
       - name: Resolve Swift packages
         run: xcodebuild -resolvePackageDependencies -project LeliBrambasTV.xcodeproj -scheme LeliBrambasTV
 
@@ -106,6 +111,9 @@ jobs:
 
       - name: Run tvOS app unit and UI tests
         run: bash Scripts/test.sh --skip-core
+
+      - name: Capture deterministic tvOS Simulator previews
+        run: bash Scripts/capture-app-store-screenshots.sh
 
       - name: Validate unsigned device archive
         run: bash Scripts/verify-unsigned-archive.sh
@@ -125,7 +133,21 @@ jobs:
           path: |
             apps/apple-tv/BuildArtifacts/Logs/
             apps/apple-tv/BuildArtifacts/TestResults/
+            apps/apple-tv/BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip
+            apps/apple-tv/BuildArtifacts/SimulatorPreview/00-tvos-home.png
+            apps/apple-tv/AppStore/Screenshots/1920x1080/*.png
           if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload tvOS Simulator preview
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-simulator-preview-${{ github.run_id }}
+          path: |
+            apps/apple-tv/BuildArtifacts/SimulatorPreview/00-tvos-home.png
+            apps/apple-tv/AppStore/Screenshots/1920x1080/*.png
+          if-no-files-found: error
           retention-days: 7
 
       - name: Upload unsigned validation artifacts

@@ -11,6 +11,8 @@ cd apps/apple-tv
 
 The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, captures PNGs, and rejects non-1920×1080 or transparent output.
 
+It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launching the app. That image is internal proof that the app was installed into a real CoreSimulator runtime; it is not an App Store product screenshot and must not be submitted.
+
 | Filename                             | Scene                             | Required review                                               |
 | ------------------------------------ | --------------------------------- | ------------------------------------------------------------- |
 | `1920x1080/01-home.png`              | Branded hero/home                 | Final wordmark, focus, backdrop crop, no private title/person |
