@@ -105,9 +105,9 @@ test.describe('mobile responsive viewer', () => {
         }).length;
       });
     expect(visibleCardCount).toBeGreaterThanOrEqual(3);
-    expect((await page.locator('.card-rail .art-card-shell').first().boundingBox())!.width).toBeLessThanOrEqual(
-      135,
-    );
+    expect(
+      (await page.locator('.card-rail .art-card-shell').first().boundingBox())!.width,
+    ).toBeLessThanOrEqual(135);
   });
 
   test('renders stable scrollable collection selectors and an exact two-column movie grid', async ({
@@ -392,7 +392,7 @@ test('hero idle media is disabled in capture mode and restores the poster after 
   await page.clock.resume();
 });
 
-test('detail backgrounds cue a borderless preview at 120s only after the two-second idle', async ({
+test('detail backgrounds cue a borderless preview at 120s only after the one-second idle', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 500 });
@@ -421,7 +421,7 @@ test('detail backgrounds cue a borderless preview at 120s only after the two-sec
   });
   await page.goto('/?screen=details&video=7');
   await expect(page.locator('[data-detail-preview-state="poster"]')).toBeVisible();
-  await page.clock.fastForward(1999);
+  await page.clock.fastForward(999);
   await expect(page.locator('[data-detail-media="preview"]')).toHaveCount(0);
   await page.clock.fastForward(1);
 

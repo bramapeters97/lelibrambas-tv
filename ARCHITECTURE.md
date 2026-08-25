@@ -27,7 +27,7 @@ Solid lines describe current runtime relationships. Dashed lines are implemented
 `apps/tv/src/` is the feature-rich React DOM/Vite SPA. It provides studio ident, profiles and a
 three-second profile gate, responsive generated catalogue rails, search, collections, a complete
 Full Library view, details, profile-scoped progress/history, Stream/direct-media player states,
-two-second ambient Home/detail previews with policy-safe fallback, deterministic capture routes, keyboard spatial
+two-second ambient Home and one-second detail previews with policy-safe fallback, deterministic capture routes, keyboard spatial
 navigation, and the renderer packaged by Electron. The same React DOM tree adapts at `<=800px`;
 mobile cards route their primary tap directly to playback while retaining a separate Details action.
 
@@ -71,7 +71,7 @@ are retained only for tvOS, and native application targets are limited to iPhone
 - Manifests contain private absolute paths and stay local/ignored. They are not catalogue payloads for a browser.
 - Viewer bundles receive provider-neutral URLs, never Cloudflare account credentials or signing material.
 - Production-shaped device tokens are hashed in D1; Stream playback uses short-lived signed HLS generated server-side.
-- Electron has no preload or IPC bridge and denies navigation, windows, downloads, webviews, and permissions.
+- Electron has no preload or IPC bridge. Packaged launches authenticate through the protected web canonical origin in Electron's persistent cookie session before switching to the local shared renderer; both a successful protected response and a non-expired Access cookie are required. Focus and five-minute checks return expired sessions to that same gate, and verification failures use a script-free local retry surface without exposing the archive. Navigation is restricted to that origin, its learned Cloudflare Access team host, the gated local renderer/error page, and narrowly allowlisted Stream frames. Windows, downloads, webviews, device permissions, and unrelated permissions remain denied.
 
 The editable catalogue source is `media_catalog_populated.xlsx`. Generation produces the committed
 `data/media_catalog.json`; content preparation copies that JSON and approved artwork into ignored

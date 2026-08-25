@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { catalogue, profiles } from '@lelibrambas/catalog';
 import { setStored, writeProgress } from '@lelibrambas/shared';
 import {
+  DETAILS_PREVIEW_DELAY_MS,
   DETAILS_PREVIEW_START_SECONDS,
   HERO_IDLE_DELAY_MS,
   HOME_PREVIEW_START_SECONDS,
@@ -97,6 +98,7 @@ describe('home progress state', () => {
 
   it('keeps the ambient preview timing contract explicit', () => {
     expect(HERO_IDLE_DELAY_MS).toBe(2000);
+    expect(DETAILS_PREVIEW_DELAY_MS).toBe(1000);
     expect(HOME_PREVIEW_START_SECONDS).toBe(40);
     expect(DETAILS_PREVIEW_START_SECONDS).toBeGreaterThanOrEqual(120);
   });

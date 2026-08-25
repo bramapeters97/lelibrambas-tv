@@ -18,7 +18,7 @@ Run from the project root in PowerShell:
 | `corepack yarn test:e2e`                                      | Playwright against a Vite preview on `127.0.0.1:4173`.                |
 | `corepack yarn test:stream`                                   | Opt-in real Stream HLS/CORS smoke using ignored public viewer config. |
 | `corepack yarn test:stream:electron`                          | Opt-in packaged custom-origin Stream/CSP playback smoke.              |
-| `corepack yarn workspace @lelibrambas/desktop smoke`          | Compiled Electron policy/path/input tests.                            |
+| `corepack yarn workspace @lelibrambas/desktop smoke`          | Compiled Electron policy/path/input/authentication tests.             |
 | `corepack yarn workspace @lelibrambas/desktop smoke:electron` | Hidden Electron window loads packaged renderer and expected title.    |
 | `corepack yarn workspace @lelibrambas/api build`              | Wrangler bundle dry-run; does not deploy.                             |
 
@@ -59,8 +59,8 @@ cover provider contracts, API, D1, importer, and Electron policies.
 Playwright covers profile-to-home-to-details-to-player selection, the exact three-second profile
 gate under a controlled clock, exact selected-row Stream URL handoff, visible arrow focus,
 profile-isolated viewing history, all four collections, stable catalogue order, Full Library/Home
-catalogue parity, exact poster responses, the cinema favicon/install assets, and the two-second
-Home/detail preview cue, cleanup, and rejected-autoplay paths. Responsive assertions cover the React DOM viewer's one-row profiles,
+catalogue parity, exact poster responses, the cinema favicon/install assets, and the two-second Home
+and one-second detail preview cues, cleanup, and rejected-autoplay paths. Responsive assertions cover the React DOM viewer's one-row profiles,
 mobile shimmer, horizontal collection selector, two-column collection results, two-column search,
 first-tap playback, reduced motion, and document-level overflow. Tests reset local storage and use
 deterministic capture routes unless timer behavior itself is under test.
@@ -77,7 +77,7 @@ Importer conversion tests use a fake process runner and temporary fixtures. They
 - iPhone Safari touch/layout/video QA or a native iOS build, device install, signing, safe areas,
   lifecycle, fullscreen, and `expo-video` behavior.
 - tvOS/Xcode build, Siri Remote, Apple TV hardware, signing, or App Store metadata.
-- Deployed Cloudflare bindings, authentication under load, rate limiting, migration against remote D1, Stream upload/transcode/playback, or R2 lifecycle.
+- Completion of the private Cloudflare Access email/code flow, authenticated-cookie refresh under load, rate limiting, migration against remote D1, Stream upload/transcode/playback, or R2 lifecycle. A packaged smoke can verify that an isolated signed-out session reaches the real email gate, but an authorized address and code are required to validate the private completion path.
 - Performance, long-duration playback, network interruption, accessibility audit, and private-data review.
 
 ## Manual release matrix

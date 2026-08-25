@@ -37,6 +37,7 @@ type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseSc
 
 export const PROFILE_LOADING_DELAY_MS = 3000;
 export const HERO_IDLE_DELAY_MS = 2000;
+export const DETAILS_PREVIEW_DELAY_MS = 1000;
 export const HOME_PREVIEW_START_SECONDS = 40;
 export const DETAILS_PREVIEW_START_SECONDS = 120;
 const MIN_PROGRESS_DURATION_SECONDS = 1;
@@ -519,7 +520,11 @@ function AmbientPreview({
   );
 }
 
-function useAmbientPreviewState(playable: boolean, scrollThreshold = 48) {
+function useAmbientPreviewState(
+  playable: boolean,
+  idleDelayMs = HERO_IDLE_DELAY_MS,
+  scrollThreshold = 48,
+) {
   const captureMode = new URLSearchParams(location.search).get('capture') === '1';
   const [requested, setRequested] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -549,7 +554,7 @@ function useAmbientPreviewState(playable: boolean, scrollThreshold = 48) {
       clearTimer();
       if (requested || document.visibilityState !== 'visible' || hasScrolledBeyondThreshold())
         return;
-      timer = window.setTimeout(() => setRequested(true), HERO_IDLE_DELAY_MS);
+      timer = window.setTimeout(() => setRequested(true), idleDelayMs);
     };
     const intentionalActivity = () => {
       if (requested) stop();
@@ -593,7 +598,7 @@ function useAmbientPreviewState(playable: boolean, scrollThreshold = 48) {
       document.removeEventListener('scroll', handleScroll, { capture: true });
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [blocked, captureMode, playable, requested, scrollThreshold, stop]);
+  }, [blocked, captureMode, idleDelayMs, playable, requested, scrollThreshold, stop]);
 
   return {
     requested,
@@ -842,7 +847,7 @@ function Details({
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
   const duration = knownDuration(video);
   const availability = playbackAvailability(video);
-  const ambientPreview = useAmbientPreviewState(availability.playable);
+  const ambientPreview = useAmbientPreviewState(availability.playable, DETAILS_PREVIEW_DELAY_MS);
   useEffect(() => setSaved(progressFor(profile, video)), [profile, video]);
   const savePosition = (seconds: number, completed: boolean) => {
     const progress = {
