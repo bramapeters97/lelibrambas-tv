@@ -28,13 +28,7 @@ struct LBMediaCard: View {
                         startPoint: .center,
                         endPoint: .bottom
                     )
-                    if let index {
-                        Text(String(index + 1).leftPadded(to: 2))
-                            .font(LBTypography.display(size: 32, weight: .bold))
-                            .foregroundStyle(Color.white.opacity(0.25))
-                            .padding(.trailing, 12)
-                            .padding(.bottom, 2)
-                    }
+                    rankingOverlay
                 }
 
                 VStack(alignment: .leading, spacing: 7) {
@@ -67,6 +61,18 @@ struct LBMediaCard: View {
         .accessibilityLabel(accessibilityLabel)
         .accessibilityHint("Open details")
         .accessibilityIdentifier("media-card-\(item.id)")
+    }
+
+    @ViewBuilder
+    private var rankingOverlay: some View {
+        if let index {
+            let rankingText = String(index + 1).leftPadded(to: 2)
+            Text(rankingText)
+                .font(LBTypography.display(size: 32, weight: .bold))
+                .foregroundStyle(Color.white.opacity(0.25))
+                .padding(.trailing, 12)
+                .padding(.bottom, 2)
+        }
     }
 
     private var metadata: String {
