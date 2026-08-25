@@ -12,12 +12,15 @@ require_command sips
 
 udid="${TVOS_SIMULATOR_UDID:-$(resolve_tvos_simulator_udid)}"
 bundle_id="$(bundle_identifier)"
-output_directory="$APPLE_TV_ROOT/AppStore/Screenshots/1920x1080"
+screenshots_root="$APPLE_TV_ROOT/AppStore/Screenshots"
+output_directory=""
 preview_directory="$APPLE_TV_ROOT/BuildArtifacts/SimulatorPreview"
+capture_width=""
+capture_height=""
 app_path="$(find "$DERIVED_DATA_PATH/Build/Products" -type d -name 'LeliBrambasTV.app' -path '*Debug-appletvsimulator*' -print -quit)"
 [[ -n "$app_path" ]] || fail "The simulator .app was not found under $DERIVED_DATA_PATH."
 
-mkdir -p "$output_directory" "$preview_directory"
+mkdir -p "$preview_directory"
 xcrun simctl boot "$udid" >/dev/null 2>&1 || true
 xcrun simctl bootstatus "$udid" -b
 xcrun simctl install "$udid" "$app_path"
@@ -30,7 +33,20 @@ validate_capture() {
   width="$(sips -g pixelWidth "$target" | awk '/pixelWidth:/ { print $2 }')"
   height="$(sips -g pixelHeight "$target" | awk '/pixelHeight:/ { print $2 }')"
   alpha="$(sips -g hasAlpha "$target" | awk '/hasAlpha:/ { print tolower($2) }')"
-  [[ "$width" == "1920" && "$height" == "1080" ]] || fail "$filename is ${width}x${height}; App Store output must be 1920x1080."
+
+  if [[ -z "$capture_width" ]]; then
+    case "${width}x${height}" in
+      1920x1080|3840x2160) ;;
+      *) fail "$filename is ${width}x${height}; supported native tvOS output is 1920x1080 or 3840x2160." ;;
+    esac
+    capture_width="$width"
+    capture_height="$height"
+    output_directory="$screenshots_root/${capture_width}x${capture_height}"
+    mkdir -p "$output_directory"
+  else
+    [[ "$width" == "$capture_width" && "$height" == "$capture_height" ]] || fail "$filename changed dimensions from ${capture_width}x${capture_height} to ${width}x${height}."
+  fi
+
   [[ "$alpha" != "yes" && "$alpha" != "true" ]] || fail "$filename contains transparency."
   log "Captured $filename (${width}x${height}, opaque)"
 }

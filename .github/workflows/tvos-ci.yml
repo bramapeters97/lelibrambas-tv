@@ -135,7 +135,7 @@ jobs:
             apps/apple-tv/BuildArtifacts/TestResults/
             apps/apple-tv/BuildArtifacts/GeneratedProject/LeliBrambasTV.xcodeproj.zip
             apps/apple-tv/BuildArtifacts/SimulatorPreview/00-tvos-home.png
-            apps/apple-tv/AppStore/Screenshots/1920x1080/*.png
+            apps/apple-tv/AppStore/Screenshots/*/*.png
           if-no-files-found: ignore
           retention-days: 7
 
@@ -146,7 +146,7 @@ jobs:
           name: tvos-simulator-preview-${{ github.run_id }}
           path: |
             apps/apple-tv/BuildArtifacts/SimulatorPreview/00-tvos-home.png
-            apps/apple-tv/AppStore/Screenshots/1920x1080/*.png
+            apps/apple-tv/AppStore/Screenshots/*/*.png
           if-no-files-found: error
           retention-days: 7
 

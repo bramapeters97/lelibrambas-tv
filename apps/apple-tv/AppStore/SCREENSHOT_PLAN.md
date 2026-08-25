@@ -9,7 +9,7 @@ cd apps/apple-tv
 ./Scripts/capture-app-store-screenshots.sh
 ```
 
-The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, captures PNGs, and rejects non-1920×1080 or transparent output.
+The script dynamically resolves/boots an Apple TV simulator, builds and installs Debug, launches compile-time-guarded fixture routes, captures PNGs, and rejects output that is transparent or not a native 1920×1080/3840×2160 tvOS size. It selects the matching output directory from the simulator framebuffer.
 
 It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launching the app. That image is internal proof that the app was installed into a real CoreSimulator runtime; it is not an App Store product screenshot and must not be submitted.
 
@@ -30,4 +30,4 @@ Before upload:
 - compare focus ring, colors, typography, safe areas, and cropping to the shipping build;
 - use only the strongest 1–10 images and preserve their unedited capture provenance.
 
-The repository does not generate 4K marketing upscales. Capture native 3840×2160 only from a simulator/runtime that actually renders at that size, then add equivalent dimension/alpha validation before submission.
+The repository does not generate 4K marketing upscales. A `3840x2160/` candidate is accepted only when the simulator/runtime actually renders at that native size and passes the same opacity validation.

@@ -13,8 +13,8 @@ The tvOS asset catalog is structurally complete and contains synthetic developme
 
 Each image-stack layer has its own `Content.imageset`, and the referenced raster dimensions match the
 tvOS asset-catalog roles. Background and Top Shelf PNGs are opaque; foreground and middle icon layers
-retain transparency for parallax. Editable SVG sources sit beside the generated PNGs but are not
-referenced by the asset catalog.
+retain transparency for parallax. Editable SVG sources are kept in `AssetSources/`, outside the asset
+catalog, so Xcode does not treat them as unassigned catalog children.
 
 ## Release gate
 
