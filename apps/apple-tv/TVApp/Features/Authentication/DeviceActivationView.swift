@@ -124,7 +124,8 @@ struct DeviceActivationView: View {
             }
         }
         .padding(46)
-        .frame(width: 560, minHeight: 620)
+        .frame(width: 560)
+        .frame(minHeight: 620)
         .background(LBColor.surface.opacity(0.93), in: RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous)
