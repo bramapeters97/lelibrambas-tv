@@ -1,258 +1,613 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "Check the internet connection and try again.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Check the internet connection and try again."
+  "sourceLanguage" : "en",
+  "strings" : {
+    " Trailer" : {
+
+    },
+    "%@ catalogue records" : {
+
+    },
+    "%@ collection" : {
+
+    },
+    "%@ results" : {
+
+    },
+    "%@ titles" : {
+
+    },
+    "+" : {
+
+    },
+    "10 seconds back" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 seconds back"
           }
         },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Controleer de internetverbinding en probeer het opnieuw."
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 seconden terug"
           }
         }
       }
     },
-    "OK": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "OK" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "OK" } }
-      }
-    },
-    "Opening the family archive…": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Opening the family archive…" } },
-        "nl": {
-          "stringUnit": { "state": "translated", "value": "Het familiearchief wordt geopend…" }
-        }
-      }
-    },
-    "Playback unavailable": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Playback unavailable" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen niet beschikbaar" } }
-      }
-    },
-    "Retry": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Retry" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Opnieuw proberen" } }
-      }
-    },
-    "The archive could not be loaded": {
-      "localizations": {
-        "en": {
-          "stringUnit": { "state": "translated", "value": "The archive could not be loaded" }
-        },
-        "nl": {
-          "stringUnit": { "state": "translated", "value": "Het archief kon niet worden geladen" }
-        }
-      }
-    },
-    "The archive is quiet": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "The archive is quiet" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Het archief is stil" } }
-      }
-    },
-    "The archive is resting": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "The archive is resting" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Het archief rust even" } }
-      }
-    },
-    "This film is unavailable": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "This film is unavailable" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Deze film is niet beschikbaar" } }
-      }
-    },
-    "10 seconds back": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "10 seconds back" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "10 seconden terug" } }
-      }
-    },
-    "10 seconds forward": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "10 seconds forward" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "10 seconden vooruit" } }
-      }
-    },
-    "A film from the private family archive.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "A film from the private family archive."
+    "10 seconds forward" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 seconds forward"
           }
         },
-        "nl": {
-          "stringUnit": { "state": "translated", "value": "Een film uit het privéfamiliearchief." }
-        }
-      }
-    },
-    "Back": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Back" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Terug" } }
-      }
-    },
-    "Cancel": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Cancel" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Annuleer" } }
-      }
-    },
-    "Collection not found": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Collection not found" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Collectie niet gevonden" } }
-      }
-    },
-    "Collections": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Collections" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Collecties" } }
-      }
-    },
-    "Every available film, ordered as in the web archive.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Every available film, ordered as in the web archive."
-          }
-        },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Elke beschikbare film, in dezelfde volgorde als in het webarchief."
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 seconden vooruit"
           }
         }
       }
     },
-    "FEATURED FROM THE ARCHIVE": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "FEATURED FROM THE ARCHIVE" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "UITGELICHT UIT HET ARCHIEF" } }
-      }
-    },
-    "Film not found": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Film not found" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Film niet gevonden" } }
-      }
-    },
-    "Library": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Library" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Bibliotheek" } }
-      }
-    },
-    "More info": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "More info" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Meer informatie" } }
-      }
-    },
-    "No description is available for this film.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No description is available for this film."
+    "A film from the private family archive." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A film from the private family archive."
           }
         },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Er is geen beschrijving beschikbaar voor deze film."
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Een film uit het privéfamiliearchief."
           }
         }
       }
     },
-    "No films found": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "No films found" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Geen films gevonden" } }
-      }
+    "A PRIVATE LELIBRAMBAS+ LOCAL MEDIA LIBRARY" : {
+
     },
-    "Play": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Play" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen" } }
-      }
-    },
-    "Playback stopped": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Playback stopped" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Afspelen gestopt" } }
-      }
-    },
-    "Preparing…": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Preparing…" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Voorbereiden…" } }
-      }
-    },
-    "Return to details": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Return to details" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Terug naar details" } }
-      }
-    },
-    "Search": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Search" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Zoeken" } }
-      }
-    },
-    "Settings": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Settings" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Instellingen" } }
-      }
-    },
-    "Try again": {
-      "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Try again" } },
-        "nl": { "stringUnit": { "state": "translated", "value": "Probeer opnieuw" } }
-      }
-    },
-    "Try another title or collection name.": {
-      "localizations": {
-        "en": {
-          "stringUnit": { "state": "translated", "value": "Try another title or collection name." }
+    "Back" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
         },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Probeer een andere titel of collectienaam."
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terug"
           }
         }
       }
     },
-    "Your private cinema, on the biggest screen.": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your private cinema, on the biggest screen."
+    "Cancel" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
           }
         },
-        "nl": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Je privébioscoop, op het grootste scherm."
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuleer"
+          }
+        }
+      }
+    },
+    "Check the internet connection and try again." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check the internet connection and try again."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Controleer de internetverbinding en probeer het opnieuw."
+          }
+        }
+      }
+    },
+    "Collection not found" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collection not found"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collectie niet gevonden"
+          }
+        }
+      }
+    },
+    "Collections" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collections"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collecties"
+          }
+        }
+      }
+    },
+    "COMPLETE CATALOGUE" : {
+
+    },
+    "Directory order" : {
+
+    },
+    "Every available film, ordered as in the web archive." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Every available film, ordered as in the web archive."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elke beschikbare film, in dezelfde volgorde als in het webarchief."
+          }
+        }
+      }
+    },
+    "EVERY FILM IN THE PRIVATE ARCHIVE" : {
+
+    },
+    "FEATURED FROM THE ARCHIVE" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FEATURED FROM THE ARCHIVE"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "UITGELICHT UIT HET ARCHIEF"
+          }
+        }
+      }
+    },
+    "Film not found" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film not found"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Film niet gevonden"
+          }
+        }
+      }
+    },
+    "Full Library" : {
+
+    },
+    "LELIBRAMBAS" : {
+
+    },
+    "LELIBRAMBAS+ CATALOGUE" : {
+
+    },
+    "Library" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Library"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotheek"
+          }
+        }
+      }
+    },
+    "More info" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "More info"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Meer informatie"
+          }
+        }
+      }
+    },
+    "More information" : {
+
+    },
+    "No description is available for this film." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No description is available for this film."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Er is geen beschrijving beschikbaar voor deze film."
+          }
+        }
+      }
+    },
+    "No films found" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No films found"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geen films gevonden"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Opening the family archive…" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening the family archive…"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het familiearchief wordt geopend…"
+          }
+        }
+      }
+    },
+    "Play" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Play"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afspelen"
+          }
+        }
+      }
+    },
+    "Play Trailer" : {
+
+    },
+    "Playback stopped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playback stopped"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afspelen gestopt"
+          }
+        }
+      }
+    },
+    "Playback unavailable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playback unavailable"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afspelen niet beschikbaar"
+          }
+        }
+      }
+    },
+    "Preparing %@…" : {
+
+    },
+    "Preparing…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing…"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voorbereiden…"
+          }
+        }
+      }
+    },
+    "Private directory overview" : {
+
+    },
+    "Ready to watch" : {
+
+    },
+    "Retry" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opnieuw proberen"
+          }
+        }
+      }
+    },
+    "Return to details" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Return to details"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terug naar details"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zoeken"
+          }
+        }
+      }
+    },
+    "Search the archive" : {
+
+    },
+    "Settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instellingen"
+          }
+        }
+      }
+    },
+    "The archive could not be loaded" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The archive could not be loaded"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het archief kon niet worden geladen"
+          }
+        }
+      }
+    },
+    "The archive is quiet" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The archive is quiet"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het archief is stil"
+          }
+        }
+      }
+    },
+    "The archive is resting" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The archive is resting"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Het archief rust even"
+          }
+        }
+      }
+    },
+    "This film is unavailable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This film is unavailable"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deze film is niet beschikbaar"
+          }
+        }
+      }
+    },
+    "TITLES, FOLDER GROUPS, YEARS AND COLLECTIONS" : {
+
+    },
+    "Try again" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again"
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probeer opnieuw"
+          }
+        }
+      }
+    },
+    "Try another title or collection name." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try another title or collection name."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Probeer een andere titel of collectienaam."
+          }
+        }
+      }
+    },
+    "WELCOME TO THE FAMILY ARCHIVE" : {
+
+    },
+    "Which folder should we open?" : {
+
+    },
+    "Who’s watching?" : {
+
+    },
+    "Your private cinema, on the biggest screen." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your private cinema, on the biggest screen."
+          }
+        },
+        "nl" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je privébioscoop, op het grootste scherm."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }
