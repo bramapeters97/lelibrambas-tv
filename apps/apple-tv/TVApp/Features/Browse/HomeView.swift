@@ -13,6 +13,8 @@ struct HomeView: View {
     let featured: MediaItem?
     let sections: [CatalogSection]
     var startAtShelves = false
+    let focusScope: Namespace.ID
+    var prefersInitialFocus = true
     let preparePreview: (MediaItem) async -> URL?
     let onPlay: (MediaItem) -> Void
     let onSelect: (MediaItem) -> Void
@@ -28,6 +30,7 @@ struct HomeView: View {
                     if let featured {
                         LBHero(
                             item: featured,
+                            focusScope: focusScope,
                             previewURL: heroPreviewURL,
                             onPreviewStopped: { heroPreviewURL = nil },
                             onPlay: {
@@ -38,7 +41,7 @@ struct HomeView: View {
                                 stopHeroPreview()
                                 onSelect(featured)
                             },
-                            prefersInitialFocus: !startAtShelves
+                            prefersInitialFocus: prefersInitialFocus && !startAtShelves
                         )
                         .id("hero")
                     }

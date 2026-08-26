@@ -45,6 +45,7 @@ struct BrowseRootView: View {
     @State private var playbackSession: PlaybackSession?
     @State private var isPreparingPlayback = false
     @State private var selectedCollectionID: String?
+    @Namespace private var browseFocusScope
 
     init(model: AppModel, profile: ViewerProfile, onSwitchProfile: @escaping () -> Void) {
         self.model = model
@@ -81,7 +82,8 @@ struct BrowseRootView: View {
                     profile: profile,
                     onSelect: selectSection,
                     onSwitchProfile: onSwitchProfile,
-                    prefersSelectedItemFocus: section == .settings
+                    prefersSelectedItemFocus: section == .settings,
+                    focusScope: browseFocusScope
                 )
                 NavigationStack(path: $path) {
                     activeSection
@@ -90,6 +92,7 @@ struct BrowseRootView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .focusScope(browseFocusScope)
         }
         .fullScreenCover(item: $playbackSession) { session in
             PlayerScreen(session: session) {
@@ -107,20 +110,23 @@ struct BrowseRootView: View {
                 featured: LBContentSelection.hero(in: model.items),
                 sections: model.sections,
                 startAtShelves: startsAtShelves,
+                focusScope: browseFocusScope,
+                prefersInitialFocus: path.isEmpty,
                 preparePreview: { await model.preparePreview(for: $0) },
                 onPlay: preparePlayback,
                 onSelect: { path.append(.details($0.id)) },
                 onOpenCollection: showCollection
             )
         case .search:
-            SearchView(items: model.items) { path.append(.details($0.id)) }
+            SearchView(items: model.items, focusScope: browseFocusScope) { path.append(.details($0.id)) }
         case .collections:
             CollectionsView(
                 sections: model.sections,
-                initialSelectionID: selectedCollectionID
+                initialSelectionID: selectedCollectionID,
+                focusScope: browseFocusScope
             ) { path.append(.details($0.id)) }
         case .library:
-            LibraryView(items: model.items) { path.append(.details($0.id)) }
+            LibraryView(items: model.items, focusScope: browseFocusScope) { path.append(.details($0.id)) }
         case .settings:
             SettingsView()
         }
@@ -143,6 +149,7 @@ struct BrowseRootView: View {
                     item: item,
                     model: model,
                     isPreparingPlayback: isPreparingPlayback,
+                    focusScope: browseFocusScope,
                     onPlay: preparePlayback
                 )
             } else {
@@ -179,6 +186,7 @@ private struct MainNavigationRail: View {
     let onSelect: (BrowseSection) -> Void
     let onSwitchProfile: () -> Void
     let prefersSelectedItemFocus: Bool
+    let focusScope: Namespace.ID
 
     @FocusState private var focusedSection: BrowseSection?
 
@@ -191,6 +199,7 @@ private struct MainNavigationRail: View {
                     onSelect(item)
                 }
                 .focused($focusedSection, equals: item)
+                .prefersDefaultFocus(prefersSelectedItemFocus && item == selection, in: focusScope)
             }
             Spacer(minLength: 12)
             ProfileRailButton(profile: profile, action: onSwitchProfile)

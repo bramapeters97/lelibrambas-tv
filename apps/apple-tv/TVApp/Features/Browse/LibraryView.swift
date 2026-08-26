@@ -3,6 +3,7 @@ import SwiftUI
 
 struct LibraryView: View {
     let items: [MediaItem]
+    let focusScope: Namespace.ID
     let onSelect: (MediaItem) -> Void
 
     var body: some View {
@@ -10,7 +11,12 @@ struct LibraryView: View {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
                 pageHeader
                 catalogueHeader
-                LBMediaGrid(items: items, prefersInitialFocus: true, onSelect: onSelect)
+                LBMediaGrid(
+                    items: items,
+                    focusScope: focusScope,
+                    prefersInitialFocus: true,
+                    onSelect: onSelect
+                )
             }
             .padding(.horizontal, LBSpacing.safeHorizontal)
             .padding(.vertical, LBSpacing.safeVertical)
@@ -52,7 +58,9 @@ struct LibraryView: View {
 
 struct LBMediaGrid: View {
     let items: [MediaItem]
+    let focusScope: Namespace.ID
     var prefersInitialFocus = false
+    var prefersFirstItemOnEntry = false
     let onSelect: (MediaItem) -> Void
 
     @FocusState private var focusedItemID: Int?
@@ -75,10 +83,15 @@ struct LBMediaGrid: View {
                     onSelect(item)
                 }
                 .focused($focusedItemID, equals: item.id)
+                .prefersDefaultFocus(prefersInitialFocus && item.id == items.first?.id, in: focusScope)
             }
         }
         .focusSection()
-        .defaultFocus($focusedItemID, prefersInitialFocus ? items.first?.id : nil)
+        .defaultFocus(
+            $focusedItemID,
+            prefersInitialFocus || prefersFirstItemOnEntry ? items.first?.id : nil,
+            priority: prefersFirstItemOnEntry ? .userInitiated : .automatic
+        )
         .task(id: items.first?.id) {
             guard prefersInitialFocus else { return }
             await Task.yield()

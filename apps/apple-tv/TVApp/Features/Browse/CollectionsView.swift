@@ -4,6 +4,7 @@ import SwiftUI
 struct CollectionsView: View {
     let sections: [CatalogSection]
     let initialSelectionID: String?
+    let focusScope: Namespace.ID
     let onSelect: (MediaItem) -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -18,10 +19,12 @@ struct CollectionsView: View {
     init(
         sections: [CatalogSection],
         initialSelectionID: String? = nil,
+        focusScope: Namespace.ID,
         onSelect: @escaping (MediaItem) -> Void
     ) {
         self.sections = sections
         self.initialSelectionID = initialSelectionID
+        self.focusScope = focusScope
         self.onSelect = onSelect
         if let initialSelectionID, sections.contains(where: { $0.id == initialSelectionID }) {
             _selectedID = State(initialValue: initialSelectionID)
@@ -65,6 +68,7 @@ struct CollectionsView: View {
                             .scaleEffect(isSelected ? 1.025 : 1)
                             .animation(reduceMotion ? nil : LBMotion.standard, value: isSelected)
                             .focused($focusedCollectionID, equals: section.id)
+                            .prefersDefaultFocus(isSelected, in: focusScope)
                             .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
@@ -113,7 +117,7 @@ struct CollectionsView: View {
                 .accessibilityElement(children: .combine)
                 .accessibilityAddTraits(.isHeader)
 
-                LBMediaGrid(items: section.items, onSelect: onSelect)
+                LBMediaGrid(items: section.items, focusScope: focusScope, onSelect: onSelect)
             }
             .id(section.id)
             .transition(.asymmetric(

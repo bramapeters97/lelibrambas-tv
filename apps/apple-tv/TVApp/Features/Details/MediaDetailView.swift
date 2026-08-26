@@ -26,6 +26,7 @@ struct MediaDetailView: View {
     let item: MediaItem
     @ObservedObject var model: AppModel
     let isPreparingPlayback: Bool
+    let focusScope: Namespace.ID
     let onPlay: (MediaItem) -> Void
 
     @State private var previewURL: URL?
@@ -108,6 +109,7 @@ struct MediaDetailView: View {
                 }
                 .disabled(isPreparingPlayback)
                 .focused($focusedAction, equals: .play)
+                .prefersDefaultFocus(true, in: focusScope)
                 .accessibilityIdentifier("details-play")
                 .padding(.top, 27)
             }

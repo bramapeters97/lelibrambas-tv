@@ -24,6 +24,7 @@ enum LBSearchIndex {
 
 struct SearchView: View {
     let items: [MediaItem]
+    let focusScope: Namespace.ID
     let onSelect: (MediaItem) -> Void
 
     @State private var query = ""
@@ -48,7 +49,12 @@ struct SearchView: View {
                     LBEmptyState(title: "No movie found.", message: "Try a category, year or another title.")
                         .frame(height: 520)
                 } else {
-                    LBMediaGrid(items: results, onSelect: onSelect)
+                    LBMediaGrid(
+                        items: results,
+                        focusScope: focusScope,
+                        prefersFirstItemOnEntry: true,
+                        onSelect: onSelect
+                    )
                 }
             }
             .padding(.horizontal, LBSpacing.safeHorizontal)
@@ -90,6 +96,7 @@ struct SearchView: View {
                     .font(LBTypography.body(size: 26, weight: .medium))
                     .textFieldStyle(.plain)
                     .focused($searchFieldFocused)
+                    .prefersDefaultFocus(true, in: focusScope)
                     .accessibilityLabel("Search the archive")
                     .accessibilityIdentifier("search-field")
                 if !query.isEmpty {

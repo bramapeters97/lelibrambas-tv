@@ -145,6 +145,7 @@ struct LBHero: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let item: MediaItem
+    let focusScope: Namespace.ID
     let previewURL: URL?
     let onPreviewStopped: () -> Void
     let onPlay: () -> Void
@@ -263,6 +264,7 @@ struct LBHero: View {
                 Text("Play Trailer")
             }
             .focused($focusedAction, equals: .play)
+            .prefersDefaultFocus(prefersInitialFocus, in: focusScope)
             .accessibilityIdentifier("hero-play")
             LBSecondaryButton(action: onDetails) {
                 Text("More information")
