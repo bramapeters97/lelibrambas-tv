@@ -1,7 +1,7 @@
 import LeliBrambasCore
 import SwiftUI
 
-enum BrowseSection: String, CaseIterable, Identifiable {
+enum BrowseSection: String, CaseIterable, Identifiable, Hashable {
     case home
     case search
     case collections
@@ -80,7 +80,8 @@ struct BrowseRootView: View {
                     selection: section,
                     profile: profile,
                     onSelect: selectSection,
-                    onSwitchProfile: onSwitchProfile
+                    onSwitchProfile: onSwitchProfile,
+                    prefersSelectedItemFocus: section == .settings
                 )
                 NavigationStack(path: $path) {
                     activeSection
@@ -177,6 +178,9 @@ private struct MainNavigationRail: View {
     let profile: ViewerProfile
     let onSelect: (BrowseSection) -> Void
     let onSwitchProfile: () -> Void
+    let prefersSelectedItemFocus: Bool
+
+    @FocusState private var focusedSection: BrowseSection?
 
     var body: some View {
         VStack(spacing: 9) {
@@ -186,6 +190,7 @@ private struct MainNavigationRail: View {
                 NavigationRailButton(item: item, selected: item == selection) {
                     onSelect(item)
                 }
+                .focused($focusedSection, equals: item)
             }
             Spacer(minLength: 12)
             ProfileRailButton(profile: profile, action: onSwitchProfile)
@@ -204,6 +209,8 @@ private struct MainNavigationRail: View {
         .overlay(alignment: .trailing) {
             Rectangle().fill(LBColor.text.opacity(0.06)).frame(width: 1)
         }
+        .focusSection()
+        .defaultFocus($focusedSection, prefersSelectedItemFocus ? selection : nil)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Main navigation")
         .zIndex(20)

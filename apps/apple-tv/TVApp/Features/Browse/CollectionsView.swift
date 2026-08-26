@@ -68,6 +68,7 @@ struct CollectionsView: View {
                             .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
+                    .focusSection()
 
                     selectedCollection
                 }
@@ -76,6 +77,10 @@ struct CollectionsView: View {
             .padding(.vertical, LBSpacing.safeVertical)
         }
         .onAppear { focusedCollectionID = selectedID }
+        .onChange(of: focusedCollectionID) { _, focusedID in
+            guard let focusedID, focusedID != selectedID else { return }
+            selectedID = focusedID
+        }
         .onChange(of: initialSelectionID) { _, requestedID in
             guard let requestedID, sections.contains(where: { $0.id == requestedID }) else { return }
             selectedID = requestedID

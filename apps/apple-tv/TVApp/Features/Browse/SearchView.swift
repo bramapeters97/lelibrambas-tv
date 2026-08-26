@@ -110,6 +110,7 @@ struct SearchView: View {
             RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous)
                 .stroke(LBColor.text.opacity(0.09), lineWidth: 1)
         }
+        .focusSection()
     }
 
     private var resultsHeader: some View {

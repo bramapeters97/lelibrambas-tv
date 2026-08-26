@@ -10,7 +10,7 @@ struct LibraryView: View {
             VStack(alignment: .leading, spacing: LBSpacing.large) {
                 pageHeader
                 catalogueHeader
-                LBMediaGrid(items: items, onSelect: onSelect)
+                LBMediaGrid(items: items, prefersInitialFocus: true, onSelect: onSelect)
             }
             .padding(.horizontal, LBSpacing.safeHorizontal)
             .padding(.vertical, LBSpacing.safeVertical)
@@ -52,7 +52,10 @@ struct LibraryView: View {
 
 struct LBMediaGrid: View {
     let items: [MediaItem]
+    var prefersInitialFocus = false
     let onSelect: (MediaItem) -> Void
+
+    @FocusState private var focusedItemID: Int?
 
     private let columns = [
         GridItem(
@@ -71,8 +74,11 @@ struct LBMediaGrid: View {
                 LBMediaCard(item: item, width: LBLayout.gridMediaCardWidth, index: index) {
                     onSelect(item)
                 }
+                .focused($focusedItemID, equals: item.id)
             }
         }
+        .focusSection()
+        .defaultFocus($focusedItemID, prefersInitialFocus ? items.first?.id : nil)
         .padding(.vertical, 20)
     }
 }

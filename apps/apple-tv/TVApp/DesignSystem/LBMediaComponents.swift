@@ -130,12 +130,18 @@ struct LBMediaShelf: View {
                 .padding(.vertical, 20)
             }
             .scrollClipDisabled()
+            .focusSection()
         }
         .accessibilityIdentifier("shelf-\(section.id)")
     }
 }
 
 struct LBHero: View {
+    private enum FocusTarget: Hashable {
+        case play
+        case details
+    }
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let item: MediaItem
@@ -143,8 +149,10 @@ struct LBHero: View {
     let onPreviewStopped: () -> Void
     let onPlay: () -> Void
     let onDetails: () -> Void
+    var prefersInitialFocus = true
 
     @State private var previewIsPlaying = false
+    @FocusState private var focusedAction: FocusTarget?
 
     var body: some View {
         ZStack(alignment: .leading) {
@@ -159,6 +167,8 @@ struct LBHero: View {
             previewIsPlaying = false
             onPreviewStopped()
         }
+        .focusSection()
+        .defaultFocus($focusedAction, prefersInitialFocus ? .play : nil)
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
         .accessibilityIdentifier("home-hero")
     }
@@ -247,10 +257,12 @@ struct LBHero: View {
             LBPrimaryButton(action: onPlay) {
                 Text("Play Trailer")
             }
+            .focused($focusedAction, equals: .play)
             .accessibilityIdentifier("hero-play")
             LBSecondaryButton(action: onDetails) {
                 Text("More information")
             }
+            .focused($focusedAction, equals: .details)
             .accessibilityIdentifier("hero-details")
         }
     }

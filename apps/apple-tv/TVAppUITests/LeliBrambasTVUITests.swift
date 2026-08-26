@@ -13,6 +13,72 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.buttons["nav-search"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["nav-settings"].exists)
         XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
+        XCTAssertTrue(waitForFocus(on: app.buttons["hero-play"]))
+    }
+
+    func testHomeFocusMovesFromHeroThroughConsecutiveShelves() throws {
+        let app = fixtureApplication(screen: "home")
+        app.launch()
+
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 12))
+        let remote = XCUIRemote.shared
+        let heroPlay = app.buttons["hero-play"]
+        let heroDetails = app.buttons["hero-details"]
+        XCTAssertTrue(heroPlay.waitForExistence(timeout: 5))
+        XCTAssertTrue(waitForFocus(on: heroPlay))
+
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: heroDetails))
+        remote.press(.left)
+        XCTAssertTrue(waitForFocus(on: heroPlay))
+
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["collection-jeugdfilms"]))
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-5"]))
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-3"]))
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-3"]))
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-4"]))
+    }
+
+    func testFocusedMovieOpensMatchingDetailsAndReturnsFocus() throws {
+        let app = fixtureApplication(screen: "home")
+        app.launch()
+
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 12))
+        let remote = XCUIRemote.shared
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["collection-jeugdfilms"]))
+        remote.press(.down)
+
+        let originCard = app.buttons["media-card-1"]
+        XCTAssertTrue(waitForFocus(on: originCard))
+        remote.press(.select)
+
+        XCTAssertTrue(identified("details-screen", in: app).waitForExistence(timeout: 8))
+        XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
+        let play = app.buttons["details-play"]
+        let back = app.buttons["details-back"]
+        XCTAssertTrue(waitForFocus(on: play))
+        remote.press(.up)
+        XCTAssertTrue(waitForFocus(on: back))
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: play))
+
+        remote.press(.menu)
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 8))
+        XCTAssertTrue(waitForFocus(on: originCard))
     }
 
     func testFixtureMediaDetailsRenderExpectedContent() throws {
@@ -21,6 +87,7 @@ final class LeliBrambasTVUITests: XCTestCase {
 
         XCTAssertTrue(identified("details-screen", in: app).waitForExistence(timeout: 12))
         XCTAssertTrue(app.staticTexts["The Lantern Archive"].waitForExistence(timeout: 5))
+        XCTAssertTrue(waitForFocus(on: app.buttons["details-play"]))
     }
 
     func testProductionLaunchShowsTheLocalProfileSelector() throws {
@@ -31,6 +98,7 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.buttons["profile-bart-astrid"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["profile-bram-edvin"].exists)
         XCTAssertTrue(app.buttons["profile-eline-luca"].exists)
+        XCTAssertTrue(waitForFocus(on: app.buttons["profile-bart-astrid"]))
         XCTAssertFalse(identified("browse-root", in: app).exists)
         XCTAssertFalse(identified("activation-screen", in: app).exists)
         XCTAssertFalse(app.buttons["Activate Apple TV"].exists)
@@ -48,6 +116,7 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 15))
         XCTAssertTrue(identified("browse-root", in: app).exists)
         XCTAssertTrue(app.buttons["switch-profile"].waitForExistence(timeout: 5))
+        XCTAssertTrue(waitForFocus(on: app.buttons["hero-play"]))
         XCTAssertFalse(identified("activation-screen", in: app).exists)
     }
 
@@ -59,6 +128,12 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.buttons["nav-home"].exists)
         XCTAssertTrue(app.staticTexts["Bundled catalogue and artwork"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Sign out"].exists)
+        let settings = app.buttons["nav-settings"]
+        XCTAssertTrue(waitForFocus(on: settings))
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(waitForFocus(on: app.buttons["nav-library"]))
+        XCUIRemote.shared.press(.down)
+        XCTAssertTrue(waitForFocus(on: settings))
     }
 
     func testFixtureSearchMatchesWebHierarchyAndDefaultsToTheField() throws {
@@ -76,6 +151,23 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(waitForFocus(on: searchField))
     }
 
+    func testSearchMovesPredictablyBetweenFieldAndResults() throws {
+        let app = fixtureApplication(screen: "search")
+        app.launch()
+
+        XCTAssertTrue(identified("search-screen", in: app).waitForExistence(timeout: 12))
+        let searchField = identified("search-field", in: app)
+        XCTAssertTrue(waitForFocus(on: searchField))
+
+        let remote = XCUIRemote.shared
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
+        remote.press(.up)
+        XCTAssertTrue(waitForFocus(on: searchField))
+    }
+
     func testFixtureFullLibraryMatchesWebHierarchy() throws {
         let app = fixtureApplication(screen: "library")
         app.launch()
@@ -86,6 +178,22 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["COMPLETE CATALOGUE"].exists)
         XCTAssertTrue(app.staticTexts["All movies"].exists)
         XCTAssertTrue(app.staticTexts["6 titles"].exists)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+    }
+
+    func testLibraryGridPreservesDirectionalPosition() throws {
+        let app = fixtureApplication(screen: "library")
+        app.launch()
+
+        XCTAssertTrue(identified("library-screen", in: app).waitForExistence(timeout: 12))
+        let remote = XCUIRemote.shared
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+        remote.press(.right)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
+        remote.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+        remote.press(.up)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
     }
 
     func testFixtureCollectionsUpdatesResultsInline() throws {
@@ -102,9 +210,12 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(waitForFocus(on: childhoodCollection))
         XCUIRemote.shared.press(.right)
         XCTAssertTrue(waitForFocus(on: holidayCollection))
-        XCUIRemote.shared.press(.select)
-
         XCTAssertTrue(identified("collection-results-vakantiefilms", in: app).waitForExistence(timeout: 5))
+
+        XCUIRemote.shared.press(.down)
+        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-5"]))
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(waitForFocus(on: holidayCollection))
         XCTAssertTrue(identified("collections-screen", in: app).exists)
     }
 

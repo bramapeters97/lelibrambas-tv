@@ -36,6 +36,7 @@ struct ProfileSelectionView: View {
                         .focused($focusedProfileID, equals: profile.id)
                     }
                 }
+                .focusSection()
 
                 Text("A PRIVATE LELIBRAMBAS+ LOCAL MEDIA LIBRARY")
                     .font(LBTypography.caption(size: 15, weight: .medium))

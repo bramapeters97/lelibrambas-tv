@@ -37,7 +37,8 @@ struct HomeView: View {
                             onDetails: {
                                 stopHeroPreview()
                                 onSelect(featured)
-                            }
+                            },
+                            prefersInitialFocus: !startAtShelves
                         )
                         .id("hero")
                     }
@@ -121,6 +122,7 @@ struct HomeView: View {
                 .padding(.vertical, 18)
             }
             .scrollClipDisabled()
+            .focusSection()
         }
         .accessibilityIdentifier("home-collections")
     }

@@ -15,6 +15,11 @@ enum LBPreviewPolicy {
 }
 
 struct MediaDetailView: View {
+    private enum FocusTarget: Hashable {
+        case play
+        case back
+    }
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
 
@@ -26,6 +31,7 @@ struct MediaDetailView: View {
     @State private var previewURL: URL?
     @State private var previewIsPlaying = false
     @State private var previewRequestGeneration = 0
+    @FocusState private var focusedAction: FocusTarget?
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -53,6 +59,7 @@ struct MediaDetailView: View {
             DetailBackButton { dismiss() }
                 .padding(.leading, LBSpacing.safeHorizontal)
                 .padding(.top, LBSpacing.safeVertical)
+                .focused($focusedAction, equals: .back)
 
             VStack(alignment: .leading, spacing: 0) {
                 Spacer()
@@ -100,6 +107,7 @@ struct MediaDetailView: View {
                     }
                 }
                 .disabled(isPreparingPlayback)
+                .focused($focusedAction, equals: .play)
                 .accessibilityIdentifier("details-play")
                 .padding(.top, 27)
             }
@@ -109,6 +117,8 @@ struct MediaDetailView: View {
         }
         .background(LBColor.canvas)
         .ignoresSafeArea()
+        .focusSection()
+        .defaultFocus($focusedAction, .play)
         .task(id: item.id) {
             previewURL = nil
             previewIsPlaying = false
