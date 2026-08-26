@@ -176,6 +176,7 @@ struct LBHero: View {
             focusedAction = .play
         }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("home-hero")
     }
 

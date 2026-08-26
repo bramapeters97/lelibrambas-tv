@@ -139,6 +139,7 @@ struct MediaDetailView: View {
         }
         .onDisappear { stopPreview() }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("details-screen")
     }
 

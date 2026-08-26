@@ -101,10 +101,6 @@ struct BrowseRootView: View {
                 playbackSession = nil
             }
         }
-        .task {
-            await Task.yield()
-            resetFocus(in: browseFocusScope)
-        }
         .onChange(of: path) { previousPath, currentPath in
             guard currentPath.count > previousPath.count else { return }
             Task { @MainActor in
