@@ -7,7 +7,6 @@ struct CollectionsView: View {
     let focusScope: Namespace.ID
     let onSelect: (MediaItem) -> Void
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedID: String?
     @FocusState private var focusedCollectionID: String?
 
@@ -61,12 +60,6 @@ struct CollectionsView: View {
                             LBCollectionCard(section: section, index: index) {
                                 selectedID = section.id
                             }
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 15, style: .continuous)
-                                    .stroke(isSelected ? LBColor.text : .clear, lineWidth: 4)
-                            }
-                            .scaleEffect(isSelected ? 1.025 : 1)
-                            .animation(reduceMotion ? nil : LBMotion.standard, value: isSelected)
                             .focused($focusedCollectionID, equals: section.id)
                             .prefersDefaultFocus(isSelected, in: focusScope)
                             .accessibilityAddTraits(isSelected ? .isSelected : [])

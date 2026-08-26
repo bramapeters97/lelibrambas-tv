@@ -7,6 +7,86 @@ struct LBPlainButtonStyle: ButtonStyle {
     }
 }
 
+enum LBFocusAppearance {
+    static let cardBorderWidth: CGFloat = 5
+    static let cardGlowOpacity = 0.38
+    static let cardGlowRadius: CGFloat = 7
+    static let accessibilityFocused = "Focused"
+    static let accessibilityNotFocused = "Not focused"
+}
+
+struct LBCardButtonStyle: ButtonStyle {
+    let cornerRadius: CGFloat
+    let focusedScale: CGFloat
+    let unfocusedBorderColor: Color
+    let focusedShadowColor: Color
+    let unfocusedShadowColor: Color
+    let focusedShadowRadius: CGFloat
+    let unfocusedShadowRadius: CGFloat
+    let shadowY: CGFloat
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label.modifier(
+            LBCardFocusChrome(
+                pressed: configuration.isPressed,
+                cornerRadius: cornerRadius,
+                focusedScale: focusedScale,
+                unfocusedBorderColor: unfocusedBorderColor,
+                focusedShadowColor: focusedShadowColor,
+                unfocusedShadowColor: unfocusedShadowColor,
+                focusedShadowRadius: focusedShadowRadius,
+                unfocusedShadowRadius: unfocusedShadowRadius,
+                shadowY: shadowY
+            )
+        )
+    }
+}
+
+private struct LBCardFocusChrome: ViewModifier {
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let pressed: Bool
+    let cornerRadius: CGFloat
+    let focusedScale: CGFloat
+    let unfocusedBorderColor: Color
+    let focusedShadowColor: Color
+    let unfocusedShadowColor: Color
+    let focusedShadowRadius: CGFloat
+    let unfocusedShadowRadius: CGFloat
+    let shadowY: CGFloat
+
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+        content
+            .clipShape(shape)
+            .overlay {
+                shape
+                    .stroke(
+                        isFocused ? Color.white : unfocusedBorderColor,
+                        lineWidth: isFocused ? LBFocusAppearance.cardBorderWidth : 1
+                    )
+                    .shadow(
+                        color: isFocused ? Color.white.opacity(LBFocusAppearance.cardGlowOpacity) : .clear,
+                        radius: LBFocusAppearance.cardGlowRadius
+                    )
+            }
+            .scaleEffect(isFocused ? focusedScale : 1)
+            .shadow(
+                color: isFocused ? focusedShadowColor : unfocusedShadowColor,
+                radius: isFocused ? focusedShadowRadius : unfocusedShadowRadius,
+                y: shadowY
+            )
+            .opacity(pressed ? 0.84 : 1)
+            .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+            .accessibilityValue(
+                isFocused
+                    ? LBFocusAppearance.accessibilityFocused
+                    : LBFocusAppearance.accessibilityNotFocused
+            )
+    }
+}
+
 private struct LBButtonChrome: ViewModifier {
     @Environment(\.isFocused) private var isFocused
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

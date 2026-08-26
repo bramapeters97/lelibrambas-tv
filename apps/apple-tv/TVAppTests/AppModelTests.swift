@@ -37,6 +37,14 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(LBSpacing.shelfGap, 15)
     }
 
+    func testFocusedCardsUseAVisibleNonLayoutOverlay() {
+        XCTAssertEqual(LBFocusAppearance.cardBorderWidth, 5)
+        XCTAssertEqual(LBFocusAppearance.cardGlowOpacity, 0.38, accuracy: 0.000_001)
+        XCTAssertEqual(LBFocusAppearance.cardGlowRadius, 7)
+        XCTAssertEqual(LBFocusAppearance.accessibilityFocused, "Focused")
+        XCTAssertEqual(LBFocusAppearance.accessibilityNotFocused, "Not focused")
+    }
+
     func testSearchMatchesYearAndLimitsEmptySuggestionsToEight() {
         let searchItems = (0..<10).map { index in
             MediaItem(

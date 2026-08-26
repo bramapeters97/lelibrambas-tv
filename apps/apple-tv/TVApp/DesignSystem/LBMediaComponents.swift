@@ -9,9 +9,6 @@ enum LBContentSelection {
 }
 
 struct LBMediaCard: View {
-    @Environment(\.isFocused) private var isFocused
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let item: MediaItem
     var width = LBLayout.mediaCardWidth
     var index: Int?
@@ -19,7 +16,18 @@ struct LBMediaCard: View {
 
     var body: some View {
         Button(action: action) { cardContent }
-            .buttonStyle(LBPlainButtonStyle())
+            .buttonStyle(
+                LBCardButtonStyle(
+                    cornerRadius: LBRadius.small,
+                    focusedScale: LBLayout.focusScale,
+                    unfocusedBorderColor: LBColor.text.opacity(0.09),
+                    focusedShadowColor: LBColor.gold.opacity(0.24),
+                    unfocusedShadowColor: .black.opacity(0.3),
+                    focusedShadowRadius: 24,
+                    unfocusedShadowRadius: 15,
+                    shadowY: 14
+                )
+            )
             .focusEffectDisabled()
             .accessibilityLabel(accessibilityLabel)
             .accessibilityHint("Open details")
@@ -33,15 +41,6 @@ struct LBMediaCard: View {
         }
         .frame(width: width, alignment: .leading)
         .background(LBColor.surface)
-        .clipShape(cardShape)
-        .overlay { focusBorder }
-        .scaleEffect(isFocused ? LBLayout.focusScale : 1)
-        .shadow(
-            color: isFocused ? LBColor.gold.opacity(0.24) : .black.opacity(0.3),
-            radius: isFocused ? 24 : 15,
-            y: 14
-        )
-        .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
 
     private var artworkPanel: some View {
@@ -71,17 +70,6 @@ struct LBMediaCard: View {
         .padding(.horizontal, 15)
         .padding(.vertical, 13)
         .frame(minWidth: width, maxWidth: width, minHeight: 68, alignment: .topLeading)
-    }
-
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: LBRadius.small, style: .continuous)
-    }
-
-    private var focusBorder: some View {
-        cardShape.stroke(
-            isFocused ? LBColor.text : LBColor.text.opacity(0.09),
-            lineWidth: isFocused ? 3 : 1
-        )
     }
 
     @ViewBuilder

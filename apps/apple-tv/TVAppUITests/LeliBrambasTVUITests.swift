@@ -33,23 +33,32 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(waitForFocus(on: heroPlay))
 
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["collection-jeugdfilms"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["collection-jeugdfilms"]))
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+        let firstCard = app.buttons["media-card-1"]
+        XCTAssertTrue(waitForFocusAppearance(on: firstCard))
 
         remote.press(.right)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+        let secondCard = app.buttons["media-card-6"]
+        XCTAssertTrue(waitForFocusAppearance(on: secondCard))
+        XCTAssertTrue(waitForNoFocusAppearance(on: firstCard))
+        remote.press(.left)
+        XCTAssertTrue(waitForFocusAppearance(on: firstCard))
+        XCTAssertTrue(waitForNoFocusAppearance(on: secondCard))
         remote.press(.right)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+        XCTAssertTrue(waitForFocusAppearance(on: secondCard))
+        remote.press(.right)
+        XCTAssertTrue(waitForFocusAppearance(on: secondCard))
 
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-5"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-5"]))
+        XCTAssertTrue(waitForNoFocusAppearance(on: secondCard))
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-3"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-3"]))
         remote.press(.right)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-3"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-3"]))
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-4"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-4"]))
     }
 
     func testFocusedMovieOpensMatchingDetailsAndReturnsFocus() throws {
@@ -59,11 +68,11 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 12))
         let remote = XCUIRemote.shared
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["collection-jeugdfilms"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["collection-jeugdfilms"]))
         remote.press(.down)
 
         let originCard = app.buttons["media-card-1"]
-        XCTAssertTrue(waitForFocus(on: originCard))
+        XCTAssertTrue(waitForFocusAppearance(on: originCard))
         remote.press(.select)
 
         XCTAssertTrue(identified("details-screen", in: app).waitForExistence(timeout: 8))
@@ -78,7 +87,8 @@ final class LeliBrambasTVUITests: XCTestCase {
 
         remote.press(.menu)
         XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 8))
-        XCTAssertTrue(waitForFocus(on: originCard))
+        XCTAssertTrue(waitForFocusAppearance(on: originCard))
+        XCTAssertTrue(waitForSingleFocusAppearance(in: app))
     }
 
     func testFixtureMediaDetailsRenderExpectedContent() throws {
@@ -161,11 +171,15 @@ final class LeliBrambasTVUITests: XCTestCase {
 
         let remote = XCUIRemote.shared
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+        let firstCard = app.buttons["media-card-1"]
+        let secondCard = app.buttons["media-card-2"]
+        XCTAssertTrue(waitForFocusAppearance(on: firstCard))
         remote.press(.right)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
+        XCTAssertTrue(waitForFocusAppearance(on: secondCard))
+        XCTAssertTrue(waitForNoFocusAppearance(on: firstCard))
         remote.press(.up)
         XCTAssertTrue(waitForFocus(on: searchField))
+        XCTAssertTrue(waitForNoFocusAppearance(on: secondCard))
     }
 
     func testFixtureFullLibraryMatchesWebHierarchy() throws {
@@ -187,13 +201,13 @@ final class LeliBrambasTVUITests: XCTestCase {
 
         XCTAssertTrue(identified("library-screen", in: app).waitForExistence(timeout: 12))
         let remote = XCUIRemote.shared
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-1"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-1"]))
         remote.press(.right)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-2"]))
         remote.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-6"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-6"]))
         remote.press(.up)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-2"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-2"]))
     }
 
     func testFixtureCollectionsUpdatesResultsInline() throws {
@@ -207,15 +221,17 @@ final class LeliBrambasTVUITests: XCTestCase {
         let holidayCollection = app.buttons["collection-vakantiefilms"]
         XCTAssertTrue(childhoodCollection.waitForExistence(timeout: 5))
         XCTAssertTrue(holidayCollection.waitForExistence(timeout: 5))
-        XCTAssertTrue(waitForFocus(on: childhoodCollection))
+        XCTAssertTrue(waitForFocusAppearance(on: childhoodCollection))
         XCUIRemote.shared.press(.right)
-        XCTAssertTrue(waitForFocus(on: holidayCollection))
+        XCTAssertTrue(waitForFocusAppearance(on: holidayCollection))
+        XCTAssertTrue(waitForNoFocusAppearance(on: childhoodCollection))
         XCTAssertTrue(identified("collection-results-vakantiefilms", in: app).waitForExistence(timeout: 5))
 
         XCUIRemote.shared.press(.down)
-        XCTAssertTrue(waitForFocus(on: app.buttons["media-card-5"]))
+        XCTAssertTrue(waitForFocusAppearance(on: app.buttons["media-card-5"]))
+        XCTAssertTrue(waitForNoFocusAppearance(on: holidayCollection))
         XCUIRemote.shared.press(.up)
-        XCTAssertTrue(waitForFocus(on: holidayCollection))
+        XCTAssertTrue(waitForFocusAppearance(on: holidayCollection))
         XCTAssertTrue(identified("collections-screen", in: app).exists)
     }
 
@@ -256,5 +272,36 @@ final class LeliBrambasTVUITests: XCTestCase {
             return false
         }
         return true
+    }
+
+    private func waitForFocusAppearance(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let predicate = NSPredicate { object, _ in
+            guard let element = object as? XCUIElement else { return false }
+            return element.hasFocus && (element.value as? String) == "Focused"
+        }
+        return XCTWaiter.wait(
+            for: [XCTNSPredicateExpectation(predicate: predicate, object: element)],
+            timeout: timeout
+        ) == .completed
+    }
+
+    private func waitForNoFocusAppearance(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
+        let predicate = NSPredicate { object, _ in
+            guard let element = object as? XCUIElement else { return false }
+            return !element.hasFocus && (element.value as? String) == "Not focused"
+        }
+        return XCTWaiter.wait(
+            for: [XCTNSPredicateExpectation(predicate: predicate, object: element)],
+            timeout: timeout
+        ) == .completed
+    }
+
+    private func waitForSingleFocusAppearance(in app: XCUIApplication, timeout: TimeInterval = 5) -> Bool {
+        let focusedAppearance = app.buttons.matching(NSPredicate(format: "value == %@", "Focused"))
+        let predicate = NSPredicate { _, _ in focusedAppearance.count == 1 }
+        return XCTWaiter.wait(
+            for: [XCTNSPredicateExpectation(predicate: predicate, object: app)],
+            timeout: timeout
+        ) == .completed
     }
 }

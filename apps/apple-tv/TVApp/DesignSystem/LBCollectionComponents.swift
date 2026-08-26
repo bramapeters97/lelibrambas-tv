@@ -71,9 +71,6 @@ struct LBCollectionPalette {
 }
 
 struct LBCollectionCard: View {
-    @Environment(\.isFocused) private var isFocused
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let section: CatalogSection
     let index: Int
     var style: LBCollectionCardStyle = .full
@@ -86,7 +83,18 @@ struct LBCollectionCard: View {
 
     var body: some View {
         Button(action: action) { cardContent }
-        .buttonStyle(LBPlainButtonStyle())
+        .buttonStyle(
+            LBCardButtonStyle(
+                cornerRadius: cardCornerRadius,
+                focusedScale: 1.035,
+                unfocusedBorderColor: Color.white.opacity(0.09),
+                focusedShadowColor: palette.accent.opacity(0.24),
+                unfocusedShadowColor: .black.opacity(0.3),
+                focusedShadowRadius: 24,
+                unfocusedShadowRadius: 16,
+                shadowY: 13
+            )
+        )
         .focusEffectDisabled()
         .accessibilityLabel("\(section.title), \(section.items.count) films")
         .accessibilityHint(style == .compact ? "Show collection" : "Show titles in this collection")
@@ -102,15 +110,6 @@ struct LBCollectionCard: View {
             directoryNumber
         }
         .frame(height: height)
-        .clipShape(cardShape)
-        .overlay { focusBorder }
-        .scaleEffect(isFocused ? 1.035 : 1)
-        .shadow(
-            color: isFocused ? palette.accent.opacity(0.24) : .black.opacity(0.3),
-            radius: isFocused ? 24 : 16,
-            y: 13
-        )
-        .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
 
     private var ellipseDecoration: some View {
@@ -165,16 +164,7 @@ struct LBCollectionCard: View {
             .padding(style == .compact ? 15 : 22)
     }
 
-    private var cardShape: RoundedRectangle {
-        RoundedRectangle(cornerRadius: style == .compact ? LBRadius.medium : 15, style: .continuous)
-    }
-
-    private var focusBorder: some View {
-        cardShape.stroke(
-            isFocused ? LBColor.text : Color.white.opacity(0.09),
-            lineWidth: isFocused ? 4 : 1
-        )
-    }
+    private var cardCornerRadius: CGFloat { style == .compact ? LBRadius.medium : 15 }
 
     private var ellipseWidth: CGFloat { style == .compact ? 245 : 330 }
     private var ellipseHeight: CGFloat { style == .compact ? 215 : 360 }
