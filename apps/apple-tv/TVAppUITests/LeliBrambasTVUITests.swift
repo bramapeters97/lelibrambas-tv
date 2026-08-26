@@ -245,6 +245,16 @@ final class LeliBrambasTVUITests: XCTestCase {
             (object as? XCUIElement)?.hasFocus == true
         }
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
-        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
+        let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        guard result == .completed else {
+            let focusedElements = XCUIApplication()
+                .descendants(matching: .any)
+                .matching(NSPredicate(format: "hasFocus == true"))
+                .allElementsBoundByIndex
+                .map { "\($0.elementType):\($0.identifier):\($0.label)" }
+            print("[focus-debug] expected=\(element.identifier) actual=\(focusedElements)")
+            return false
+        }
+        return true
     }
 }
