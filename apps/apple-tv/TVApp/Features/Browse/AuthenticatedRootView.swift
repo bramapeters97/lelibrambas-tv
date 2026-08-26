@@ -36,6 +36,8 @@ enum BrowseRoute: Hashable {
 }
 
 struct BrowseRootView: View {
+    @Environment(\.resetFocus) private var resetFocus
+
     @ObservedObject var model: AppModel
     let profile: ViewerProfile
     let onSwitchProfile: () -> Void
@@ -97,6 +99,17 @@ struct BrowseRootView: View {
         .fullScreenCover(item: $playbackSession) { session in
             PlayerScreen(session: session) {
                 playbackSession = nil
+            }
+        }
+        .task {
+            await Task.yield()
+            resetFocus(in: browseFocusScope)
+        }
+        .onChange(of: path) { previousPath, currentPath in
+            guard currentPath.count > previousPath.count else { return }
+            Task { @MainActor in
+                await Task.yield()
+                resetFocus(in: browseFocusScope)
             }
         }
         .accessibilityIdentifier("browse-root")
