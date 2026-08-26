@@ -7,6 +7,7 @@ struct CollectionsView: View {
     let focusScope: Namespace.ID
     let onSelect: (MediaItem) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var selectedID: String?
     @FocusState private var focusedCollectionID: String?
 
