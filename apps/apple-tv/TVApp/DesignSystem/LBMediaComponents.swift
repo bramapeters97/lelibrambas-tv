@@ -169,6 +169,11 @@ struct LBHero: View {
         }
         .focusSection()
         .defaultFocus($focusedAction, prefersInitialFocus ? .play : nil)
+        .task {
+            guard prefersInitialFocus else { return }
+            await Task.yield()
+            focusedAction = .play
+        }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.72), value: previewIsPlaying)
         .accessibilityIdentifier("home-hero")
     }

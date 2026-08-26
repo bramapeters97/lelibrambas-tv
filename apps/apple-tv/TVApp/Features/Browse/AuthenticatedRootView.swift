@@ -211,6 +211,11 @@ private struct MainNavigationRail: View {
         }
         .focusSection()
         .defaultFocus($focusedSection, prefersSelectedItemFocus ? selection : nil)
+        .task(id: selection) {
+            guard prefersSelectedItemFocus else { return }
+            await Task.yield()
+            focusedSection = selection
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Main navigation")
         .zIndex(20)

@@ -119,6 +119,10 @@ struct MediaDetailView: View {
         .ignoresSafeArea()
         .focusSection()
         .defaultFocus($focusedAction, .play)
+        .task {
+            await Task.yield()
+            focusedAction = .play
+        }
         .task(id: item.id) {
             previewURL = nil
             previewIsPlaying = false

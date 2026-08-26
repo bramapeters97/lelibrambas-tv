@@ -79,6 +79,11 @@ struct LBMediaGrid: View {
         }
         .focusSection()
         .defaultFocus($focusedItemID, prefersInitialFocus ? items.first?.id : nil)
+        .task(id: items.first?.id) {
+            guard prefersInitialFocus else { return }
+            await Task.yield()
+            focusedItemID = items.first?.id
+        }
         .padding(.vertical, 20)
     }
 }
