@@ -40,8 +40,8 @@ Apple publishes these tvOS-specific steps at [testflight.apple.com](https://test
 
 ## 4. Physical-device acceptance
 
-- Confirm launch shows the three local profiles, then reaches Home without an activation screen or startup network request.
-- Relaunch and confirm the bundled production catalogue opens again without account or session state.
+- Confirm launch plays the full native ident and jingle, then shows the three local profiles and reaches Home without an activation screen or startup network request.
+- Background and return to the app; confirm the full ident and jingle replay, the previous local profile is cleared, and profile selection is required again before the bundled production catalogue opens without account or session state.
 - Confirm bundled PNG artwork loads and a missing poster uses `generic_cinema_2.png`.
 - Play supported HLS/MP4 content; test play/pause, ±10-second seeking, scrubber, volume/audio routing, interruption, Back, and error recovery.
 - Check focus, safe areas, typography, and crop at 1080p and 4K where devices permit.

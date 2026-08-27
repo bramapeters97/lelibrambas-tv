@@ -149,6 +149,33 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertFalse(identified("activation-screen", in: app).exists)
     }
 
+    func testProductionBackgroundReturnReplaysIntroAndRequiresProfileAgain() throws {
+        let app = productionApplication()
+        app.launch()
+
+        let profile = app.buttons["profile-bart-astrid"]
+        XCTAssertTrue(profile.waitForExistence(timeout: 15))
+        XCTAssertTrue(waitForFocus(on: profile))
+        XCUIRemote.shared.press(.select)
+        XCTAssertTrue(identified("home-screen", in: app).waitForExistence(timeout: 15))
+
+        XCUIRemote.shared.press(.menu)
+        XCTAssertTrue(waitForBackground(on: app))
+        app.activate()
+
+        let intro = identified("intro-screen", in: app)
+        XCTAssertTrue(intro.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["LELIBRAMBAS+"].waitForExistence(timeout: 5))
+        XCTAssertFalse(identified("home-screen", in: app).exists)
+        XCTAssertFalse(identified("profile-selector", in: app).exists)
+
+        XCTAssertTrue(identified("profile-selector", in: app).waitForExistence(timeout: 15))
+        XCTAssertFalse(intro.exists)
+        XCTAssertTrue(app.buttons["profile-bart-astrid"].exists)
+        XCTAssertFalse(identified("home-screen", in: app).exists)
+        XCTAssertFalse(identified("activation-screen", in: app).exists)
+    }
+
     func testSettingsDescribeBundledContentWithoutLoginControls() throws {
         let app = fixtureApplication(screen: "settings")
         app.launch()
@@ -303,6 +330,22 @@ final class LeliBrambasTVUITests: XCTestCase {
             return false
         }
         return true
+    }
+
+    private func waitForBackground(on app: XCUIApplication, timeout: TimeInterval = 8) -> Bool {
+        let predicate = NSPredicate { object, _ in
+            guard let app = object as? XCUIApplication else { return false }
+            switch app.state {
+            case .runningBackground, .runningBackgroundSuspended:
+                return true
+            default:
+                return false
+            }
+        }
+        return XCTWaiter.wait(
+            for: [XCTNSPredicateExpectation(predicate: predicate, object: app)],
+            timeout: timeout
+        ) == .completed
     }
 
     private func waitForFocusAppearance(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {

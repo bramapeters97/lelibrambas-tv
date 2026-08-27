@@ -9,7 +9,7 @@
 ./Scripts/assert-repository-isolation.sh
 ```
 
-The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, official studio brand resource, and the byte-identical web-viewer introduction jingle. Unit tests verify the ident's text, timing, ordered phases, play-once behavior and audio-failure fallback alongside local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, preview policies, fallback artwork, distinct item video sources, direct playback resolution, Search suggestions, and player retry. UI tests verify production launch runs the native ident before showing the local profile selector, selecting a profile reaches Home without activation, and the Search/Full Library hierarchies render in deterministic fixture mode.
+The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, official studio brand resource, and the byte-identical web-viewer introduction jingle. Unit tests verify the ident's text, timing, ordered phases, per-cycle play-once behavior, background cancellation, inactive-state stability, background-to-active recreation, and audio-failure fallback alongside local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, preview policies, fallback artwork, distinct item video sources, direct playback resolution, Search suggestions, and player retry. UI tests verify production launch runs the native ident before showing the local profile selector, selecting a profile reaches Home without activation, a background return replays the ident and requires profile selection again, and the Search/Full Library hierarchies render in deterministic fixture mode.
 
 ## GitHub Actions
 
@@ -17,7 +17,7 @@ The simulator and unsigned-archive commands validate that the resulting app bund
 
 ## Required physical-device checks
 
-- Launch and relaunch through the full ident and audible jingle to the local profile selector, then select each profile and switch profiles from Home without replaying the ident.
+- Cold-launch through the full ident and audible jingle, select a profile, background the app from profiles/Home/details/playback, and confirm every return replays the ident and requires a profile again. Confirm a transient inactive interruption does not restart the flow, and in-app profile switching does not replay the ident.
 - Catalogue, backdrop, landscape thumbnail, and fallback artwork loading.
 - HLS/MP4/Cloudflare playback, play/pause, +/-10-second seek, scrub, audio, interruption, and error recovery.
 - Focus order and Back behavior on every screen.

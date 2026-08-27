@@ -90,6 +90,71 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(sleeps.delays, IntroPresentation.intervals(reduceMotion: false))
     }
 
+    func testIntroLifecycleRestartsExactlyOnceAfterBackground() {
+        var lifecycle = IntroLifecycleState()
+        let initialCycleID = lifecycle.cycleID
+
+        XCTAssertFalse(lifecycle.handle(.active))
+        XCTAssertFalse(lifecycle.handle(.inactive))
+        XCTAssertFalse(lifecycle.requiresFreshIntro)
+        XCTAssertEqual(lifecycle.cycleID, initialCycleID)
+
+        XCTAssertFalse(lifecycle.handle(.background))
+        XCTAssertTrue(lifecycle.requiresFreshIntro)
+        XCTAssertEqual(lifecycle.cycleID, initialCycleID)
+
+        XCTAssertTrue(lifecycle.handle(.active))
+        XCTAssertFalse(lifecycle.requiresFreshIntro)
+        XCTAssertNotEqual(lifecycle.cycleID, initialCycleID)
+
+        let restartedCycleID = lifecycle.cycleID
+        XCTAssertFalse(lifecycle.handle(.active))
+        XCTAssertEqual(lifecycle.cycleID, restartedCycleID)
+    }
+
+    func testBackgroundCancellationStopsIntroWithoutCompleting() async {
+        let audio = IntroAudioPlayerSpy(playResult: true)
+        let sleepGate = IntroSleepGate()
+        let model = IntroSequenceModel(
+            audioPlayer: audio,
+            sleeper: { delay in try await sleepGate.sleep(delay: delay) }
+        )
+        var completionCount = 0
+
+        let run = Task {
+            await model.run(reduceMotion: false) { completionCount += 1 }
+        }
+        await sleepGate.waitUntilRequested()
+        model.cancel()
+        await sleepGate.resume()
+        await run.value
+
+        XCTAssertEqual(model.phaseHistory, [.idle, .lights])
+        XCTAssertEqual(completionCount, 0)
+        XCTAssertEqual(audio.playCount, 1)
+        XCTAssertEqual(audio.stopCount, 1)
+    }
+
+    func testFreshIntroCyclesEachPlayTheJingleOnce() async {
+        let audio = IntroAudioPlayerSpy(playResult: true)
+        let firstCycle = IntroSequenceModel(
+            audioPlayer: audio,
+            sleeper: { _ in }
+        )
+        let secondCycle = IntroSequenceModel(
+            audioPlayer: audio,
+            sleeper: { _ in }
+        )
+
+        await firstCycle.run(reduceMotion: false) {}
+        await secondCycle.run(reduceMotion: false) {}
+
+        XCTAssertEqual(firstCycle.runCount, 1)
+        XCTAssertEqual(secondCycle.runCount, 1)
+        XCTAssertEqual(audio.playCount, 2)
+        XCTAssertEqual(audio.stopCount, 2)
+    }
+
     func testIntroAudioFailureStillCompletesAndReducedMotionUsesWebDuration() async {
         let audio = IntroAudioPlayerSpy(playResult: false)
         let sleeps = IntroSleepRecorder()
@@ -401,4 +466,31 @@ private final class IntroAudioPlayerSpy: IntroAudioPlaying {
 
 private final class IntroSleepRecorder {
     var delays: [UInt64] = []
+}
+
+private actor IntroSleepGate {
+    private var continuation: CheckedContinuation<Void, Never>?
+    private var requested = false
+    private var requestWaiters: [CheckedContinuation<Void, Never>] = []
+
+    func sleep(delay _: UInt64) async throws {
+        requested = true
+        requestWaiters.forEach { $0.resume() }
+        requestWaiters.removeAll()
+        await withCheckedContinuation { continuation in
+            self.continuation = continuation
+        }
+    }
+
+    func waitUntilRequested() async {
+        if requested { return }
+        await withCheckedContinuation { continuation in
+            requestWaiters.append(continuation)
+        }
+    }
+
+    func resume() {
+        continuation?.resume()
+        continuation = nil
+    }
 }

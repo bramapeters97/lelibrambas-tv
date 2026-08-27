@@ -17,9 +17,11 @@ struct LeliBrambasTVApp: App {
 
 private struct RootView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var model: AppModel
     @State private var selectedProfile: ViewerProfile?
     @State private var hasCompletedIntro = false
+    @State private var introLifecycle = IntroLifecycleState()
 
     var body: some View {
         ZStack {
@@ -28,6 +30,7 @@ private struct RootView: View {
                 IntroSplashView(playsAudio: shouldPlayIntroAudio) {
                     hasCompletedIntro = true
                 }
+                .id(introLifecycle.cycleID)
                 .transition(.opacity)
             } else if activeProfile == nil {
                 ProfileSelectionView(profiles: ViewerProfile.all) { profile in
@@ -64,6 +67,11 @@ private struct RootView: View {
         } message: { error in
             Text(error.message)
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard introLifecycle.handle(newPhase) else { return }
+            selectedProfile = nil
+            hasCompletedIntro = false
+        }
     }
 
     private var activeProfile: ViewerProfile? {
@@ -91,6 +99,29 @@ private struct RootView: View {
 #else
         return true
 #endif
+    }
+}
+
+struct IntroLifecycleState {
+    private(set) var requiresFreshIntro = false
+    private(set) var cycleID = UUID()
+
+    @discardableResult
+    mutating func handle(_ scenePhase: ScenePhase) -> Bool {
+        switch scenePhase {
+        case .background:
+            requiresFreshIntro = true
+            return false
+        case .active:
+            guard requiresFreshIntro else { return false }
+            requiresFreshIntro = false
+            cycleID = UUID()
+            return true
+        case .inactive:
+            return false
+        @unknown default:
+            return false
+        }
     }
 }
 
@@ -232,6 +263,8 @@ final class IntroSequenceModel: ObservableObject {
     private let sleeper: Sleeper
     private var hasStarted = false
     private var deliveredCompletion = false
+    private var cancellationRequested = false
+    private var audioNeedsStopping = false
 
     init(
         audioPlayer: IntroAudioPlaying = BundledIntroAudioPlayer(),
@@ -246,31 +279,33 @@ final class IntroSequenceModel: ObservableObject {
         playAudio: Bool = true,
         onComplete: @escaping () -> Void
     ) async {
-        guard !hasStarted else { return }
+        guard !hasStarted, !cancellationRequested else { return }
         hasStarted = true
         runCount += 1
 
         if playAudio {
             _ = audioPlayer.play(volume: IntroPresentation.jingleVolume)
+            audioNeedsStopping = true
         }
         defer {
-            if playAudio { audioPlayer.stop() }
+            stopAudioIfNeeded()
         }
 
+        guard !cancellationRequested else { return }
         transition(to: .lights)
         let intervals = IntroPresentation.intervals(reduceMotion: reduceMotion)
 
         do {
             try await sleeper(intervals[0])
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, !cancellationRequested else { return }
             transition(to: .mark)
 
             try await sleeper(intervals[1])
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, !cancellationRequested else { return }
             transition(to: .copy)
 
             try await sleeper(intervals[2])
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, !cancellationRequested else { return }
         } catch {
             return
         }
@@ -281,14 +316,25 @@ final class IntroSequenceModel: ObservableObject {
         onComplete()
     }
 
+    func cancel() {
+        cancellationRequested = true
+        stopAudioIfNeeded()
+    }
+
     func silenceAudio() {
-        audioPlayer.stop()
+        stopAudioIfNeeded()
     }
 
     private func transition(to nextPhase: IntroSequencePhase) {
         guard phase != nextPhase else { return }
         phase = nextPhase
         phaseHistory.append(nextPhase)
+    }
+
+    private func stopAudioIfNeeded() {
+        guard audioNeedsStopping else { return }
+        audioNeedsStopping = false
+        audioPlayer.stop()
     }
 }
 
@@ -352,7 +398,8 @@ struct IntroSplashView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel(IntroPresentation.accessibilityLabel)
         .accessibilityIdentifier("intro-screen")
-        .task {
+        .task(id: scenePhase == .background) {
+            guard scenePhase != .background else { return }
             await sequence.run(
                 reduceMotion: reduceMotion,
                 playAudio: playsAudio,
@@ -360,7 +407,14 @@ struct IntroSplashView: View {
             )
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase != .active {
+            switch newPhase {
+            case .background:
+                sequence.cancel()
+            case .inactive:
+                sequence.silenceAudio()
+            case .active:
+                break
+            @unknown default:
                 sequence.silenceAudio()
             }
         }
