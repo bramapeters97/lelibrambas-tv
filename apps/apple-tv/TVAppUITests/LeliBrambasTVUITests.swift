@@ -100,11 +100,20 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertTrue(waitForFocus(on: app.buttons["details-play"]))
     }
 
-    func testProductionLaunchShowsTheLocalProfileSelector() throws {
+    func testProductionLaunchRunsTheWebIdentThenShowsTheLocalProfileSelector() throws {
         let app = productionApplication()
         app.launch()
 
+        let intro = identified("intro-screen", in: app)
+        XCTAssertTrue(intro.waitForExistence(timeout: 3))
+        XCTAssertTrue(app.staticTexts["LELIBRAMBAS+"].waitForExistence(timeout: 4))
+        XCTAssertTrue(app.staticTexts["A private family archive"].exists)
+        XCTAssertFalse(identified("profile-selector", in: app).exists)
+        XCTAssertFalse(identified("activation-screen", in: app).exists)
+        attachScreenshot(named: "production-intro-ident")
+
         XCTAssertTrue(identified("profile-selector", in: app).waitForExistence(timeout: 15))
+        XCTAssertFalse(intro.exists)
         let firstProfile = app.buttons["profile-bart-astrid"]
         let secondProfile = app.buttons["profile-bram-edvin"]
         XCTAssertTrue(firstProfile.waitForExistence(timeout: 5))

@@ -18,10 +18,16 @@ catalog="$REPOSITORY_ROOT/data/media_catalog.json"
 artwork_root="$REPOSITORY_ROOT/artwork"
 fallback="$artwork_root/generic_cinema_2.png"
 studio_brand="$REPOSITORY_ROOT/lelibrambas-studios.png"
+intro_jingle="$REPOSITORY_ROOT/apps/tv/assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3"
+native_intro_jingle="$APPLE_TV_ROOT/TVApp/Assets.xcassets/LaunchJingle.dataset/lelibrambas-plus-magical-app-launch-universal-192k.mp3"
 
 [[ -f "$catalog" ]] || fail "Production catalogue is missing: $catalog"
 [[ -f "$fallback" ]] || fail "Poster fallback is missing: $fallback"
 [[ -f "$studio_brand" ]] || fail "Official studio brand source is missing: $studio_brand"
+[[ -f "$intro_jingle" ]] || fail "Official introduction jingle is missing: $intro_jingle"
+[[ -f "$native_intro_jingle" ]] || fail "Native introduction jingle data asset is missing: $native_intro_jingle"
+cmp -s "$intro_jingle" "$native_intro_jingle" \
+  || fail "Native introduction jingle differs from the web viewer source."
 
 stream_count="$(sed -nE 's/.*"stream_video_id"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog" | sort -u | wc -l | tr -d ' ')"
 [[ "$stream_count" -gt 1 ]] || fail "Production catalogue must contain multiple distinct stream_video_id values."
@@ -45,6 +51,7 @@ if [[ -n "$bundle_path" ]]; then
   [[ -f "$bundle_path/media_catalog.json" ]] || fail "Built app is missing media_catalog.json."
   [[ -f "$bundle_path/artwork/generic_cinema_2.png" ]] || fail "Built app is missing artwork/generic_cinema_2.png."
   [[ -f "$bundle_path/lelibrambas-studios.png" ]] || fail "Built app is missing lelibrambas-studios.png."
+  [[ -f "$bundle_path/Assets.car" ]] || fail "Built app is missing the compiled asset catalogue."
   cmp -s "$catalog" "$bundle_path/media_catalog.json" || fail "Built app catalogue differs from data/media_catalog.json."
   if ! cmp -s "$studio_brand" "$bundle_path/lelibrambas-studios.png"; then
     # Xcode losslessly normalizes standalone PNG resources during CopyPNGFile.
@@ -60,4 +67,4 @@ if [[ -n "$bundle_path" ]]; then
   fi
 fi
 
-log "Bundled catalogue and artwork validation passed ($stream_count distinct video sources)."
+log "Bundled catalogue, artwork, branding, and introduction jingle validation passed ($stream_count distinct video sources)."

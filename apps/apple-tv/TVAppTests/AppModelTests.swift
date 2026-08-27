@@ -55,6 +55,66 @@ final class AppModelTests: XCTestCase {
         XCTAssertTrue(LBLayout.navigationDividerSafeAreaEdges.contains(.bottom))
     }
 
+    func testIntroPresentationMatchesTheWebIdent() {
+        XCTAssertEqual(IntroPresentation.title, "LELIBRAMBAS+")
+        XCTAssertEqual(IntroPresentation.subtitle, "A private family archive")
+        XCTAssertEqual(IntroPresentation.jingleVolume, 0.68, accuracy: 0.000_001)
+        XCTAssertEqual(IntroPresentation.lights.count, 18)
+        XCTAssertEqual(IntroPresentation.markDelayNanoseconds, 1_150_000_000)
+        XCTAssertEqual(IntroPresentation.copyDelayNanoseconds, 1_750_000_000)
+        XCTAssertEqual(IntroPresentation.completionDelayNanoseconds, 5_800_000_000)
+        XCTAssertEqual(IntroPresentation.reducedCompletionDelayNanoseconds, 900_000_000)
+    }
+
+    func testIntroSequenceAdvancesOnceAndPlaysTheJingleOnce() async {
+        let audio = IntroAudioPlayerSpy(playResult: true)
+        let sleeps = IntroSleepRecorder()
+        let model = IntroSequenceModel(
+            audioPlayer: audio,
+            sleeper: { delay in sleeps.delays.append(delay) }
+        )
+        var completionCount = 0
+
+        await model.run(reduceMotion: false) { completionCount += 1 }
+        await model.run(reduceMotion: false) { completionCount += 1 }
+
+        XCTAssertEqual(
+            model.phaseHistory,
+            [.idle, .lights, .mark, .copy, .completed]
+        )
+        XCTAssertEqual(model.runCount, 1)
+        XCTAssertEqual(completionCount, 1)
+        XCTAssertEqual(audio.playCount, 1)
+        XCTAssertEqual(audio.stopCount, 1)
+        XCTAssertEqual(audio.requestedVolumes, [IntroPresentation.jingleVolume])
+        XCTAssertEqual(sleeps.delays, IntroPresentation.intervals(reduceMotion: false))
+    }
+
+    func testIntroAudioFailureStillCompletesAndReducedMotionUsesWebDuration() async {
+        let audio = IntroAudioPlayerSpy(playResult: false)
+        let sleeps = IntroSleepRecorder()
+        let model = IntroSequenceModel(
+            audioPlayer: audio,
+            sleeper: { delay in sleeps.delays.append(delay) }
+        )
+        var didComplete = false
+
+        await model.run(reduceMotion: true) { didComplete = true }
+
+        XCTAssertTrue(didComplete)
+        XCTAssertEqual(model.phase, .completed)
+        XCTAssertEqual(audio.playCount, 1)
+        XCTAssertEqual(audio.stopCount, 1)
+        XCTAssertEqual(sleeps.delays.reduce(0, +), 900_000_000)
+        XCTAssertEqual(sleeps.delays, IntroPresentation.intervals(reduceMotion: true))
+    }
+
+    func testHostedAppBundleContainsTheExactIntroJingleDataAsset() throws {
+        let resourceData = try XCTUnwrap(BundledIntroAudioPlayer.resourceData())
+
+        XCTAssertEqual(resourceData.count, 116_511)
+    }
+
     func testSearchMatchesYearAndLimitsEmptySuggestionsToEight() {
         let searchItems = (0..<10).map { index in
             MediaItem(
@@ -316,4 +376,29 @@ private actor BlockingCatalogLoader: CatalogLoading {
         continuation?.resume(returning: CatalogOrganizer.sorted(items))
         continuation = nil
     }
+}
+
+private final class IntroAudioPlayerSpy: IntroAudioPlaying {
+    let playResult: Bool
+    private(set) var playCount = 0
+    private(set) var stopCount = 0
+    private(set) var requestedVolumes: [Float] = []
+
+    init(playResult: Bool) {
+        self.playResult = playResult
+    }
+
+    func play(volume: Float) -> Bool {
+        playCount += 1
+        requestedVolumes.append(volume)
+        return playResult
+    }
+
+    func stop() {
+        stopCount += 1
+    }
+}
+
+private final class IntroSleepRecorder {
+    var delays: [UInt64] = []
 }

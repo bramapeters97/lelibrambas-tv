@@ -9,7 +9,7 @@
 ./Scripts/assert-repository-isolation.sh
 ```
 
-The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, and the official studio brand resource. Unit tests verify local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, the Home two-second/40-second and detail one-second/120-second preview policies, fallback artwork, distinct item video sources, direct playback resolution, Search suggestions, and player retry. UI tests verify production launch shows the local profile selector, selecting a profile reaches Home without activation, and the Search/Full Library hierarchies render in deterministic fixture mode.
+The simulator and unsigned-archive commands validate that the resulting app bundle contains the exact production `media_catalog.json`, the `artwork/` directory, `generic_cinema_2.png`, official studio brand resource, and the byte-identical web-viewer introduction jingle. Unit tests verify the ident's text, timing, ordered phases, play-once behavior and audio-failure fallback alongside local catalogue loading, exact profile definitions, the 16:9 card contract, trailer hero selection, preview policies, fallback artwork, distinct item video sources, direct playback resolution, Search suggestions, and player retry. UI tests verify production launch runs the native ident before showing the local profile selector, selecting a profile reaches Home without activation, and the Search/Full Library hierarchies render in deterministic fixture mode.
 
 ## GitHub Actions
 
@@ -17,7 +17,7 @@ The simulator and unsigned-archive commands validate that the resulting app bund
 
 ## Required physical-device checks
 
-- Launch and relaunch to the local profile selector, then select each profile and switch profiles from Home.
+- Launch and relaunch through the full ident and audible jingle to the local profile selector, then select each profile and switch profiles from Home without replaying the ident.
 - Catalogue, backdrop, landscape thumbnail, and fallback artwork loading.
 - HLS/MP4/Cloudflare playback, play/pause, +/-10-second seek, scrub, audio, interruption, and error recovery.
 - Focus order and Back behavior on every screen.

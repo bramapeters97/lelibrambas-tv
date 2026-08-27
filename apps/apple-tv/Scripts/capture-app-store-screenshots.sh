@@ -83,14 +83,15 @@ capture() {
   validate_capture "$filename" "$target"
 }
 
-capture profiles 01-profile-selector.png
-capture home 02-home.png
-capture shelves 03-content-shelves.png
-capture details 04-media-details.png
-capture playback-ready 05-collections.png
-capture settings 06-settings.png
-capture search 07-search.png
-capture library 08-full-library.png
+capture intro 01-introduction-ident.png
+capture profiles 02-profile-selector.png
+capture home 03-home.png
+capture shelves 04-content-shelves.png
+capture details 05-media-details.png
+capture playback-ready 06-collections.png
+capture settings 07-settings.png
+capture search 08-search.png
+capture library 09-full-library.png
 
 log "The tvOS shell preview is ready at $home_target."
 log "App screenshots are ready for human visual review at $output_directory. Do not submit them without checking focus, text, artwork rights, and private-data exposure."
