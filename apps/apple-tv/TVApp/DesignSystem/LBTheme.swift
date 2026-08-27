@@ -69,7 +69,7 @@ enum LBRadius {
 }
 
 enum LBLayout {
-    static let navigationWidth: CGFloat = 70
+    static let navigationWidth: CGFloat = 78
     static let contentMaxWidth: CGFloat = 1700
     static let mediaCardWidth: CGFloat = 250
     static let gridMediaCardWidth: CGFloat = 300

@@ -223,9 +223,13 @@ private struct MainNavigationRail: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
+            .ignoresSafeArea(edges: [.top, .bottom, .leading])
         }
         .overlay(alignment: .trailing) {
-            Rectangle().fill(LBColor.text.opacity(0.06)).frame(width: 1)
+            Rectangle()
+                .fill(LBColor.text.opacity(0.06))
+                .frame(width: 1)
+                .ignoresSafeArea(edges: .vertical)
         }
         .focusSection()
         .defaultFocus($focusedSection, prefersSelectedItemFocus ? selection : nil)
