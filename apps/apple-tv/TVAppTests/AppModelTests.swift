@@ -45,6 +45,16 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(LBFocusAppearance.accessibilityNotFocused, "Not focused")
     }
 
+    func testNavigationShellFillsTheLeftViewportEdges() {
+        XCTAssertEqual(LBLayout.navigationWidth, 78)
+        XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.leading))
+        XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.top))
+        XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.bottom))
+        XCTAssertFalse(LBLayout.navigationShellSafeAreaEdges.contains(.trailing))
+        XCTAssertTrue(LBLayout.navigationDividerSafeAreaEdges.contains(.top))
+        XCTAssertTrue(LBLayout.navigationDividerSafeAreaEdges.contains(.bottom))
+    }
+
     func testSearchMatchesYearAndLimitsEmptySuggestionsToEight() {
         let searchItems = (0..<10).map { index in
             MediaItem(

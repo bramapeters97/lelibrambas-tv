@@ -77,29 +77,12 @@ struct ProfileSelectionView: View {
 }
 
 private struct ProfileButton: View {
-    @Environment(\.isFocused) private var isFocused
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let profile: ViewerProfile
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 0) {
-                ProfileAvatar(profile: profile, focused: isFocused)
-                Text(profile.name)
-                    .font(LBTypography.title(size: 27, weight: .semibold))
-                    .foregroundStyle(LBColor.text)
-                    .padding(.top, 24)
-                Text("Ready to watch")
-                    .font(LBTypography.caption(size: 16, weight: .regular))
-                    .tracking(1)
-                    .foregroundStyle(LBColor.textMuted)
-                    .padding(.top, 7)
-            }
-            .frame(width: 270)
-            .scaleEffect(isFocused ? 1.04 : 1)
-            .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+            ProfileButtonLabel(profile: profile)
         }
         .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
@@ -108,6 +91,31 @@ private struct ProfileButton: View {
         .accessibilityHint("Open this local profile")
         .accessibilityAddTraits(.isButton)
         .accessibilityIdentifier("profile-\(profile.id)")
+    }
+}
+
+private struct ProfileButtonLabel: View {
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let profile: ViewerProfile
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ProfileAvatar(profile: profile, focused: isFocused)
+            Text(profile.name)
+                .font(LBTypography.title(size: 27, weight: .semibold))
+                .foregroundStyle(LBColor.text)
+                .padding(.top, 24)
+            Text("Ready to watch")
+                .font(LBTypography.caption(size: 16, weight: .regular))
+                .tracking(1)
+                .foregroundStyle(LBColor.textMuted)
+                .padding(.top, 7)
+        }
+        .frame(width: 270)
+        .scaleEffect(isFocused ? 1.04 : 1)
+        .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
 }
 
@@ -145,8 +153,15 @@ private struct ProfileAvatar: View {
         .clipShape(RoundedRectangle(cornerRadius: 62, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 62, style: .continuous)
-                .stroke(Color.white.opacity(focused ? 1 : 0.16), lineWidth: focused ? 4 : 1)
+                .stroke(
+                    Color.white.opacity(focused ? 1 : 0.16),
+                    lineWidth: focused ? LBFocusAppearance.cardBorderWidth : 1
+                )
                 .padding(focused ? -8 : 0)
+                .shadow(
+                    color: focused ? Color.white.opacity(LBFocusAppearance.cardGlowOpacity) : .clear,
+                    radius: LBFocusAppearance.cardGlowRadius
+                )
         }
         .shadow(color: focused ? profile.accent.opacity(0.25) : .black.opacity(0.34), radius: focused ? 30 : 24, y: 18)
     }

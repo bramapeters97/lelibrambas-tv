@@ -105,10 +105,20 @@ final class LeliBrambasTVUITests: XCTestCase {
         app.launch()
 
         XCTAssertTrue(identified("profile-selector", in: app).waitForExistence(timeout: 15))
-        XCTAssertTrue(app.buttons["profile-bart-astrid"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.buttons["profile-bram-edvin"].exists)
+        let firstProfile = app.buttons["profile-bart-astrid"]
+        let secondProfile = app.buttons["profile-bram-edvin"]
+        XCTAssertTrue(firstProfile.waitForExistence(timeout: 5))
+        XCTAssertTrue(secondProfile.exists)
         XCTAssertTrue(app.buttons["profile-eline-luca"].exists)
-        XCTAssertTrue(waitForFocus(on: app.buttons["profile-bart-astrid"]))
+        XCTAssertTrue(waitForFocus(on: firstProfile))
+        attachScreenshot(named: "profile-focus-first")
+        XCUIRemote.shared.press(.right)
+        XCTAssertTrue(waitForFocus(on: secondProfile))
+        XCTAssertTrue(waitForNoFocusAppearance(on: firstProfile))
+        attachScreenshot(named: "profile-focus-second")
+        XCUIRemote.shared.press(.left)
+        XCTAssertTrue(waitForFocus(on: firstProfile))
+        XCTAssertTrue(waitForNoFocusAppearance(on: secondProfile))
         XCTAssertFalse(identified("browse-root", in: app).exists)
         XCTAssertFalse(identified("activation-screen", in: app).exists)
         XCTAssertFalse(app.buttons["Activate Apple TV"].exists)
@@ -140,10 +150,22 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertFalse(app.buttons["Sign out"].exists)
         let settings = app.buttons["nav-settings"]
         XCTAssertTrue(waitForFocus(on: settings))
+        attachScreenshot(named: "navigation-focus-settings")
         XCUIRemote.shared.press(.up)
-        XCTAssertTrue(waitForFocus(on: app.buttons["nav-library"]))
+        let library = app.buttons["nav-library"]
+        XCTAssertTrue(waitForFocus(on: library))
+        XCTAssertTrue(waitForNoFocusAppearance(on: settings))
         XCUIRemote.shared.press(.down)
         XCTAssertTrue(waitForFocus(on: settings))
+        XCTAssertTrue(waitForNoFocusAppearance(on: library))
+        XCUIRemote.shared.press(.down)
+        let switchProfile = app.buttons["switch-profile"]
+        XCTAssertTrue(waitForFocus(on: switchProfile))
+        XCTAssertTrue(waitForNoFocusAppearance(on: settings))
+        attachScreenshot(named: "navigation-focus-switch-profile")
+        XCUIRemote.shared.press(.up)
+        XCTAssertTrue(waitForFocus(on: settings))
+        XCTAssertTrue(waitForNoFocusAppearance(on: switchProfile))
     }
 
     func testFixtureSearchMatchesWebHierarchyAndDefaultsToTheField() throws {
@@ -275,20 +297,13 @@ final class LeliBrambasTVUITests: XCTestCase {
     }
 
     private func waitForFocusAppearance(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
-        let predicate = NSPredicate { object, _ in
-            guard let element = object as? XCUIElement else { return false }
-            return element.hasFocus && (element.value as? String) == "Focused"
-        }
-        return XCTWaiter.wait(
-            for: [XCTNSPredicateExpectation(predicate: predicate, object: element)],
-            timeout: timeout
-        ) == .completed
+        waitForFocus(on: element, timeout: timeout)
     }
 
     private func waitForNoFocusAppearance(on element: XCUIElement, timeout: TimeInterval = 5) -> Bool {
         let predicate = NSPredicate { object, _ in
             guard let element = object as? XCUIElement else { return false }
-            return !element.hasFocus && (element.value as? String) == "Not focused"
+            return !element.hasFocus
         }
         return XCTWaiter.wait(
             for: [XCTNSPredicateExpectation(predicate: predicate, object: element)],
@@ -297,11 +312,18 @@ final class LeliBrambasTVUITests: XCTestCase {
     }
 
     private func waitForSingleFocusAppearance(in app: XCUIApplication, timeout: TimeInterval = 5) -> Bool {
-        let focusedAppearance = app.buttons.matching(NSPredicate(format: "value == %@", "Focused"))
+        let focusedAppearance = app.buttons.matching(NSPredicate(format: "hasFocus == true"))
         let predicate = NSPredicate { _, _ in focusedAppearance.count == 1 }
         return XCTWaiter.wait(
             for: [XCTNSPredicateExpectation(predicate: predicate, object: app)],
             timeout: timeout
         ) == .completed
+    }
+
+    private func attachScreenshot(named name: String) {
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 }

@@ -223,13 +223,13 @@ private struct MainNavigationRail: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .ignoresSafeArea(edges: [.top, .bottom, .leading])
+            .ignoresSafeArea(edges: LBLayout.navigationShellSafeAreaEdges)
         }
         .overlay(alignment: .trailing) {
             Rectangle()
                 .fill(LBColor.text.opacity(0.06))
                 .frame(width: 1)
-                .ignoresSafeArea(edges: .vertical)
+                .ignoresSafeArea(edges: LBLayout.navigationDividerSafeAreaEdges)
         }
         .focusSection()
         .defaultFocus($focusedSection, prefersSelectedItemFocus ? selection : nil)
@@ -245,44 +245,60 @@ private struct MainNavigationRail: View {
 }
 
 private struct NavigationRailButton: View {
-    @Environment(\.isFocused) private var isFocused
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let item: BrowseSection
     let selected: Bool
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 14) {
-                navigationIcon
-                if isFocused {
-                    Text(item.title)
-                        .font(LBTypography.caption(size: 18, weight: .semibold))
-                        .lineLimit(1)
-                        .transition(.opacity)
-                }
-            }
-            .padding(.leading, 14)
-            .foregroundStyle(selected ? LBColor.text : LBColor.textMuted)
-            .frame(width: isFocused ? 176 : 52, height: 47, alignment: .leading)
-            .background(
-                (isFocused ? LBColor.surfaceRaised : selected ? LBColor.text.opacity(0.09) : .clear),
-                in: RoundedRectangle(cornerRadius: 12, style: .continuous)
-            )
-            .overlay {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(isFocused ? LBColor.text : .clear, lineWidth: 3)
-            }
-            .offset(x: isFocused ? 52 : 0)
-            .scaleEffect(isFocused ? 1.035 : 1)
-            .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+            NavigationRailButtonLabel(item: item, selected: selected)
         }
         .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel(item.title)
         .accessibilityAddTraits(selected ? .isSelected : [])
         .accessibilityIdentifier("nav-\(item.rawValue)")
+    }
+}
+
+private struct NavigationRailButtonLabel: View {
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let item: BrowseSection
+    let selected: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            navigationIcon
+            if isFocused {
+                Text(item.title)
+                    .font(LBTypography.caption(size: 18, weight: .semibold))
+                    .lineLimit(1)
+                    .transition(.opacity)
+            }
+        }
+        .padding(.leading, 14)
+        .foregroundStyle(selected ? LBColor.text : LBColor.textMuted)
+        .frame(width: isFocused ? 176 : 52, height: 47, alignment: .leading)
+        .background(
+            (isFocused ? LBColor.surfaceRaised : selected ? LBColor.text.opacity(0.09) : .clear),
+            in: RoundedRectangle(cornerRadius: 12, style: .continuous)
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(
+                    isFocused ? LBColor.text : .clear,
+                    lineWidth: isFocused ? LBFocusAppearance.cardBorderWidth : 1
+                )
+                .shadow(
+                    color: isFocused ? Color.white.opacity(LBFocusAppearance.cardGlowOpacity) : .clear,
+                    radius: LBFocusAppearance.cardGlowRadius
+                )
+        }
+        .offset(x: isFocused ? 52 : 0)
+        .scaleEffect(isFocused ? 1.035 : 1)
+        .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
 
     @ViewBuilder
@@ -303,35 +319,50 @@ private struct NavigationRailButton: View {
 }
 
 private struct ProfileRailButton: View {
-    @Environment(\.isFocused) private var isFocused
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-
     let profile: ViewerProfile
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            Text(profile.initials)
-                .font(LBTypography.caption(size: 14, weight: .bold))
-                .foregroundStyle(LBColor.text)
-                .frame(width: 44, height: 44)
-                .background(LBColor.surfaceRaised, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 13, style: .continuous)
-                        .stroke(profile.accent, lineWidth: 2)
-                }
-                .overlay {
-                    RoundedRectangle(cornerRadius: 13, style: .continuous)
-                        .stroke(isFocused ? LBColor.text : .clear, lineWidth: 3)
-                        .padding(-4)
-                }
-                .scaleEffect(isFocused ? 1.055 : 1)
-                .shadow(color: isFocused ? profile.accent.opacity(0.36) : .clear, radius: 15)
-                .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
+            ProfileRailButtonLabel(profile: profile)
         }
         .buttonStyle(LBPlainButtonStyle())
         .focusEffectDisabled()
         .accessibilityLabel("Switch profile, currently \(profile.name)")
         .accessibilityIdentifier("switch-profile")
+    }
+}
+
+private struct ProfileRailButtonLabel: View {
+    @Environment(\.isFocused) private var isFocused
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    let profile: ViewerProfile
+
+    var body: some View {
+        Text(profile.initials)
+            .font(LBTypography.caption(size: 14, weight: .bold))
+            .foregroundStyle(LBColor.text)
+            .frame(width: 44, height: 44)
+            .background(LBColor.surfaceRaised, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    .stroke(profile.accent, lineWidth: 2)
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    .stroke(
+                        isFocused ? LBColor.text : .clear,
+                        lineWidth: isFocused ? LBFocusAppearance.cardBorderWidth : 1
+                    )
+                    .padding(-4)
+                    .shadow(
+                        color: isFocused ? Color.white.opacity(LBFocusAppearance.cardGlowOpacity) : .clear,
+                        radius: LBFocusAppearance.cardGlowRadius
+                    )
+            }
+            .scaleEffect(isFocused ? 1.055 : 1)
+            .shadow(color: isFocused ? profile.accent.opacity(0.36) : .clear, radius: 15)
+            .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
 }
