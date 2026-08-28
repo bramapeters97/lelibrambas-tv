@@ -19,6 +19,17 @@ enum LBMediaPreviewTiming {
 enum BundledArtworkResolver {
     static let fallbackPath = "artwork/generic_cinema_2.png"
 
+    static func remoteURL(for source: String) -> URL? {
+        guard let components = URLComponents(string: source),
+              components.scheme?.lowercased() == "https",
+              components.host?.isEmpty == false,
+              components.user == nil,
+              components.password == nil else {
+            return nil
+        }
+        return components.url
+    }
+
     static func url(for source: String, bundle: Bundle = .main) -> URL? {
         if source.hasPrefix("fixture://") { return nil }
         return resourceURL(for: source, bundle: bundle)
@@ -62,7 +73,11 @@ struct LBArtwork: View {
 
     var body: some View {
         Group {
-            if let image = bundledImage {
+            if let remoteURL = BundledArtworkResolver.remoteURL(for: source) {
+                LBRemoteArtwork(url: remoteURL) {
+                    fallbackArtwork
+                }
+            } else if let image = bundledImage {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
@@ -73,6 +88,17 @@ struct LBArtwork: View {
         .aspectRatio(kind == .poster ? LBLayout.cardAspectRatio : LBLayout.backdropAspectRatio, contentMode: .fill)
         .clipped()
         .accessibilityHidden(true)
+    }
+
+    @ViewBuilder
+    private var fallbackArtwork: some View {
+        if let image = bundledImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+        } else {
+            placeholder
+        }
     }
 
     private var bundledImage: UIImage? {
@@ -114,6 +140,57 @@ struct LBArtwork: View {
         case 2: return [Color(red: 0.24, green: 0.12, blue: 0.18), Color(red: 0.52, green: 0.30, blue: 0.18)]
         case 3: return [Color(red: 0.08, green: 0.16, blue: 0.27), Color(red: 0.26, green: 0.23, blue: 0.52)]
         default: return [Color(red: 0.10, green: 0.23, blue: 0.19), Color(red: 0.33, green: 0.29, blue: 0.17)]
+        }
+    }
+}
+
+private enum LBRemoteArtworkCache {
+    static let images = NSCache<NSURL, UIImage>()
+}
+
+private struct LBRemoteArtwork<Fallback: View>: View {
+    let url: URL
+    @ViewBuilder let fallback: () -> Fallback
+
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                fallback()
+            }
+        }
+        .task(id: url) {
+            image = nil
+            let cacheKey = url as NSURL
+            if let cached = LBRemoteArtworkCache.images.object(forKey: cacheKey) {
+                image = cached
+                return
+            }
+
+            do {
+                var request = URLRequest(
+                    url: url,
+                    cachePolicy: .useProtocolCachePolicy,
+                    timeoutInterval: 20
+                )
+                request.httpMethod = "GET"
+                let (data, response) = try await URLSession.shared.data(for: request)
+                guard !Task.isCancelled,
+                      let response = response as? HTTPURLResponse,
+                      (200..<300).contains(response.statusCode),
+                      let loadedImage = UIImage(data: data) else {
+                    return
+                }
+                LBRemoteArtworkCache.images.setObject(loadedImage, forKey: cacheKey)
+                image = loadedImage
+            } catch {
+                // The bundled generic image remains visible when remote artwork fails.
+            }
         }
     }
 }

@@ -189,7 +189,7 @@ final class AppModelTests: XCTestCase {
 
         XCTAssertEqual(section?.id, "all-movies")
         XCTAssertEqual(section?.title, "All movies")
-        XCTAssertEqual(section?.items.map(\.id), [10, 20])
+        XCTAssertEqual(section?.items.map(\.id), [20, 10])
     }
 
     func testPlaybackProgressRulesAndTimestampFormattingMatchWebBehavior() {
@@ -433,7 +433,10 @@ final class AppModelTests: XCTestCase {
 
         XCTAssertFalse(items.isEmpty)
         XCTAssertGreaterThan(Set(items.compactMap(\.streamURL)).count, 1)
-        XCTAssertTrue(items.allSatisfy { $0.posterURL.hasPrefix("artwork/") })
+        XCTAssertTrue(items.allSatisfy {
+            $0.posterURL.hasPrefix("artwork/")
+                || BundledArtworkResolver.remoteURL(for: $0.posterURL) != nil
+        })
     }
 
     func testBundledArtworkResolvesAndMissingPosterUsesGenericFallback() throws {

@@ -15,7 +15,7 @@ elif [[ $# -gt 0 ]]; then
 fi
 
 catalog="$REPOSITORY_ROOT/data/media_catalog.json"
-artwork_root="$REPOSITORY_ROOT/artwork"
+artwork_root="$APPLE_TV_ROOT/TVApp/Resources/artwork"
 fallback="$artwork_root/generic_cinema_2.png"
 studio_brand="$REPOSITORY_ROOT/lelibrambas-studios.png"
 intro_jingle="$REPOSITORY_ROOT/apps/tv/assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3"
@@ -32,19 +32,18 @@ cmp -s "$intro_jingle" "$native_intro_jingle" \
 stream_count="$(sed -nE 's/.*"stream_video_id"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog" | sort -u | wc -l | tr -d ' ')"
 [[ "$stream_count" -gt 1 ]] || fail "Production catalogue must contain multiple distinct stream_video_id values."
 
-missing_artwork=0
 while IFS= read -r poster_path; do
   [[ -n "$poster_path" ]] || continue
   case "$poster_path" in
-    artwork/*.png) ;;
-    *) fail "Catalogue poster path is not a bundled artwork PNG: $poster_path" ;;
+    https://*) ;;
+    artwork/*.png)
+      relative_path="${poster_path#artwork/}"
+      [[ -f "$artwork_root/$relative_path" ]] \
+        || fail "Catalogue artwork is missing from the tvOS resource folder: $poster_path"
+      ;;
+    *) fail "Catalogue poster must be an HTTPS URL or bundled artwork PNG: $poster_path" ;;
   esac
-  if [[ ! -f "$REPOSITORY_ROOT/$poster_path" ]]; then
-    printf '[apple-tv] missing catalogue artwork: %s\n' "$poster_path" >&2
-    missing_artwork=$((missing_artwork + 1))
-  fi
 done < <(sed -nE 's/.*"poster_url"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog")
-[[ "$missing_artwork" -eq 0 ]] || fail "$missing_artwork catalogue poster(s) are not present in the artwork directory."
 
 if [[ -n "$bundle_path" ]]; then
   [[ -d "$bundle_path" ]] || fail "App bundle does not exist: $bundle_path"
@@ -67,4 +66,4 @@ if [[ -n "$bundle_path" ]]; then
   fi
 fi
 
-log "Bundled catalogue, artwork, branding, and introduction jingle validation passed ($stream_count distinct video sources)."
+log "Bundled fallback catalogue, fallback artwork, branding, and introduction jingle validation passed ($stream_count distinct video sources)."

@@ -144,7 +144,7 @@ struct HomeView: View {
 enum LBHomeContent {
     static func allMovies(from items: [MediaItem]) -> CatalogSection? {
         var seenIDs = Set<Int>()
-        let uniqueItems = CatalogOrganizer.sorted(items).filter { seenIDs.insert($0.id).inserted }
+        let uniqueItems = items.filter { seenIDs.insert($0.id).inserted }
         guard !uniqueItems.isEmpty else { return nil }
         return CatalogSection(id: "all-movies", title: "All movies", items: uniqueItems)
     }

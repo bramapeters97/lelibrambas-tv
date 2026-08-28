@@ -48,11 +48,12 @@ targets:
       - path: TVApp/Resources
         excludes:
           - Info.plist
+          - artwork
+        buildPhase: resources
+      - path: TVApp/Resources/artwork
+        type: folder
         buildPhase: resources
       - path: ../../data/media_catalog.json
-        buildPhase: resources
-      - path: ../../artwork
-        type: folder
         buildPhase: resources
       - path: ../../lelibrambas-studios.png
         buildPhase: resources

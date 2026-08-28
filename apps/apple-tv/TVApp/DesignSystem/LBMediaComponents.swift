@@ -4,7 +4,8 @@ import SwiftUI
 enum LBContentSelection {
     static func hero(in items: [MediaItem]) -> MediaItem? {
         items.first { $0.title.caseInsensitiveCompare("Lelibrambas+ Trailer") == .orderedSame }
-            ?? CatalogOrganizer.featuredItem(in: items)
+            ?? items.first(where: \.featured)
+            ?? items.first
     }
 }
 

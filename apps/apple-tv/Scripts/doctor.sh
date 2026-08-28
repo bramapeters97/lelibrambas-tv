@@ -65,7 +65,7 @@ check "Release.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Release.xcconfig"
 check "Signing template exists" test -f "$APPLE_TV_ROOT/Config/Signing.xcconfig.example"
 check "Privacy manifest exists" test -f "$APPLE_TV_ROOT/TVApp/Resources/PrivacyInfo.xcprivacy"
 check "bundled production catalogue exists" test -f "$REPOSITORY_ROOT/data/media_catalog.json"
-check "bundled poster fallback exists" test -f "$REPOSITORY_ROOT/artwork/generic_cinema_2.png"
+check "bundled poster fallback exists" test -f "$APPLE_TV_ROOT/TVApp/Resources/artwork/generic_cinema_2.png"
 
 generator="$(xcodegen_binary || true)"
 if [[ -n "$generator" && "$($generator --version 2>/dev/null || true)" == *"2.46.0"* ]]; then

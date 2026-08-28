@@ -1,6 +1,6 @@
 # Configuration
 
-Tracked configuration contains no secrets. `Config/Base.xcconfig`, `Debug.xcconfig`, and `Release.xcconfig` define stable build policy. The tvOS app needs no gateway, activation, account, session, token, or API endpoint configuration.
+Tracked configuration contains no secrets. `Config/Base.xcconfig`, `Debug.xcconfig`, and `Release.xcconfig` define stable build policy. `MoviesAPIConfiguration.defaultURL` contains the public production catalogue endpoint; Debug and tests may override it with `LELIBRAMBAS_MOVIES_API_URL`. Release ignores that process override. The tvOS app needs no gateway, activation, account, session, token, or secret endpoint configuration.
 
 | Local value                         | Purpose                              | Allowed in Git? |
 | ----------------------------------- | ------------------------------------ | --------------- |
@@ -17,4 +17,4 @@ export APPLE_DEVELOPMENT_TEAM="REPLACE_WITH_TEAM_ID"
 ./Scripts/archive.sh --version 1.0.0 --build-number 1
 ```
 
-Release always bundles `../../data/media_catalog.json` and `../../artwork/`. The archive script rejects fixture/debug/reviewer compilation conditions, validates those bundled resources, and refuses to overwrite an existing archive.
+Release always bundles `../../data/media_catalog.json` and `TVApp/Resources/artwork/generic_cinema_2.png` as offline/failure fallbacks. The archive script rejects fixture/debug/reviewer compilation conditions, validates those bundled resources, and refuses to overwrite an existing archive.

@@ -46,7 +46,7 @@ private struct RootView: View {
             } else if model.items.isEmpty {
                 LBEmptyState(
                     title: "The archive is quiet",
-                    message: "No films are available in the bundled catalogue."
+                    message: "No films are available in the catalogue."
                 )
             } else if let profile = activeProfile {
                 BrowseRootView(

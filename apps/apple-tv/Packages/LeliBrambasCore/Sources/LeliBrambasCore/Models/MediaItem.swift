@@ -10,6 +10,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     public let backdropURL: String?
     public let streamURL: String?
     public let playbackAssetID: String?
+    public let createdAt: String?
     public let sortOrder: Int
     public let featured: Bool
     public let previewStartSeconds: Double
@@ -24,6 +25,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         backdropURL: String? = nil,
         streamURL: String? = nil,
         playbackAssetID: String? = nil,
+        createdAt: String? = nil,
         sortOrder: Int? = nil,
         featured: Bool = false,
         previewStartSeconds: Double = 0
@@ -37,6 +39,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         self.backdropURL = backdropURL
         self.streamURL = streamURL
         self.playbackAssetID = playbackAssetID
+        self.createdAt = createdAt
         self.sortOrder = sortOrder ?? id
         self.featured = featured
         self.previewStartSeconds = max(0, previewStartSeconds)
@@ -52,6 +55,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         case backdropURL = "backdrop_url"
         case streamURL = "stream_video_id"
         case playbackAssetID = "playback_asset_id"
+        case createdAt = "created_at"
         case sortOrder = "sort_order"
         case featured
         case previewStartSeconds = "preview_start_seconds"
@@ -79,6 +83,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         backdropURL = try values.decodeIfPresent(String.self, forKey: .backdropURL)
         streamURL = try values.decodeIfPresent(String.self, forKey: .streamURL)
         playbackAssetID = try values.decodeIfPresent(String.self, forKey: .playbackAssetID)
+        createdAt = try values.decodeIfPresent(String.self, forKey: .createdAt)
         sortOrder = try values.decodeIfPresent(Int.self, forKey: .sortOrder) ?? id
         featured = try values.decodeIfPresent(Bool.self, forKey: .featured) ?? false
         previewStartSeconds = max(
@@ -116,6 +121,15 @@ public enum CatalogOrganizer {
 
     public static func sections(from items: [MediaItem]) -> [CatalogSection] {
         let grouped = Dictionary(grouping: sorted(items), by: \.category)
+        return sections(from: grouped)
+    }
+
+    public static func sectionsPreservingItemOrder(from items: [MediaItem]) -> [CatalogSection] {
+        let grouped = Dictionary(grouping: items, by: \.category)
+        return sections(from: grouped)
+    }
+
+    private static func sections(from grouped: [String: [MediaItem]]) -> [CatalogSection] {
         let known = preferredOrder.filter { grouped[$0] != nil }
         let additional = grouped.keys.filter { !preferredOrder.contains($0) }.sorted()
         return (known + additional).compactMap { category in

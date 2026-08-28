@@ -10,7 +10,7 @@ Stop. Do not bypass the checksum. Confirm the repository still pins version 2.46
 
 ## Release configuration failure
 
-Run `./Scripts/validate-bundled-content.sh`. Release requires the tracked `data/media_catalog.json`, every referenced PNG under `artwork/`, and `artwork/generic_cinema_2.png`. It does not require an API or activation endpoint.
+Run `./Scripts/validate-bundled-content.sh`. Release requires the tracked `data/media_catalog.json` fallback and tvOS-specific `TVApp/Resources/artwork/generic_cinema_2.png`. The production API endpoint is built in and public; no activation endpoint or secret configuration is required.
 
 ## Signing failure
 
@@ -22,7 +22,7 @@ Regenerate the Xcode project and run `./Scripts/build-simulator.sh`. The build v
 
 ## Video fails on a physical Apple TV
 
-Confirm the selected item’s `stream_video_id` is HTTPS and resolves to supported HLS, MP4, or Cloudflare Stream playback. There is no gateway request between selection and AVPlayer.
+Confirm the selected item’s `stream_video_id` is HTTPS and resolves to supported HLS, MP4, or Cloudflare Stream playback. The catalogue request occurs at startup; there is no gateway or catalogue request between selection and AVPlayer.
 
 ## Screenshot dimensions are rejected
 

@@ -14,6 +14,7 @@ final class MediaItemTests: XCTestCase {
         XCTAssertEqual(items[0].title, "The Lantern Archive")
         XCTAssertEqual(items[0].previewStartSeconds, 12)
         XCTAssertEqual(items[1].description, "")
+        XCTAssertNil(items[1].createdAt)
         XCTAssertEqual(items[1].sortOrder, 102)
         XCTAssertEqual(items[2].previewStartSeconds, 0)
     }
@@ -38,6 +39,18 @@ final class MediaItemTests: XCTestCase {
         let sections = CatalogOrganizer.sections(from: items)
         XCTAssertEqual(sections.map(\.title), ["JEUGDFILMS", "VAKANTIEFILMS", "EVENTS", "SCI-FI & FANTASY"])
         XCTAssertEqual(sections.map(\.id), ["jeugdfilms", "vakantiefilms", "events", "sci-fi-fantasy"])
+    }
+
+    func testOrganizerCanPreserveSourceOrderInsideExistingCategoryOrder() throws {
+        let items = try JSONDecoder().decode(
+            FixtureEnvelope<[MediaItem]>.self,
+            from: TestFixtures.data(named: "catalog")
+        ).data
+
+        let sections = CatalogOrganizer.sectionsPreservingItemOrder(from: items)
+
+        XCTAssertEqual(sections.map(\.title), ["JEUGDFILMS", "VAKANTIEFILMS", "EVENTS", "SCI-FI & FANTASY"])
+        XCTAssertEqual(sections.flatMap(\.items).map(\.id), [102, 104, 101, 103])
     }
 
     func testFeaturedItemUsesSortedFeaturedThenFirstFallback() {

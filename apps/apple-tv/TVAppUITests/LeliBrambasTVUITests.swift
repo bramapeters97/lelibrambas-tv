@@ -176,13 +176,13 @@ final class LeliBrambasTVUITests: XCTestCase {
         XCTAssertFalse(identified("activation-screen", in: app).exists)
     }
 
-    func testSettingsDescribeBundledContentWithoutLoginControls() throws {
+    func testSettingsDescribeLiveContentFallbackWithoutLoginControls() throws {
         let app = fixtureApplication(screen: "settings")
         app.launch()
 
         XCTAssertTrue(identified("settings-screen", in: app).waitForExistence(timeout: 12))
         XCTAssertTrue(app.buttons["nav-home"].exists)
-        XCTAssertTrue(app.staticTexts["Bundled catalogue and artwork"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Live catalogue with offline fallback"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Sign out"].exists)
         let settings = app.buttons["nav-settings"]
         XCTAssertTrue(waitForFocus(on: settings))
