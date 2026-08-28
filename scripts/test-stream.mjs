@@ -28,6 +28,7 @@ const iframeUrl = `https://${source.hostname}/${identifier}/iframe`;
 const staticHeaders = readFileSync(join(tvRoot, 'public', '_headers'), 'utf8');
 for (const requiredPolicy of [
   "script-src 'self'",
+  "img-src 'self' data: blob: https://assets.lelibrambas.com",
   'https://*.cloudflarestream.com',
   'https://videodelivery.net',
   'https://*.videodelivery.net',
