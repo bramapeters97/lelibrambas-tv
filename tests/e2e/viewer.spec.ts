@@ -263,7 +263,7 @@ test('intro, profiles, and poster-backed cinema hero preserve the viewer contrac
   await expect(page.locator('.hero-art .hero-poster')).toHaveCount(1);
   await expect(page.locator('.hero-art .hero-poster')).toHaveAttribute(
     'src',
-    /lelibrambas-studios.*\.png$/,
+    /lelibrambas_studios.*\.png$/,
   );
   await expect(page.locator('.hero-art .hero-poster')).not.toHaveAttribute(
     'src',

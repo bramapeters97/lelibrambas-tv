@@ -32,7 +32,7 @@ import {
 } from './Discovery';
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
-import heroLogoUrl from '../assets/lelibrambas-studios.png';
+import heroLogoUrl from '../../../lelibrambas_studios.png';
 
 type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseScreenId;
 
