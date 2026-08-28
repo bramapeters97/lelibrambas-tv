@@ -47,6 +47,12 @@ final class AppModelTests: XCTestCase {
 
     func testNavigationShellFillsTheLeftViewportEdges() {
         XCTAssertEqual(LBLayout.navigationWidth, 78)
+        XCTAssertEqual(
+            LBLayout.navigationIconSize / LBLayout.navigationWidth,
+            54.0 / 78.0,
+            accuracy: 0.000_001
+        )
+        XCTAssertEqual(LBLayout.navigationIconInset, 12)
         XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.leading))
         XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.top))
         XCTAssertTrue(LBLayout.navigationShellSafeAreaEdges.contains(.bottom))
@@ -60,10 +66,13 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(IntroPresentation.subtitle, "A private family archive")
         XCTAssertEqual(IntroPresentation.jingleVolume, 0.68, accuracy: 0.000_001)
         XCTAssertEqual(IntroPresentation.lights.count, 18)
+        XCTAssertEqual(IntroPresentation.backgroundOnlyDelayNanoseconds, 1_000_000_000)
         XCTAssertEqual(IntroPresentation.markDelayNanoseconds, 1_150_000_000)
         XCTAssertEqual(IntroPresentation.copyDelayNanoseconds, 1_750_000_000)
-        XCTAssertEqual(IntroPresentation.completionDelayNanoseconds, 5_800_000_000)
-        XCTAssertEqual(IntroPresentation.reducedCompletionDelayNanoseconds, 900_000_000)
+        XCTAssertEqual(IntroPresentation.animationCompletionDelayNanoseconds, 2_950_000_000)
+        XCTAssertEqual(IntroPresentation.finalHoldDelayNanoseconds, 3_000_000_000)
+        XCTAssertEqual(IntroPresentation.completionDelayNanoseconds, 6_950_000_000)
+        XCTAssertEqual(IntroPresentation.reducedCompletionDelayNanoseconds, 4_420_000_000)
     }
 
     func testIntroSequenceAdvancesOnceAndPlaysTheJingleOnce() async {
@@ -80,7 +89,7 @@ final class AppModelTests: XCTestCase {
 
         XCTAssertEqual(
             model.phaseHistory,
-            [.idle, .lights, .mark, .copy, .completed]
+            [.idle, .lights, .mark, .copy, .hold, .completed]
         )
         XCTAssertEqual(model.runCount, 1)
         XCTAssertEqual(completionCount, 1)
@@ -129,10 +138,10 @@ final class AppModelTests: XCTestCase {
         await sleepGate.resume()
         await run.value
 
-        XCTAssertEqual(model.phaseHistory, [.idle, .lights])
+        XCTAssertEqual(model.phaseHistory, [.idle])
         XCTAssertEqual(completionCount, 0)
-        XCTAssertEqual(audio.playCount, 1)
-        XCTAssertEqual(audio.stopCount, 1)
+        XCTAssertEqual(audio.playCount, 0)
+        XCTAssertEqual(audio.stopCount, 0)
     }
 
     func testFreshIntroCyclesEachPlayTheJingleOnce() async {
@@ -170,8 +179,56 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(model.phase, .completed)
         XCTAssertEqual(audio.playCount, 1)
         XCTAssertEqual(audio.stopCount, 1)
-        XCTAssertEqual(sleeps.delays.reduce(0, +), 900_000_000)
+        XCTAssertEqual(sleeps.delays.reduce(0, +), 4_420_000_000)
         XCTAssertEqual(sleeps.delays, IntroPresentation.intervals(reduceMotion: true))
+    }
+
+    func testAllMoviesUsesStableCatalogueOrderAndIncludesEachMovieOnce() {
+        let duplicatedInput = [Self.items[0], Self.items[1], Self.items[0]]
+        let section = LBHomeContent.allMovies(from: duplicatedInput)
+
+        XCTAssertEqual(section?.id, "all-movies")
+        XCTAssertEqual(section?.title, "All movies")
+        XCTAssertEqual(section?.items.map(\.id), [10, 20])
+    }
+
+    func testPlaybackProgressRulesAndTimestampFormattingMatchWebBehavior() {
+        XCTAssertFalse(LBPlaybackProgressPolicy.canResume(seconds: 4.99, durationSeconds: 100))
+        XCTAssertTrue(LBPlaybackProgressPolicy.canResume(seconds: 5, durationSeconds: 100))
+        XCTAssertFalse(LBPlaybackProgressPolicy.canResume(seconds: 94, durationSeconds: 100))
+        XCTAssertTrue(LBPlaybackProgressPolicy.isComplete(seconds: 94, durationSeconds: 100))
+        XCTAssertEqual(LBPlaybackProgressPolicy.timestamp(55 * 60 + 12), "55:12")
+        XCTAssertEqual(LBPlaybackProgressPolicy.timestamp(3_725), "1:02:05")
+    }
+
+    func testPlaybackProgressIsProfileSpecificAndRestartClearsOnlyThatMovie() throws {
+        let suiteName = "LeliBrambasTVTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = PlaybackProgressStore(defaults: defaults)
+
+        store.save(profileID: "profile-a", movieID: 10, seconds: 55, durationSeconds: 100)
+        store.save(profileID: "profile-b", movieID: 10, seconds: 25, durationSeconds: 100)
+
+        XCTAssertEqual(store.resumableProgress(profileID: "profile-a", movieID: 10)?.seconds, 55)
+        XCTAssertEqual(store.resumableProgress(profileID: "profile-b", movieID: 10)?.seconds, 25)
+
+        store.clear(profileID: "profile-a", movieID: 10)
+
+        XCTAssertNil(store.progress(profileID: "profile-a", movieID: 10))
+        XCTAssertEqual(store.resumableProgress(profileID: "profile-b", movieID: 10)?.seconds, 25)
+    }
+
+    func testNearEndAndCompletedProgressNeverOffersResume() throws {
+        let suiteName = "LeliBrambasTVTests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+        let store = PlaybackProgressStore(defaults: defaults)
+
+        store.save(profileID: "profile", movieID: 10, seconds: 94, durationSeconds: 100)
+
+        XCTAssertTrue(try XCTUnwrap(store.progress(profileID: "profile", movieID: 10)).completed)
+        XCTAssertNil(store.resumableProgress(profileID: "profile", movieID: 10))
     }
 
     func testHostedAppBundleContainsTheExactIntroJingleDataAsset() throws {
@@ -275,6 +332,20 @@ final class AppModelTests: XCTestCase {
         XCTAssertNotEqual(first?.url, second?.url)
     }
 
+    func testPlaybackPreparationCarriesTheRequestedProfileResumePosition() async {
+        let model = AppModel(catalogLoader: StubCatalogLoader(items: Self.items))
+        let item = Self.items[0]
+
+        let playback = await model.preparePlayback(
+            for: item,
+            startSeconds: 55 * 60 + 12,
+            profileID: "profile-a"
+        )
+
+        XCTAssertEqual(playback?.startSeconds, 55 * 60 + 12)
+        XCTAssertEqual(playback?.profileID, "profile-a")
+    }
+
     func testCloudflareWatchSourceResolvesDirectlyForAVPlayer() async {
         let item = MediaItem(
             id: 30,
@@ -312,6 +383,7 @@ final class AppModelTests: XCTestCase {
         )
         let controller = PlayerController(session: session)
 
+        XCTAssertEqual(session.startSeconds, 0, accuracy: 0.000_001)
         XCTAssertEqual(controller.player.currentTime().seconds, 0, accuracy: 0.000_001)
         controller.stop()
     }

@@ -11,6 +11,7 @@ struct HomeView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     let featured: MediaItem?
+    let items: [MediaItem]
     let sections: [CatalogSection]
     var startAtShelves = false
     let focusScope: Namespace.ID
@@ -56,6 +57,10 @@ struct HomeView: View {
                         LBMediaShelf(section: section, onSelect: onSelect)
                             .id("shelf-\(section.id)")
                     }
+                    if let allMoviesSection {
+                        LBMediaShelf(section: allMoviesSection, onSelect: onSelect)
+                            .id("shelf-all-movies")
+                    }
                     Color.clear.frame(height: LBSpacing.safeVertical)
                 }
             }
@@ -77,6 +82,7 @@ struct HomeView: View {
             heroPreviewURL = preparedURL
         }
         .onDisappear { stopHeroPreview() }
+        .background(LBColor.canvas)
         .ignoresSafeArea(edges: .top)
         .accessibilityIdentifier("home-screen")
     }
@@ -104,6 +110,10 @@ struct HomeView: View {
         return CatalogSection(id: "currently-trending", title: "Currently Trending", items: items)
     }
 
+    private var allMoviesSection: CatalogSection? {
+        LBHomeContent.allMovies(from: items)
+    }
+
     private var homeCollections: some View {
         VStack(alignment: .leading, spacing: 15) {
             LBSectionTitle(
@@ -128,5 +138,14 @@ struct HomeView: View {
             .focusSection()
         }
         .accessibilityIdentifier("home-collections")
+    }
+}
+
+enum LBHomeContent {
+    static func allMovies(from items: [MediaItem]) -> CatalogSection? {
+        var seenIDs = Set<Int>()
+        let uniqueItems = CatalogOrganizer.sorted(items).filter { seenIDs.insert($0.id).inserted }
+        guard !uniqueItems.isEmpty else { return nil }
+        return CatalogSection(id: "all-movies", title: "All movies", items: uniqueItems)
     }
 }

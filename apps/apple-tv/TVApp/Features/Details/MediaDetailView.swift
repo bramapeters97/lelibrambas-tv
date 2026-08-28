@@ -17,6 +17,7 @@ enum LBPreviewPolicy {
 struct MediaDetailView: View {
     private enum FocusTarget: Hashable {
         case play
+        case restart
         case back
     }
 
@@ -25,9 +26,11 @@ struct MediaDetailView: View {
 
     let item: MediaItem
     @ObservedObject var model: AppModel
+    let profile: ViewerProfile
+    @ObservedObject var progressStore: PlaybackProgressStore
     let isPreparingPlayback: Bool
     let focusScope: Namespace.ID
-    let onPlay: (MediaItem) -> Void
+    let onPlay: (MediaItem, Double) -> Void
 
     @State private var previewURL: URL?
     @State private var previewIsPlaying = false
@@ -97,20 +100,56 @@ struct MediaDetailView: View {
                     .frame(maxWidth: 820, alignment: .leading)
                     .padding(.top, 20)
 
-                LBPrimaryButton(action: startFullPlayback) {
-                    if isPreparingPlayback {
-                        HStack(spacing: 14) {
-                            ProgressView().tint(LBColor.canvas)
-                            Text("Preparing…")
+                if let progress = resumableProgress {
+                    VStack(alignment: .leading, spacing: 11) {
+                        GeometryReader { proxy in
+                            ZStack(alignment: .leading) {
+                                Capsule().fill(LBColor.text.opacity(0.16))
+                                Capsule()
+                                    .fill(LBColor.gold)
+                                    .frame(width: proxy.size.width * progressFraction(progress))
+                            }
                         }
-                    } else {
-                        Text("Play")
+                        .frame(width: 690, height: 8)
+                        .accessibilityLabel("Playback progress")
+                        .accessibilityValue("\(Int((progressFraction(progress) * 100).rounded())) percent")
+
+                        Text("Resume at \(LBPlaybackProgressPolicy.timestamp(progress.seconds))")
+                            .font(LBTypography.caption(size: 18, weight: .semibold))
+                            .foregroundStyle(LBColor.textSecondary)
+                            .accessibilityIdentifier("details-resume-time")
+                    }
+                    .padding(.top, 20)
+                }
+
+                HStack(spacing: 18) {
+                    LBPrimaryButton(action: startFullPlayback) {
+                        if isPreparingPlayback {
+                            HStack(spacing: 14) {
+                                ProgressView().tint(LBColor.canvas)
+                                Text("Preparing…")
+                            }
+                        } else {
+                            Label(
+                                resumableProgress == nil ? "Play" : "Resume",
+                                systemImage: "play.fill"
+                            )
+                        }
+                    }
+                    .disabled(isPreparingPlayback)
+                    .focused($focusedAction, equals: .play)
+                    .prefersDefaultFocus(true, in: focusScope)
+                    .accessibilityIdentifier("details-play")
+
+                    if resumableProgress != nil {
+                        LBSecondaryButton(action: restartPlayback) {
+                            Label("Restart", systemImage: "arrow.counterclockwise")
+                        }
+                        .disabled(isPreparingPlayback)
+                        .focused($focusedAction, equals: .restart)
+                        .accessibilityIdentifier("details-restart")
                     }
                 }
-                .disabled(isPreparingPlayback)
-                .focused($focusedAction, equals: .play)
-                .prefersDefaultFocus(true, in: focusScope)
-                .accessibilityIdentifier("details-play")
                 .padding(.top, 27)
             }
             .padding(.leading, LBSpacing.safeHorizontal)
@@ -174,7 +213,23 @@ struct MediaDetailView: View {
 
     private func startFullPlayback() {
         stopPreview()
-        onPlay(item)
+        onPlay(item, resumableProgress?.seconds ?? 0)
+    }
+
+    private func restartPlayback() {
+        stopPreview()
+        progressStore.clear(profileID: profile.id, movieID: item.id)
+        onPlay(item, 0)
+    }
+
+    private var resumableProgress: PlaybackProgress? {
+        _ = progressStore.revision
+        return progressStore.resumableProgress(profileID: profile.id, movieID: item.id)
+    }
+
+    private func progressFraction(_ progress: PlaybackProgress) -> CGFloat {
+        guard progress.durationSeconds > 0 else { return 0 }
+        return CGFloat(min(1, max(0, progress.seconds / progress.durationSeconds)))
     }
 
     private func stopPreview() {

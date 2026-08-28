@@ -11,15 +11,23 @@ struct PlayerScreen: View {
     }
 
     let session: PlaybackSession
+    @ObservedObject var progressStore: PlaybackProgressStore
     let onDismiss: () -> Void
 
     @StateObject private var controller: PlayerController
     @FocusState private var focusedErrorAction: ErrorAction?
 
-    init(session: PlaybackSession, onDismiss: @escaping () -> Void) {
+    init(
+        session: PlaybackSession,
+        progressStore: PlaybackProgressStore,
+        onDismiss: @escaping () -> Void
+    ) {
         self.session = session
+        self.progressStore = progressStore
         self.onDismiss = onDismiss
-        _controller = StateObject(wrappedValue: PlayerController(session: session))
+        _controller = StateObject(
+            wrappedValue: PlayerController(session: session, progressStore: progressStore)
+        )
     }
 
     var body: some View {
@@ -88,25 +96,41 @@ final class PlayerController: ObservableObject {
 
     let player: AVPlayer
     let title: String
+    private let session: PlaybackSession
     private let streamURL: URL
+    private let progressStore: PlaybackProgressStore?
     private let notificationCenter: NotificationCenter
     private var statusObservation: NSKeyValueObservation?
+    private var timeControlObservation: NSKeyValueObservation?
+    private var periodicTimeObserver: Any?
     private var failedToEndObservation: NSObjectProtocol?
+    private var didPlayToEndObservation: NSObjectProtocol?
+    private var shouldAutoplay = false
+    private var hasPreparedInitialPosition = false
+    private var didStop = false
 
-    init(session: PlaybackSession, notificationCenter: NotificationCenter = .default) {
+    init(
+        session: PlaybackSession,
+        progressStore: PlaybackProgressStore? = nil,
+        notificationCenter: NotificationCenter = .default
+    ) {
+        self.session = session
         title = session.item.title
         streamURL = session.url
+        self.progressStore = progressStore
         self.notificationCenter = notificationCenter
         player = AVPlayer()
         player.automaticallyWaitsToMinimizeStalling = true
         installNewItem(autoplay: false)
+        observePlayerState()
     }
 
     func play() {
+        shouldAutoplay = true
         if player.currentItem == nil {
             installNewItem(autoplay: true)
-        } else {
-            player.play()
+        } else if isReady {
+            startAtInitialPositionIfNeeded()
         }
     }
 
@@ -115,7 +139,11 @@ final class PlayerController: ObservableObject {
     }
 
     func stop() {
+        guard !didStop else { return }
+        didStop = true
+        persistProgress()
         removeItemObservers()
+        removePlayerObservers()
         player.pause()
         player.replaceCurrentItem(with: nil)
         isReady = false
@@ -137,16 +165,15 @@ final class PlayerController: ObservableObject {
     private func installNewItem(autoplay: Bool) {
         removeItemObservers()
         player.pause()
+        didStop = false
         isReady = false
         errorMessage = nil
+        shouldAutoplay = autoplay
+        hasPreparedInitialPosition = false
 
         let item = makePlayerItem()
         player.replaceCurrentItem(with: item)
         observe(item)
-
-        if autoplay {
-            player.play()
-        }
     }
 
     private func makePlayerItem() -> AVPlayerItem {
@@ -169,6 +196,9 @@ final class PlayerController: ObservableObject {
                 case .readyToPlay:
                     self.isReady = true
                     self.errorMessage = nil
+                    if self.shouldAutoplay {
+                        self.startAtInitialPositionIfNeeded()
+                    }
                 case .failed:
                     self.showPlaybackFailure(
                         "The stream could not be played. Check the connection and try again."
@@ -193,12 +223,94 @@ final class PlayerController: ObservableObject {
                 )
             }
         }
+
+        didPlayToEndObservation = notificationCenter.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: item,
+            queue: .main
+        ) { [weak self, weak item] _ in
+            Task { @MainActor in
+                guard let self, let item, self.player.currentItem === item else { return }
+                self.shouldAutoplay = false
+                self.persistProgress(completed: true)
+            }
+        }
     }
 
     private func showPlaybackFailure(_ message: String) {
+        persistProgress()
         player.pause()
         isReady = false
         errorMessage = message
+    }
+
+    private func startAtInitialPositionIfNeeded() {
+        guard shouldAutoplay, let item = player.currentItem, item.status == .readyToPlay else {
+            return
+        }
+        guard !hasPreparedInitialPosition else {
+            player.play()
+            return
+        }
+        hasPreparedInitialPosition = true
+
+        let duration = item.duration.seconds
+        let target: Double
+        if duration.isFinite, duration > 0 {
+            target = min(session.startSeconds, max(0, duration - 1))
+        } else {
+            target = session.startSeconds
+        }
+        guard target >= LBPlaybackProgressPolicy.minimumResumeSeconds else {
+            player.play()
+            return
+        }
+
+        player.seek(
+            to: CMTime(seconds: target, preferredTimescale: 600),
+            toleranceBefore: .zero,
+            toleranceAfter: .zero
+        ) { [weak self] _ in
+            Task { @MainActor in
+                guard let self, self.shouldAutoplay else { return }
+                self.player.play()
+            }
+        }
+    }
+
+    private func observePlayerState() {
+        periodicTimeObserver = player.addPeriodicTimeObserver(
+            forInterval: CMTime(seconds: 5, preferredTimescale: 600),
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.persistProgress() }
+        }
+
+        timeControlObservation = player.observe(
+            \.timeControlStatus,
+            options: [.old, .new]
+        ) { [weak self] _, change in
+            guard change.oldValue == .playing, change.newValue == .paused else { return }
+            Task { @MainActor in self?.persistProgress() }
+        }
+    }
+
+    private func persistProgress(completed: Bool? = nil) {
+        guard let profileID = session.profileID,
+              let progressStore,
+              let item = player.currentItem else {
+            return
+        }
+        let seconds = player.currentTime().seconds
+        let duration = item.duration.seconds
+        guard seconds.isFinite, duration.isFinite, duration > 0 else { return }
+        progressStore.save(
+            profileID: profileID,
+            movieID: session.item.id,
+            seconds: seconds,
+            durationSeconds: duration,
+            completed: completed
+        )
     }
 
     private func removeItemObservers() {
@@ -207,6 +319,19 @@ final class PlayerController: ObservableObject {
         if let failedToEndObservation {
             notificationCenter.removeObserver(failedToEndObservation)
             self.failedToEndObservation = nil
+        }
+        if let didPlayToEndObservation {
+            notificationCenter.removeObserver(didPlayToEndObservation)
+            self.didPlayToEndObservation = nil
+        }
+    }
+
+    private func removePlayerObservers() {
+        timeControlObservation?.invalidate()
+        timeControlObservation = nil
+        if let periodicTimeObserver {
+            player.removeTimeObserver(periodicTimeObserver)
+            self.periodicTimeObserver = nil
         }
     }
 }

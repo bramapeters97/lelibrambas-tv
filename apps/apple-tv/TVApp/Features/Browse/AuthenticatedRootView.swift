@@ -47,6 +47,7 @@ struct BrowseRootView: View {
     @State private var playbackSession: PlaybackSession?
     @State private var isPreparingPlayback = false
     @State private var selectedCollectionID: String?
+    @StateObject private var progressStore = PlaybackProgressStore()
     @Namespace private var browseFocusScope
 
     init(model: AppModel, profile: ViewerProfile, onSwitchProfile: @escaping () -> Void) {
@@ -97,7 +98,7 @@ struct BrowseRootView: View {
             .focusScope(browseFocusScope)
         }
         .fullScreenCover(item: $playbackSession) { session in
-            PlayerScreen(session: session) {
+            PlayerScreen(session: session, progressStore: progressStore) {
                 playbackSession = nil
             }
         }
@@ -117,12 +118,13 @@ struct BrowseRootView: View {
         case .home:
             HomeView(
                 featured: LBContentSelection.hero(in: model.items),
+                items: model.items,
                 sections: model.sections,
                 startAtShelves: startsAtShelves,
                 focusScope: browseFocusScope,
                 prefersInitialFocus: path.isEmpty,
                 preparePreview: { await model.preparePreview(for: $0) },
-                onPlay: preparePlayback,
+                onPlay: { preparePlayback($0, startSeconds: 0) },
                 onSelect: { path.append(.details($0.id)) },
                 onOpenCollection: showCollection
             )
@@ -157,6 +159,8 @@ struct BrowseRootView: View {
                 MediaDetailView(
                     item: item,
                     model: model,
+                    profile: profile,
+                    progressStore: progressStore,
                     isPreparingPlayback: isPreparingPlayback,
                     focusScope: browseFocusScope,
                     onPlay: preparePlayback
@@ -173,11 +177,15 @@ struct BrowseRootView: View {
         section = newSection
     }
 
-    private func preparePlayback(_ item: MediaItem) {
+    private func preparePlayback(_ item: MediaItem, startSeconds: Double) {
         guard !isPreparingPlayback else { return }
         isPreparingPlayback = true
         Task {
-            playbackSession = await model.preparePlayback(for: item)
+            playbackSession = await model.preparePlayback(
+                for: item,
+                startSeconds: startSeconds,
+                profileID: profile.id
+            )
             isPreparingPlayback = false
         }
     }
@@ -278,9 +286,13 @@ private struct NavigationRailButtonLabel: View {
                     .transition(.opacity)
             }
         }
-        .padding(.leading, 14)
+        .padding(.leading, LBLayout.navigationIconInset)
         .foregroundStyle(selected ? LBColor.text : LBColor.textMuted)
-        .frame(width: isFocused ? 176 : 52, height: 47, alignment: .leading)
+        .frame(
+            width: isFocused ? LBLayout.navigationFocusedItemWidth : LBLayout.navigationWidth,
+            height: LBLayout.navigationItemHeight,
+            alignment: .leading
+        )
         .background(
             (isFocused ? LBColor.surfaceRaised : selected ? LBColor.text.opacity(0.09) : .clear),
             in: RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -296,7 +308,7 @@ private struct NavigationRailButtonLabel: View {
                     radius: LBFocusAppearance.cardGlowRadius
                 )
         }
-        .offset(x: isFocused ? 52 : 0)
+        .offset(x: isFocused ? LBLayout.navigationFocusedItemOffset : 0)
         .scaleEffect(isFocused ? 1.035 : 1)
         .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)
     }
@@ -308,11 +320,11 @@ private struct NavigationRailButtonLabel: View {
                 .resizable()
                 .renderingMode(.template)
                 .scaledToFit()
-                .frame(width: 26, height: 26)
+                .frame(width: LBLayout.navigationIconSize, height: LBLayout.navigationIconSize)
         } else {
             Image(systemName: "gearshape")
-                .font(.system(size: 25, weight: .regular))
-                .frame(width: 26, height: 26)
+                .font(.system(size: LBLayout.navigationIconSize * 0.9, weight: .regular))
+                .frame(width: LBLayout.navigationIconSize, height: LBLayout.navigationIconSize)
         }
     }
 

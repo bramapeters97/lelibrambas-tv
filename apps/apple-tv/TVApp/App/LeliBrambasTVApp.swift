@@ -132,13 +132,17 @@ enum IntroPresentation {
     static let jingleAssetName = "LaunchJingle"
     static let jingleVolume: Float = 0.68
 
+    static let backgroundOnlyDelayNanoseconds: UInt64 = 1_000_000_000
     static let markDelayNanoseconds: UInt64 = 1_150_000_000
     static let copyDelayNanoseconds: UInt64 = 1_750_000_000
-    static let completionDelayNanoseconds: UInt64 = 5_800_000_000
+    static let animationCompletionDelayNanoseconds: UInt64 = 2_950_000_000
+    static let finalHoldDelayNanoseconds: UInt64 = 3_000_000_000
+    static let completionDelayNanoseconds: UInt64 = 6_950_000_000
 
     static let reducedMarkDelayNanoseconds: UInt64 = 120_000_000
     static let reducedCopyDelayNanoseconds: UInt64 = 240_000_000
-    static let reducedCompletionDelayNanoseconds: UInt64 = 900_000_000
+    static let reducedAnimationCompletionDelayNanoseconds: UInt64 = 420_000_000
+    static let reducedCompletionDelayNanoseconds: UInt64 = 4_420_000_000
 
     struct Light: Identifiable, Equatable {
         let id: Int
@@ -171,15 +175,19 @@ enum IntroPresentation {
     static func intervals(reduceMotion: Bool) -> [UInt64] {
         if reduceMotion {
             return [
+                backgroundOnlyDelayNanoseconds,
                 reducedMarkDelayNanoseconds,
                 reducedCopyDelayNanoseconds - reducedMarkDelayNanoseconds,
-                reducedCompletionDelayNanoseconds - reducedCopyDelayNanoseconds,
+                reducedAnimationCompletionDelayNanoseconds - reducedCopyDelayNanoseconds,
+                finalHoldDelayNanoseconds,
             ]
         }
         return [
+            backgroundOnlyDelayNanoseconds,
             markDelayNanoseconds,
             copyDelayNanoseconds - markDelayNanoseconds,
-            completionDelayNanoseconds - copyDelayNanoseconds,
+            animationCompletionDelayNanoseconds - copyDelayNanoseconds,
+            finalHoldDelayNanoseconds,
         ]
     }
 }
@@ -189,6 +197,7 @@ enum IntroSequencePhase: Int, Equatable {
     case lights
     case mark
     case copy
+    case hold
     case completed
 }
 
@@ -283,28 +292,35 @@ final class IntroSequenceModel: ObservableObject {
         hasStarted = true
         runCount += 1
 
-        if playAudio {
-            _ = audioPlayer.play(volume: IntroPresentation.jingleVolume)
-            audioNeedsStopping = true
-        }
         defer {
             stopAudioIfNeeded()
         }
 
-        guard !cancellationRequested else { return }
-        transition(to: .lights)
         let intervals = IntroPresentation.intervals(reduceMotion: reduceMotion)
 
         do {
             try await sleeper(intervals[0])
             guard !Task.isCancelled, !cancellationRequested else { return }
-            transition(to: .mark)
+
+            if playAudio {
+                _ = audioPlayer.play(volume: IntroPresentation.jingleVolume)
+                audioNeedsStopping = true
+            }
+            transition(to: .lights)
 
             try await sleeper(intervals[1])
             guard !Task.isCancelled, !cancellationRequested else { return }
-            transition(to: .copy)
+            transition(to: .mark)
 
             try await sleeper(intervals[2])
+            guard !Task.isCancelled, !cancellationRequested else { return }
+            transition(to: .copy)
+
+            try await sleeper(intervals[3])
+            guard !Task.isCancelled, !cancellationRequested else { return }
+            transition(to: .hold)
+
+            try await sleeper(intervals[4])
             guard !Task.isCancelled, !cancellationRequested else { return }
         } catch {
             return
@@ -391,6 +407,17 @@ struct IntroSplashView: View {
                 .offset(y: copyIsVisible ? 0 : 12)
                 .animation(copyAnimation, value: copyIsVisible)
                 .position(x: proxy.size.width / 2, y: proxy.size.height / 2 + 150)
+
+                if sequence.phase == .hold {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(LBColor.gold)
+                        .scaleEffect(1.2)
+                        .position(x: proxy.size.width / 2, y: proxy.size.height / 2 + 236)
+                        .transition(.opacity)
+                        .accessibilityLabel("Loading")
+                        .accessibilityIdentifier("intro-loader")
+                }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
         }

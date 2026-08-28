@@ -70,6 +70,11 @@ enum LBRadius {
 
 enum LBLayout {
     static let navigationWidth: CGFloat = 78
+    static let navigationIconSize: CGFloat = 54
+    static let navigationIconInset: CGFloat = 12
+    static let navigationItemHeight: CGFloat = 68
+    static let navigationFocusedItemWidth: CGFloat = 216
+    static let navigationFocusedItemOffset: CGFloat = (navigationFocusedItemWidth - navigationWidth) / 2
     static let navigationShellSafeAreaEdges: Edge.Set = [.top, .bottom, .leading]
     static let navigationDividerSafeAreaEdges: Edge.Set = .vertical
     static let contentMaxWidth: CGFloat = 1700
