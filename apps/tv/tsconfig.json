@@ -11,6 +11,8 @@
     "src/**/*.tsx",
     "mobile/**/*.ts",
     "mobile/**/*.tsx",
+    "native-tv/**/*.ts",
+    "native-tv/**/*.tsx",
     "index.ts",
     "App.tsx",
     "app.config.ts",
