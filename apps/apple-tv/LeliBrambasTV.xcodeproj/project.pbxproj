@@ -64,7 +64,7 @@
 		1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "validate-release-configuration.sh"; sourceTree = "<group>"; };
 		147C9E1A4AE14235D9034D40 /* bootstrap-xcodegen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-xcodegen.sh"; sourceTree = "<group>"; };
 		15E191E046436319456D1A05 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
-		1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LeliBrambasTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeliBrambasTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DA66EC96AD59283897813D2 /* doctor.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = doctor.sh; sourceTree = "<group>"; };
 		1E4F2C95807018A5DAEBAB58 /* APP_REVIEW_NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_REVIEW_NOTES.md; sourceTree = "<group>"; };
 		1F85AC5FDC75C12E34B40C5B /* DESIGN_PARITY_MATRIX.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DESIGN_PARITY_MATRIX.md; sourceTree = "<group>"; };
@@ -91,7 +91,7 @@
 		636DC9DF37D6C862C65A2FD0 /* TESTFLIGHT_METADATA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTFLIGHT_METADATA.md; sourceTree = "<group>"; };
 		6D441D700FCF53157BB44F08 /* LBMediaComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBMediaComponents.swift; sourceTree = "<group>"; };
 		6D57545F71BED15752407106 /* UNLISTED_REQUEST_DRAFT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_REQUEST_DRAFT.md; sourceTree = "<group>"; };
-		6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LeliBrambasTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeliBrambasTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		719C2AFEC74622525A953D1C /* PlayerScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerScreen.swift; sourceTree = "<group>"; };
 		73D7624166CEEFC1504CFC04 /* LBArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBArtwork.swift; sourceTree = "<group>"; };
 		74F98EC721BD523AE093E9D1 /* SUPPORT_PAGE_CONTENT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SUPPORT_PAGE_CONTENT.md; sourceTree = "<group>"; };
@@ -113,7 +113,7 @@
 		9C14ECC43223C1CF217D3C1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A0E8614C5ED2E2EE81024249 /* APP_RECORD_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_RECORD_SETUP.md; sourceTree = "<group>"; };
 		A3B094F859A0CD522479197D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A5D6D035D96E3394175950CB /* LeliBrambasTV.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LeliBrambasTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A5D6D035D96E3394175950CB /* LeliBrambasTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LeliBrambasTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A74C23E86A43D4CD5C1B79EC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		ABACF4CC8E45DE3406BD8197 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		ABB3CE5B3053F5792B2E9819 /* SCREENSHOT_PLAN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SCREENSHOT_PLAN.md; sourceTree = "<group>"; };
@@ -123,10 +123,10 @@
 		B08522D396348C8BD5C6E7C6 /* UNLISTED_DISTRIBUTION.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_DISTRIBUTION.md; sourceTree = "<group>"; };
 		B4E0A6F23B59D7CF2F7D95CC /* bootstrap-mac.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-mac.sh"; sourceTree = "<group>"; };
 		BC21A39EC5B37CF1D6E2C359 /* artwork */ = {isa = PBXFileReference; lastKnownFileType = folder; name = artwork; path = ../../artwork; sourceTree = SOURCE_ROOT; };
-		C719A7098636678B74512681 /* Signing.xcconfig.example */ = {isa = PBXFileReference; path = Signing.xcconfig.example; sourceTree = "<group>"; };
+		C719A7098636678B74512681 /* Signing.xcconfig.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = Signing.xcconfig.example; sourceTree = "<group>"; };
 		C9AE0BE1029EB1708DA812EF /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
 		CA32944B740AC724196F9E4C /* BundledCatalogLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundledCatalogLoader.swift; sourceTree = "<group>"; };
-		CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		CE047633A8ABFD73065B3142 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D0F49FA460C3211AC0D761CF /* media_catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = media_catalog.json; sourceTree = "<group>"; };
 		D1C38DE55FCE82F86EDAE6AB /* ViewerProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewerProfile.swift; sourceTree = "<group>"; };
 		D6094254E4FF1242603478A1 /* MAC_DAY_RUNBOOK.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MAC_DAY_RUNBOOK.md; sourceTree = "<group>"; };
@@ -504,9 +504,6 @@
 					75F76294886A2649F93B8E83 = {
 						TestTargetID = CDFD6A6A94A176F0CF0EB88C;
 					};
-					CDFD6A6A94A176F0CF0EB88C = {
-						ProvisioningStyle = Automatic;
-					};
 				};
 			};
 			buildConfigurationList = 9B549F9EAC86931431CBDC4F /* Build configuration list for PBXProject "LeliBrambasTV" */;
@@ -636,7 +633,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "Apple Distribution: Bram Peters (4W75X459YD)";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 9;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = 4W75X459YD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -644,6 +645,8 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_MODULE_NAME = LeliBrambasTV;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "LeliBrambas tvOS App Store";
 				SDKROOT = appletvos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -720,6 +723,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Distribution";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -770,6 +774,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -797,7 +802,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 9;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
