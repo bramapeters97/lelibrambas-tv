@@ -14,44 +14,27 @@ elif [[ $# -gt 0 ]]; then
   fail "Usage: $0 [--bundle /path/to/LeliBrambasTV.app]"
 fi
 
-catalog="$REPOSITORY_ROOT/data/media_catalog.json"
-artwork_root="$APPLE_TV_ROOT/TVApp/Resources/artwork"
-fallback="$artwork_root/generic_cinema_2.png"
 studio_brand="$REPOSITORY_ROOT/lelibrambas-studios.png"
 intro_jingle="$REPOSITORY_ROOT/apps/tv/assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3"
 native_intro_jingle="$APPLE_TV_ROOT/TVApp/Assets.xcassets/LaunchJingle.dataset/lelibrambas-plus-magical-app-launch-universal-192k.mp3"
 
-[[ -f "$catalog" ]] || fail "Production catalogue is missing: $catalog"
-[[ -f "$fallback" ]] || fail "Poster fallback is missing: $fallback"
 [[ -f "$studio_brand" ]] || fail "Official studio brand source is missing: $studio_brand"
 [[ -f "$intro_jingle" ]] || fail "Official introduction jingle is missing: $intro_jingle"
 [[ -f "$native_intro_jingle" ]] || fail "Native introduction jingle data asset is missing: $native_intro_jingle"
 cmp -s "$intro_jingle" "$native_intro_jingle" \
   || fail "Native introduction jingle differs from the web viewer source."
 
-stream_count="$(sed -nE 's/.*"stream_video_id"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog" | sort -u | wc -l | tr -d ' ')"
-[[ "$stream_count" -gt 1 ]] || fail "Production catalogue must contain multiple distinct stream_video_id values."
-
-while IFS= read -r poster_path; do
-  [[ -n "$poster_path" ]] || continue
-  case "$poster_path" in
-    https://*) ;;
-    artwork/*.png)
-      relative_path="${poster_path#artwork/}"
-      [[ -f "$artwork_root/$relative_path" ]] \
-        || fail "Catalogue artwork is missing from the tvOS resource folder: $poster_path"
-      ;;
-    *) fail "Catalogue poster must be an HTTPS URL or bundled artwork PNG: $poster_path" ;;
-  esac
-done < <(sed -nE 's/.*"poster_url"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$catalog")
+if grep -R -n -E 'media_catalog|BundledCatalogLoader|FallbackCatalogLoader|generic_cinema_2|Resources/artwork' \
+  "$APPLE_TV_ROOT/TVApp" "$APPLE_TV_ROOT/project.yml"; then
+  fail "The tvOS production target still references a local catalogue or poster fallback."
+fi
 
 if [[ -n "$bundle_path" ]]; then
   [[ -d "$bundle_path" ]] || fail "App bundle does not exist: $bundle_path"
-  [[ -f "$bundle_path/media_catalog.json" ]] || fail "Built app is missing media_catalog.json."
-  [[ -f "$bundle_path/artwork/generic_cinema_2.png" ]] || fail "Built app is missing artwork/generic_cinema_2.png."
+  [[ ! -e "$bundle_path/media_catalog.json" ]] || fail "Built app unexpectedly contains media_catalog.json."
+  [[ ! -e "$bundle_path/artwork" ]] || fail "Built app unexpectedly contains a local poster artwork directory."
   [[ -f "$bundle_path/lelibrambas-studios.png" ]] || fail "Built app is missing lelibrambas-studios.png."
   [[ -f "$bundle_path/Assets.car" ]] || fail "Built app is missing the compiled asset catalogue."
-  cmp -s "$catalog" "$bundle_path/media_catalog.json" || fail "Built app catalogue differs from data/media_catalog.json."
   if ! cmp -s "$studio_brand" "$bundle_path/lelibrambas-studios.png"; then
     # Xcode losslessly normalizes standalone PNG resources during CopyPNGFile.
     # Reproduce that exact transformation before comparing bundle contents.
@@ -66,4 +49,4 @@ if [[ -n "$bundle_path" ]]; then
   fi
 fi
 
-log "Bundled fallback catalogue, fallback artwork, branding, and introduction jingle validation passed ($stream_count distinct video sources)."
+log "API-only catalogue configuration, branding, and introduction jingle validation passed."

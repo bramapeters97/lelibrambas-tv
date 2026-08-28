@@ -30,7 +30,7 @@ Then:
 
 1. Open Xcode **Settings > Accounts** and sign in to the Apple Developer account.
 2. Open `LeliBrambasTV.xcodeproj`, select the `LeliBrambasTV` target, and verify automatic signing sees the intended team and bundle ID. Do not alter targets/build phases manually; regenerate from `project.yml` if needed.
-3. Configure only the Apple Developer team. The public production catalogue endpoint is built in, with catalogue/artwork fallbacks included in the app; no gateway, activation, or API-secret environment variables are needed:
+3. Configure only the Apple Developer team. The single public production catalogue endpoint is built in; no local catalogue/poster fallback, alternate endpoint, gateway, activation, or API-secret environment variables are needed:
 
 ```bash
 export APPLE_DEVELOPMENT_TEAM="REPLACE_WITH_10_CHARACTER_TEAM_ID"

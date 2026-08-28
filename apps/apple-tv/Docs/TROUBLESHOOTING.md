@@ -10,7 +10,7 @@ Stop. Do not bypass the checksum. Confirm the repository still pins version 2.46
 
 ## Release configuration failure
 
-Run `./Scripts/validate-bundled-content.sh`. Release requires the tracked `data/media_catalog.json` fallback and tvOS-specific `TVApp/Resources/artwork/generic_cinema_2.png`. The production API endpoint is built in and public; no activation endpoint or secret configuration is required.
+Run `./Scripts/validate-bundled-content.sh`. Release requires the production API loader and must not contain a local catalogue, poster directory, or alternate catalogue endpoint. The production API endpoint is built in and public; no activation endpoint or secret configuration is required.
 
 ## Signing failure
 
@@ -18,7 +18,7 @@ Sign into Xcode, ensure the Account Holder has accepted current agreements, rese
 
 ## Catalogue or poster fails to load
 
-Regenerate the Xcode project and run `./Scripts/build-simulator.sh`. The build validates that `media_catalog.json` and `artwork/generic_cinema_2.png` are present in the app bundle. Missing item artwork intentionally falls back to `generic_cinema_2.png`.
+Confirm the Apple TV can reach the configured public movies API and each item’s absolute HTTPS `poster_url`, then regenerate the Xcode project and run `./Scripts/build-simulator.sh`. A catalogue failure should show the existing retry action. Missing or failed item artwork uses the existing code-rendered placeholder; no local movie catalogue or poster PNG is required.
 
 ## Video fails on a physical Apple TV
 

@@ -48,12 +48,6 @@ targets:
       - path: TVApp/Resources
         excludes:
           - Info.plist
-          - artwork
-        buildPhase: resources
-      - path: TVApp/Resources/artwork
-        type: folder
-        buildPhase: resources
-      - path: ../../data/media_catalog.json
         buildPhase: resources
       - path: ../../lelibrambas-studios.png
         buildPhase: resources
@@ -97,7 +91,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.tests
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_FILE: ""
+        INFOPLIST_FILE: ''
         CODE_SIGNING_ALLOWED: NO
 
   LeliBrambasTVUITests:
@@ -112,7 +106,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.uitests
         GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_FILE: ""
+        INFOPLIST_FILE: ''
         CODE_SIGNING_ALLOWED: NO
         TEST_TARGET_NAME: LeliBrambasTV
 

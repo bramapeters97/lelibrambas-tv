@@ -25,7 +25,7 @@ struct SettingsView: View {
             Divider().overlay(LBColor.text.opacity(0.1))
             SettingsRow(icon: "number", title: "Version", value: versionLabel)
             Divider().overlay(LBColor.text.opacity(0.1))
-            SettingsRow(icon: "shippingbox.fill", title: "Content", value: "Live catalogue with offline fallback")
+            SettingsRow(icon: "network", title: "Content", value: "Live Cloudflare catalogue")
         }
         .background(LBColor.surface.opacity(0.9), in: RoundedRectangle(cornerRadius: LBRadius.large, style: .continuous))
         .overlay {

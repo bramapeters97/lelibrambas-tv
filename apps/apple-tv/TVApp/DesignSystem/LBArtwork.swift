@@ -16,9 +16,7 @@ enum LBMediaPreviewTiming {
     }
 }
 
-enum BundledArtworkResolver {
-    static let fallbackPath = "artwork/generic_cinema_2.png"
-
+enum RemoteArtworkResolver {
     static func remoteURL(for source: String) -> URL? {
         guard let components = URLComponents(string: source),
               components.scheme?.lowercased() == "https",
@@ -29,36 +27,9 @@ enum BundledArtworkResolver {
         }
         return components.url
     }
-
-    static func url(for source: String, bundle: Bundle = .main) -> URL? {
-        if source.hasPrefix("fixture://") { return nil }
-        return resourceURL(for: source, bundle: bundle)
-            ?? resourceURL(for: fallbackPath, bundle: bundle)
-    }
-
-    private static func resourceURL(for source: String, bundle: Bundle) -> URL? {
-        let normalized = source.replacingOccurrences(of: "\\", with: "/")
-        guard !normalized.isEmpty,
-              !normalized.hasPrefix("/"),
-              !normalized.contains("../"),
-              URL(string: normalized)?.scheme == nil else {
-            return nil
-        }
-
-        let relative = normalized.hasPrefix("artwork/")
-            ? String(normalized.dropFirst("artwork/".count))
-            : normalized
-        let component = relative as NSString
-        let fileName = component.deletingPathExtension
-        let fileExtension = component.pathExtension
-        guard !fileName.isEmpty, !fileExtension.isEmpty else { return nil }
-        return bundle.url(forResource: fileName, withExtension: fileExtension, subdirectory: "artwork")
-    }
 }
 
 struct LBArtwork: View {
-    private static let imageCache = NSCache<NSString, UIImage>()
-
     let item: MediaItem
     let kind: LBArtworkKind
 
@@ -73,14 +44,10 @@ struct LBArtwork: View {
 
     var body: some View {
         Group {
-            if let remoteURL = BundledArtworkResolver.remoteURL(for: source) {
+            if let remoteURL = RemoteArtworkResolver.remoteURL(for: source) {
                 LBRemoteArtwork(url: remoteURL) {
-                    fallbackArtwork
+                    placeholder
                 }
-            } else if let image = bundledImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
             } else {
                 placeholder
             }
@@ -88,26 +55,6 @@ struct LBArtwork: View {
         .aspectRatio(kind == .poster ? LBLayout.cardAspectRatio : LBLayout.backdropAspectRatio, contentMode: .fill)
         .clipped()
         .accessibilityHidden(true)
-    }
-
-    @ViewBuilder
-    private var fallbackArtwork: some View {
-        if let image = bundledImage {
-            Image(uiImage: image)
-                .resizable()
-                .scaledToFill()
-        } else {
-            placeholder
-        }
-    }
-
-    private var bundledImage: UIImage? {
-        guard let url = BundledArtworkResolver.url(for: source) else { return nil }
-        let cacheKey = url.path as NSString
-        if let cached = Self.imageCache.object(forKey: cacheKey) { return cached }
-        guard let image = UIImage(contentsOfFile: url.path) else { return nil }
-        Self.imageCache.setObject(image, forKey: cacheKey)
-        return image
     }
 
     private var placeholder: some View {
@@ -189,7 +136,7 @@ private struct LBRemoteArtwork<Fallback: View>: View {
                 LBRemoteArtworkCache.images.setObject(loadedImage, forKey: cacheKey)
                 image = loadedImage
             } catch {
-                // The bundled generic image remains visible when remote artwork fails.
+                // The code-rendered placeholder remains visible when remote artwork fails.
             }
         }
     }

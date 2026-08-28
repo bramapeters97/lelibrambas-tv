@@ -6,13 +6,9 @@ import XCTest
 final class MoviesAPICatalogLoaderTests: XCTestCase {
     private let endpoint = URL(string: "https://catalogue.example.test/api/movies")!
 
-    func testValidAPIResponseIsPreferredAndMappedWithoutReordering() async throws {
+    func testValidAPIResponseIsMappedWithoutReordering() async throws {
         let transport = StubMoviesAPITransport(results: [.success(response(data: validPayload))])
-        let fallback = CountingCatalogLoader(items: [fallbackItem])
-        let loader = FallbackCatalogLoader(
-            primary: MoviesAPICatalogLoader(endpoint: endpoint, transport: transport),
-            fallback: fallback
-        )
+        let loader = MoviesAPICatalogLoader(endpoint: endpoint, transport: transport)
 
         let items = try await loader.loadCatalog()
 
@@ -26,9 +22,7 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
             "https://media.example.test/synthetic-seven.m3u8",
         ])
         XCTAssertEqual(items.map(\.createdAt), ["2026-08-28 12:00:00", "2026-08-28 12:01:00"])
-        let fallbackRequestCount = await fallback.requestCount
         let requests = await transport.requests
-        XCTAssertEqual(fallbackRequestCount, 0)
 
         let request = try XCTUnwrap(requests.first)
         XCTAssertEqual(request.url, endpoint)
@@ -56,7 +50,7 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
         XCTAssertEqual(LBSearchIndex.results(in: items, query: "").map(\.id), [12, 7])
     }
 
-    func testInvalidRequiredRecordsUseTheCompleteBundledFallback() async throws {
+    func testInvalidRequiredRecordsAreRejected() async throws {
         let invalidPayloads = [
             Data("not-json".utf8),
             Data("{\"id\":1}".utf8),
@@ -68,21 +62,16 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
         ]
 
         for payload in invalidPayloads {
-            let fallback = CountingCatalogLoader(items: [fallbackItem])
-            let loader = FallbackCatalogLoader(
-                primary: makeAPILoader(data: payload),
-                fallback: fallback
-            )
-
-            let items = try await loader.loadCatalog()
-
-            XCTAssertEqual(items.map(\.id), [fallbackItem.id])
-            let fallbackRequestCount = await fallback.requestCount
-            XCTAssertEqual(fallbackRequestCount, 1)
+            do {
+                _ = try await makeAPILoader(data: payload).loadCatalog()
+                XCTFail("Invalid API payload was accepted")
+            } catch {
+                XCTAssertNotNil(error)
+            }
         }
     }
 
-    func testHTTPAndNetworkFailuresUseFallback() async throws {
+    func testHTTPAndNetworkFailuresAreReported() async throws {
         let failures: [Result<(Data, URLResponse), Error>] = [
             .success(response(data: validPayload, statusCode: 503)),
             .failure(URLError(.timedOut)),
@@ -91,17 +80,27 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
 
         for failure in failures {
             let transport = StubMoviesAPITransport(results: [failure])
-            let fallback = CountingCatalogLoader(items: [fallbackItem])
-            let loader = FallbackCatalogLoader(
-                primary: MoviesAPICatalogLoader(endpoint: endpoint, transport: transport),
-                fallback: fallback
-            )
+            let loader = MoviesAPICatalogLoader(endpoint: endpoint, transport: transport)
+            do {
+                _ = try await loader.loadCatalog()
+                XCTFail("Failed request was accepted")
+            } catch {
+                XCTAssertNotNil(error)
+            }
+        }
+    }
 
-            let items = try await loader.loadCatalog()
+    func testLocalAndInsecurePosterAddressesAreRejected() async {
+        let invalidPosters = ["relative/synthetic.png", "http://assets.example.test/insecure.png"]
 
-            XCTAssertEqual(items.map(\.id), [fallbackItem.id])
-            let fallbackRequestCount = await fallback.requestCount
-            XCTAssertEqual(fallbackRequestCount, 1)
+        for poster in invalidPosters {
+            let payload = Data("[\(record(id: "2", poster: poster))]".utf8)
+            do {
+                _ = try await makeAPILoader(data: payload).loadCatalog()
+                XCTFail("Non-HTTPS poster address was accepted")
+            } catch {
+                XCTAssertNotNil(error)
+            }
         }
     }
 
@@ -123,47 +122,18 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
         XCTAssertEqual(requests.count, 2)
     }
 
-    func testRemotePosterURLIsUsedDirectlyAndLocalPathsRemainBundled() throws {
+    func testRemotePosterURLIsUsedDirectlyAndLocalPathsAreRejected() throws {
         let remoteSource = "https://assets.example.test/synthetic-poster.png"
-        let remote = try XCTUnwrap(BundledArtworkResolver.remoteURL(for: remoteSource))
+        let remote = try XCTUnwrap(RemoteArtworkResolver.remoteURL(for: remoteSource))
 
         XCTAssertEqual(remote.absoluteString, remoteSource)
-        XCTAssertNil(BundledArtworkResolver.remoteURL(for: "artwork/generic_cinema_2.png"))
-        XCTAssertNil(BundledArtworkResolver.remoteURL(for: "http://assets.example.test/insecure.png"))
-
-        let bundled = try XCTUnwrap(
-            BundledArtworkResolver.url(for: "artwork/generic_cinema_2.png")
-        )
-        let missing = try XCTUnwrap(
-            BundledArtworkResolver.url(for: "artwork/missing-synthetic-poster.png")
-        )
-        XCTAssertEqual(bundled.lastPathComponent, "generic_cinema_2.png")
-        XCTAssertEqual(missing, bundled)
-    }
-
-    func testBundledCatalogueStillLoadsAsOfflineFallback() async throws {
-        let items = try await BundledCatalogLoader().loadCatalog()
-
-        XCTAssertFalse(items.isEmpty)
-        XCTAssertEqual(Set(items.map(\.id)).count, items.count)
-        XCTAssertGreaterThan(Set(items.compactMap(\.streamURL)).count, 1)
+        XCTAssertNil(RemoteArtworkResolver.remoteURL(for: "relative/synthetic.png"))
+        XCTAssertNil(RemoteArtworkResolver.remoteURL(for: "http://assets.example.test/insecure.png"))
     }
 
     private var validPayload: Data {
         Data(
             "[\(record(id: \"\\\"12\\\"\", title: \"Synthetic Twelve\", category: \"JEUGDFILMS\", poster: \"https://assets.example.test/synthetic-twelve.png\", stream: \"https://customer-example.cloudflarestream.com/synthetic-twelve/watch\", createdAt: \"2026-08-28 12:00:00\")),\(record(id: \"7\", title: \"Synthetic Seven\", category: \"EVENTS\", poster: \"https://assets.example.test/synthetic-seven.png\", stream: \"https://media.example.test/synthetic-seven.m3u8\", createdAt: \"2026-08-28 12:01:00\"))]".utf8
-        )
-    }
-
-    private var fallbackItem: MediaItem {
-        MediaItem(
-            id: 999,
-            title: "Synthetic Offline Fallback",
-            year: 2024,
-            description: "Synthetic fallback fixture.",
-            category: "OTHERS",
-            posterURL: "artwork/generic_cinema_2.png",
-            streamURL: "https://media.example.test/synthetic-fallback.m3u8"
         )
     }
 
@@ -212,19 +182,5 @@ private actor StubMoviesAPITransport: MoviesAPITransport {
         requests.append(request)
         guard !results.isEmpty else { throw URLError(.resourceUnavailable) }
         return try results.removeFirst().get()
-    }
-}
-
-private actor CountingCatalogLoader: CatalogLoading {
-    private let items: [MediaItem]
-    private(set) var requestCount = 0
-
-    init(items: [MediaItem]) {
-        self.items = items
-    }
-
-    func loadCatalog() async throws -> [MediaItem] {
-        requestCount += 1
-        return items
     }
 }

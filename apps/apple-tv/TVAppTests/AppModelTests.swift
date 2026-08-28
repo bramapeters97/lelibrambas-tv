@@ -19,7 +19,7 @@ final class AppModelTests: XCTestCase {
             year: 2026,
             description: "A synthetic trailer used to verify deterministic hero selection.",
             category: "EVENTS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-trailer.png",
             streamURL: "https://media.example.test/trailer.m3u8"
         )
 
@@ -245,7 +245,7 @@ final class AppModelTests: XCTestCase {
                 year: 2000 + index,
                 description: index == 9 ? "A gold archive memory" : "Synthetic description",
                 category: index.isMultiple(of: 2) ? "EVENTS" : "OTHERS",
-                posterURL: "artwork/generic_cinema_2.png"
+                posterURL: "https://assets.example.test/synthetic-\(index).png"
             )
         }
 
@@ -282,7 +282,7 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(LBPreviewPolicy.startSeconds(for: 600), 120, accuracy: 0.000_001)
     }
 
-    func testStartLoadsAndOrganizesBundledItemsWithoutAuthentication() async {
+    func testStartLoadsAndOrganizesItemsWithoutAuthentication() async {
         let model = AppModel(catalogLoader: StubCatalogLoader(items: Self.items))
 
         await model.start()
@@ -307,7 +307,7 @@ final class AppModelTests: XCTestCase {
         XCTAssertEqual(model.items.map(\.id), [10, 20])
     }
 
-    func testFailedBundledCatalogLoadCanBeRetried() async {
+    func testFailedCatalogLoadCanBeRetried() async {
         let loader = RetryCatalogLoader(items: Self.items)
         let model = AppModel(catalogLoader: loader)
 
@@ -353,7 +353,7 @@ final class AppModelTests: XCTestCase {
             year: 2026,
             description: "Synthetic test data.",
             category: "OTHERS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-cloud.png",
             streamURL: "https://customer-example.cloudflarestream.com/synthetic-id/watch"
         )
         let model = AppModel(catalogLoader: StubCatalogLoader(items: []))
@@ -373,7 +373,7 @@ final class AppModelTests: XCTestCase {
             year: 2026,
             description: "Synthetic test data.",
             category: "OTHERS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-full-playback.png",
             streamURL: "https://media.example.test/full-playback.m3u8"
         )
         let session = PlaybackSession(
@@ -395,7 +395,7 @@ final class AppModelTests: XCTestCase {
             year: 2026,
             description: "Synthetic test data.",
             category: "OTHERS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-retry-playback.png",
             streamURL: "https://media.example.test/retry-playback.m3u8"
         )
         let streamURL = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -428,24 +428,13 @@ final class AppModelTests: XCTestCase {
         controller.stop()
     }
 
-    func testReleaseBundleContainsProductionCatalogAndDistinctStreams() async throws {
-        let items = try await BundledCatalogLoader().loadCatalog()
+    func testArtworkAcceptsOnlyAbsoluteHTTPSURLs() throws {
+        let source = "https://assets.example.test/synthetic-poster.png"
+        let remote = try XCTUnwrap(RemoteArtworkResolver.remoteURL(for: source))
 
-        XCTAssertFalse(items.isEmpty)
-        XCTAssertGreaterThan(Set(items.compactMap(\.streamURL)).count, 1)
-        XCTAssertTrue(items.allSatisfy {
-            $0.posterURL.hasPrefix("artwork/")
-                || BundledArtworkResolver.remoteURL(for: $0.posterURL) != nil
-        })
-    }
-
-    func testBundledArtworkResolvesAndMissingPosterUsesGenericFallback() throws {
-        let production = try XCTUnwrap(BundledArtworkResolver.url(for: "artwork/generic_cinema_2.png"))
-        let fallback = try XCTUnwrap(BundledArtworkResolver.url(for: "artwork/does-not-exist.png"))
-
-        XCTAssertTrue(FileManager.default.fileExists(atPath: production.path))
-        XCTAssertEqual(fallback.lastPathComponent, "generic_cinema_2.png")
-        XCTAssertTrue(FileManager.default.fileExists(atPath: fallback.path))
+        XCTAssertEqual(remote.absoluteString, source)
+        XCTAssertNil(RemoteArtworkResolver.remoteURL(for: "relative/synthetic.png"))
+        XCTAssertNil(RemoteArtworkResolver.remoteURL(for: "http://assets.example.test/insecure.png"))
     }
 
     private static let items = [
@@ -455,7 +444,7 @@ final class AppModelTests: XCTestCase {
             year: 2010,
             description: "A fictional event.",
             category: "EVENTS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-event.png",
             streamURL: "https://media.example.test/second.mp4",
             sortOrder: 20
         ),
@@ -465,7 +454,7 @@ final class AppModelTests: XCTestCase {
             year: 2001,
             description: "A fictional childhood film.",
             category: "JEUGDFILMS",
-            posterURL: "artwork/generic_cinema_2.png",
+            posterURL: "https://assets.example.test/synthetic-childhood.png",
             streamURL: "https://media.example.test/first.m3u8",
             sortOrder: 10,
             featured: true
@@ -486,7 +475,7 @@ private actor RetryCatalogLoader: CatalogLoading {
 
     func loadCatalog() async throws -> [MediaItem] {
         attempts += 1
-        if attempts == 1 { throw BundledCatalogError.resourceMissing }
+        if attempts == 1 { throw MoviesAPIError.invalidResponse }
         return CatalogOrganizer.sorted(items)
     }
 }

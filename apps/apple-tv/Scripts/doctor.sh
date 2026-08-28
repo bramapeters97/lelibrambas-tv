@@ -64,8 +64,9 @@ check "Debug.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Debug.xcconfig"
 check "Release.xcconfig exists" test -f "$APPLE_TV_ROOT/Config/Release.xcconfig"
 check "Signing template exists" test -f "$APPLE_TV_ROOT/Config/Signing.xcconfig.example"
 check "Privacy manifest exists" test -f "$APPLE_TV_ROOT/TVApp/Resources/PrivacyInfo.xcprivacy"
-check "bundled production catalogue exists" test -f "$REPOSITORY_ROOT/data/media_catalog.json"
-check "bundled poster fallback exists" test -f "$APPLE_TV_ROOT/TVApp/Resources/artwork/generic_cinema_2.png"
+check "live movies API loader exists" test -f "$APPLE_TV_ROOT/TVApp/App/MoviesAPICatalogLoader.swift"
+check "production target has no local catalogue or poster fallback" \
+  bash -c "! grep -R -q -E 'media_catalog|BundledCatalogLoader|FallbackCatalogLoader|generic_cinema_2|Resources/artwork' '$APPLE_TV_ROOT/TVApp' '$APPLE_TV_ROOT/project.yml'"
 
 generator="$(xcodegen_binary || true)"
 if [[ -n "$generator" && "$($generator --version 2>/dev/null || true)" == *"2.46.0"* ]]; then

@@ -26,12 +26,7 @@ final class AppModel: ObservableObject {
             return AppModel(catalogLoader: FixtureCatalogLoader())
         }
 #endif
-        return AppModel(
-            catalogLoader: FallbackCatalogLoader(
-                primary: MoviesAPICatalogLoader(),
-                fallback: BundledCatalogLoader()
-            )
-        )
+        return AppModel(catalogLoader: MoviesAPICatalogLoader())
     }
 
     func start() async {
@@ -82,8 +77,6 @@ final class AppModel: ObservableObject {
             let loadedItems = try await catalogLoader.loadCatalog()
             items = loadedItems
             sections = CatalogOrganizer.sectionsPreservingItemOrder(from: loadedItems)
-        } catch BundledCatalogError.malformed {
-            presentedError = .malformedData
         } catch {
             presentedError = .catalogUnavailable
         }
@@ -260,9 +253,9 @@ enum AppError: Error, Equatable, Identifiable {
     var message: String {
         switch self {
         case .catalogUnavailable:
-            return "The live archive and its offline copy are unavailable. Try again later."
+            return "The live archive is unavailable. Check the connection and try again."
         case .malformedData:
-            return "The live archive and its offline copy could not be read safely."
+            return "The live archive could not be read safely."
         case .videoUnavailable:
             return "The video address in this catalogue item could not be played."
         case .insecureMedia:

@@ -1,6 +1,10 @@
 import Foundation
 import LeliBrambasCore
 
+protocol CatalogLoading {
+    func loadCatalog() async throws -> [MediaItem]
+}
+
 enum MoviesAPIConfiguration {
     static let defaultURL = URL(
         string: "https://lelibrambas-api.bramapeters.workers.dev/api/movies"
@@ -86,24 +90,6 @@ struct MoviesAPICatalogLoader: CatalogLoading {
     }
 }
 
-struct FallbackCatalogLoader: CatalogLoading {
-    private let primary: any CatalogLoading
-    private let fallback: any CatalogLoading
-
-    init(primary: any CatalogLoading, fallback: any CatalogLoading) {
-        self.primary = primary
-        self.fallback = fallback
-    }
-
-    func loadCatalog() async throws -> [MediaItem] {
-        do {
-            return try await primary.loadCatalog()
-        } catch {
-            return try await fallback.loadCatalog()
-        }
-    }
-}
-
 private struct MoviesAPIRecord: Decodable {
     let id: Int
     let title: String
@@ -152,6 +138,15 @@ private struct MoviesAPIRecord: Decodable {
         description = try values.decode(String.self, forKey: .description)
         category = try values.decodeRequiredNonemptyString(forKey: .category)
         posterURL = try values.decodeRequiredNonemptyString(forKey: .posterURL)
+        guard let posterAddress = URL(string: posterURL),
+              posterAddress.scheme?.lowercased() == "https",
+              posterAddress.host?.isEmpty == false else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .posterURL,
+                in: values,
+                debugDescription: "Movie poster_url must be an absolute HTTPS URL."
+            )
+        }
         streamURL = try values.decodeRequiredNonemptyString(forKey: .streamURL)
         createdAt = try values.decode(String.self, forKey: .createdAt)
     }

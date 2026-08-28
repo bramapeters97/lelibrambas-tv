@@ -4,14 +4,10 @@ on:
   pull_request:
     paths:
       - 'apps/apple-tv/**'
-      - 'data/media_catalog.json'
-      - 'artwork/**'
       - '.github/workflows/tvos-ci.yml'
   push:
     paths:
       - 'apps/apple-tv/**'
-      - 'data/media_catalog.json'
-      - 'artwork/**'
       - '.github/workflows/tvos-ci.yml'
   workflow_dispatch:
 

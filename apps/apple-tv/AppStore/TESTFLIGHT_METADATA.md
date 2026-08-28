@@ -4,7 +4,7 @@ Replace all angle-bracket placeholders before enabling testers.
 
 **Beta app description**
 
-Native Apple TV client for the LeliBrambas+ film archive. This beta validates live-catalogue browsing with bundled fallback, search, details, public poster artwork with a bundled fallback, and native video playback.
+Native Apple TV client for the LeliBrambas+ film archive. This beta validates live-catalogue browsing, search, details, public poster artwork, retry/error states, and native video playback.
 
 **Feedback email**
 
@@ -13,7 +13,7 @@ Native Apple TV client for the LeliBrambas+ film archive. This beta validates li
 **What to Test**
 
 1. Launch and confirm Home appears directly without login or activation.
-2. Relaunch and confirm the current catalogue is requested again; offline mode must open the bundled fallback.
+2. Relaunch and confirm the current catalogue is requested again; network failure must show the existing retry state.
 3. Browse Home and Collections; test long titles, empty states, loading, and Siri Remote focus order.
 4. Search for a catalogue title and open its detail page; confirm its preview begins after one second.
 5. Start playback; test play/pause, ±10-second seeking, scrubbing, audio, Back, and replay.

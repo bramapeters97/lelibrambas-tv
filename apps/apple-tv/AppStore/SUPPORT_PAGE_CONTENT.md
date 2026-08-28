@@ -11,7 +11,7 @@ Open the app and wait for Home. No login, account, PIN, QR code, gateway, or act
 3. Quit and reopen the app, then try again.
 4. Update tvOS and the app when updates are available.
 
-The app requests the current public catalogue and poster artwork when online. A catalogue copy and generic poster are bundled so catalogue browsing still has a fallback; preview and movie playback require the video network.
+The app requests the current public catalogue and poster artwork from the network. Catalogue browsing, previews, and movie playback therefore require internet access. A failed catalogue request shows a retry action, while failed poster artwork uses an in-app visual placeholder.
 
 ## Contact
 

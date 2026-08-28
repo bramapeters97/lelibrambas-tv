@@ -1,5 +1,5 @@
 # App privacy worksheet
 
-This worksheet reflects the current native tvOS code and is not legal advice. The app has no account, activation, session, analytics, advertising, tracking, or diagnostic upload layer. It requests the public Cloudflare Workers movies catalogue on startup, loads public HTTPS poster artwork from R2, and contacts Cloudflare Stream when a preview or movie plays through AVPlayer. A catalogue and generic poster remain bundled as fallbacks.
+This worksheet reflects the current native tvOS code and is not legal advice. The app has no account, activation, session, analytics, advertising, tracking, or diagnostic upload layer. It requests the public Cloudflare Workers movies catalogue on startup, loads public HTTPS poster artwork from R2, and contacts Cloudflare Stream when a preview or movie plays through AVPlayer. No movie catalogue or poster artwork is bundled.
 
 The checked-in Privacy Manifest declares no tracking, tracking domains, accessed required-reason API categories, or collected data types. Before submission, the Account Holder must confirm this remains accurate for the exact production binary and the video host’s current contractual/logging behavior, then answer App Store Connect consistently.

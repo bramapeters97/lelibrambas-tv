@@ -51,7 +51,7 @@ struct CollectionsView: View {
                 if sections.isEmpty {
                     LBEmptyState(
                         title: "No collections",
-                        message: "The bundled archive does not currently contain collection groups."
+                        message: "The live archive does not currently contain collection groups."
                     )
                     .frame(height: 520)
                 } else {

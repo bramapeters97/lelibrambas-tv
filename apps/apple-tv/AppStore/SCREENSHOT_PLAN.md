@@ -13,16 +13,16 @@ The script dynamically resolves/boots an Apple TV simulator, builds and installs
 
 It also saves `BuildArtifacts/SimulatorPreview/00-tvos-home.png` before launching the app. That image is internal proof that the app was installed into a real CoreSimulator runtime; it is not an App Store product screenshot and must not be submitted.
 
-| Filename                             | Scene                             | Required review                                               |
-| ------------------------------------ | --------------------------------- | ------------------------------------------------------------- |
-| `1920x1080/01-profile-selector.png`  | Local three-profile selector      | Exact names/colors, wordmark, and focus visibility            |
-| `1920x1080/02-home.png`              | Branded trailer hero/home         | Official studio art, hierarchy, focus, and safe-area crop     |
-| `1920x1080/03-content-shelves.png`   | Multiple collection/media shelves | 16:9 crop, spacing, synthetic labels, focus visibility        |
-| `1920x1080/04-media-details.png`     | Detail screen                     | Metadata readability, backdrop/gradient, Play action          |
-| `1920x1080/05-collections.png`       | Collections feature view          | Four-card grouping, margins, focus order                      |
-| `1920x1080/06-settings.png`          | Settings                          | Version, live/fallback content status, focus order             |
-| `1920x1080/07-search.png`            | Search                            | Web hierarchy, default field focus, suggestions and grid       |
-| `1920x1080/08-full-library.png`      | Full Library                      | Catalogue hierarchy, title count, landscape grid and spacing   |
+| Filename                            | Scene                             | Required review                                              |
+| ----------------------------------- | --------------------------------- | ------------------------------------------------------------ |
+| `1920x1080/01-profile-selector.png` | Local three-profile selector      | Exact names/colors, wordmark, and focus visibility           |
+| `1920x1080/02-home.png`             | Branded trailer hero/home         | Official studio art, hierarchy, focus, and safe-area crop    |
+| `1920x1080/03-content-shelves.png`  | Multiple collection/media shelves | 16:9 crop, spacing, synthetic labels, focus visibility       |
+| `1920x1080/04-media-details.png`    | Detail screen                     | Metadata readability, backdrop/gradient, Play action         |
+| `1920x1080/05-collections.png`      | Collections feature view          | Four-card grouping, margins, focus order                     |
+| `1920x1080/06-settings.png`         | Settings                          | Version, live Cloudflare catalogue status, focus order       |
+| `1920x1080/07-search.png`           | Search                            | Web hierarchy, default field focus, suggestions and grid     |
+| `1920x1080/08-full-library.png`     | Full Library                      | Catalogue hierarchy, title count, landscape grid and spacing |
 
 Before upload:
 

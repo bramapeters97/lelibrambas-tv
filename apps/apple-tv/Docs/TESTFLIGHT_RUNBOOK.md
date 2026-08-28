@@ -42,7 +42,7 @@ Apple publishes these tvOS-specific steps at [testflight.apple.com](https://test
 
 - Confirm launch plays the full native ident and jingle, then shows the three local profiles and reaches Home without an activation screen; the public catalogue request may run during this startup flow.
 - Background and return to the app; confirm the full ident and jingle replay, the previous local profile is cleared, and profile selection is required again without account or session state.
-- Confirm public R2 poster artwork loads, network failure uses the bundled catalogue, and missing/failed artwork uses `generic_cinema_2.png`.
+- Confirm the live catalogue and public R2 poster artwork load, catalogue network failure shows the retry state, and missing/failed artwork uses the existing code-rendered placeholder.
 - Play supported HLS/MP4 content; test play/pause, ±10-second seeking, scrubber, volume/audio routing, interruption, Back, and error recovery.
 - Check focus, safe areas, typography, and crop at 1080p and 4K where devices permit.
 - Email tester feedback to the configured feedback address; tvOS does not provide the same screenshot feedback flow as all other platforms.
