@@ -33,11 +33,13 @@ The Expo TV guide lists AsyncStorage, Image, Reanimated, and Video as TV-capable
 
 ## Rendering and navigation
 
-`apps/tv/App.tsx` dispatches on `Platform.isTV`. Its tvOS branch uses `Pressable`,
-`TVFocusGuideView`, `useTVEventHandler`, explicit screen state, and `expo-video`; it remains a small
-profile/home/player shell while native focus and playback are validated. Its phone branch renders
-`apps/tv/mobile/MobileApp.tsx`, with profile selection, Home, Search, Collections, Saved, catalogue
-details, and a bundled demo player.
+`apps/tv/App.tsx` dispatches on `Platform.isTV`. Its tvOS branch is implemented by focused modules
+under `apps/tv/native-tv/` and uses `Pressable`, `TVFocusGuideView`, `useTVEventHandler`, explicit
+screen state, and `expo-video`. The flow includes the timed studio splash, local profile selection,
+navigation rail, catalogue-backed Home/browse/detail screens, direct playback, and profile-specific
+resume progress stored through AsyncStorage. Progress writes are throttled and completion follows
+the shared 94% rule; generated `apps/tv/ios/` output remains disposable. The phone branch renders
+`apps/tv/mobile/MobileApp.tsx`, with its existing independent native flow.
 
 The full product prototype is a separate React DOM/Vite SPA used by browser QA, Playwright,
 screenshots, and Electron. React Native Web renders the Expo phone branch in its Safari preview but
