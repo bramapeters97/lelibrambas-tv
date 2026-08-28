@@ -6,6 +6,7 @@ import {
   DETAILS_PREVIEW_START_SECONDS,
   HERO_IDLE_DELAY_MS,
   HOME_PREVIEW_START_SECONDS,
+  homeTrailerFor,
   knownDuration,
   recentlyWatchedFor,
 } from './App';
@@ -101,5 +102,17 @@ describe('home progress state', () => {
     expect(DETAILS_PREVIEW_DELAY_MS).toBe(1000);
     expect(HOME_PREVIEW_START_SECONDS).toBe(40);
     expect(DETAILS_PREVIEW_START_SECONDS).toBeGreaterThanOrEqual(120);
+  });
+
+  it('selects the 2026 trailer by its stable catalogue identity', () => {
+    const fallback = catalogue[0]!;
+    const trailer = catalogue.find((video) => video.catalogueId === 36)!;
+
+    expect(
+      homeTrailerFor([fallback, { ...trailer, title: 'lelibrambas_trailer(2026)' }]),
+    ).toMatchObject({
+      catalogueId: 36,
+      year: 2026,
+    });
   });
 });

@@ -260,10 +260,11 @@ test('intro, profiles, and poster-backed cinema hero preserve the viewer contrac
       .evaluate((element) => getComputedStyle(element).color),
   ).toBe('rgb(112, 216, 255)');
   await expect(page.getByRole('button', { name: 'Play Trailer' })).toBeVisible();
+  await expect(page.locator('.hero .metadata')).toContainText('2026');
   await expect(page.locator('.hero-art .hero-poster')).toHaveCount(1);
   await expect(page.locator('.hero-art .hero-poster')).toHaveAttribute(
     'src',
-    /lelibrambas_studios.*\.png$/,
+    /lelibrambas_productions.*\.png$/,
   );
   await expect(page.locator('.hero-art .hero-poster')).not.toHaveAttribute(
     'src',

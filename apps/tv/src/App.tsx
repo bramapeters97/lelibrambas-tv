@@ -32,7 +32,7 @@ import {
 } from './Discovery';
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
-import heroLogoUrl from '../../../lelibrambas_studios.png';
+import heroLogoUrl from '../../../lelibrambas_productions.png';
 
 type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseScreenId;
 
@@ -201,6 +201,14 @@ export function recentlyWatchedFor(
     .sort(
       (left, right) => Date.parse(right.progress.updatedAt) - Date.parse(left.progress.updatedAt),
     );
+}
+
+export function homeTrailerFor(catalogue: readonly CatalogueVideoRecord[]): CatalogueVideoRecord {
+  const trailer =
+    catalogue.find((item) => item.catalogueId === 36 && item.year === 2026) ??
+    catalogue.find((item) => item.year === 2026 && /lelibrambas.*trailer/i.test(item.title));
+
+  return trailer ?? catalogue[0]!;
 }
 
 function paletteStyle(video: CatalogueVideoRecord): React.CSSProperties {
@@ -643,7 +651,7 @@ function Home({
   onReplayIntro: () => void;
   onProfile: () => void;
 }) {
-  const hero = catalogue.find((item) => item.title === 'Lelibrambas+ Trailer') ?? catalogue[0]!;
+  const hero = homeTrailerFor(catalogue);
   const heroAvailability = playbackAvailability(hero);
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
