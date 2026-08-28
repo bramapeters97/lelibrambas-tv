@@ -1887,8 +1887,8 @@ function CatalogueState({ error }: { error?: string }) {
       <h1>{error ? 'The media library could not be loaded.' : 'Preparing your libraryâ€¦'}</h1>
       <span>
         {error
-          ? `${error} Regenerate the catalogue and restart the local viewer.`
-          : 'Loading the generated local catalogue and artwork.'}
+          ? `${error} Check the API or local fallback catalogue and reload the viewer.`
+          : 'Loading the latest movie catalogue.'}
       </span>
     </main>
   );

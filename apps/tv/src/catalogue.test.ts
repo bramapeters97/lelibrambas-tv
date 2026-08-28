@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import generatedCatalog from '../../../data/media_catalog.json';
-import { catalogueRequestUrl, loadCatalogue } from './catalogue';
+import {
+  DEFAULT_MOVIES_API_URL,
+  catalogueRequestUrl,
+  loadCatalogue,
+  moviesApiRequestUrl,
+} from './catalogue';
 import {
   applyPosterFallback,
   FALLBACK_POSTER,
@@ -9,22 +14,118 @@ import {
   resolvePosterUrl,
 } from './media';
 
+const apiMovies = [
+  {
+    id: '20',
+    title: 'Second synthetic movie',
+    year: 2025,
+    description: 'A synthetic API test record.',
+    category: 'EVENTS',
+    poster_url: 'https://images.example/second.png',
+    stream_video_id: 'https://media.example/second.mp4',
+    created_at: '2026-08-28T10:00:00.000Z',
+  },
+  {
+    id: '10',
+    title: 'First synthetic movie',
+    year: 2024,
+    description: 'Another synthetic API test record.',
+    category: 'EVENTS',
+    poster_url: 'https://images.example/first.png',
+    stream_video_id: 'https://media.example/first.mp4',
+    created_at: '2026-08-27T10:00:00.000Z',
+  },
+];
+
 describe('runtime catalogue loading and media resolution', () => {
-  it('loads exactly the generated JSON rows without placeholder fallback data', async () => {
-    const fetcher = vi.fn(
-      async () => new Response(JSON.stringify(generatedCatalog)),
-    ) as typeof fetch;
-    const loaded = await loadCatalogue(fetcher, 'https://example.test/nested/route');
-    expect(fetcher).toHaveBeenCalledWith('https://example.test/data/media_catalog.json', {
+  it('loads and normalizes the API catalogue while preserving API order', async () => {
+    const fetcher = vi.fn(async () => new Response(JSON.stringify(apiMovies))) as typeof fetch;
+    const loaded = await loadCatalogue(
+      fetcher,
+      'https://example.test/nested/route',
+      'https://api.example.test/movies',
+    );
+    expect(fetcher).toHaveBeenCalledOnce();
+    expect(fetcher).toHaveBeenCalledWith('https://api.example.test/movies', {
       cache: 'no-store',
     });
-    expect(loaded.catalogue).toHaveLength(generatedCatalog.length);
-    expect(loaded.catalogue.map((video) => video.catalogueId)).toEqual(
-      generatedCatalog.map((record) => record.id),
-    );
+    expect(loaded.source).toBe('api');
+    expect(loaded.catalogue.map((video) => video.catalogueId)).toEqual([20, 10]);
+    expect(loaded.collections[0]?.videoIds).toEqual(['20', '10']);
+    expect(loaded.catalogue[0]).toMatchObject({
+      posterUrl: apiMovies[0]?.poster_url,
+      streamVideoId: apiMovies[0]?.stream_video_id,
+      addedDate: apiMovies[0]?.created_at,
+    });
   });
 
-  it('uses an origin-root catalogue URL so nested routes do not alter asset paths', () => {
+  it('falls back to the generated local catalogue when the API request fails', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('unavailable', { status: 503 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(generatedCatalog))) as typeof fetch;
+    const loaded = await loadCatalogue(
+      fetcher,
+      'https://example.test/nested/route',
+      'https://api.example.test/movies',
+    );
+    expect(fetcher).toHaveBeenNthCalledWith(2, 'https://example.test/data/media_catalog.json', {
+      cache: 'no-store',
+    });
+    expect(loaded.source).toBe('fallback');
+    expect(loaded.catalogue).toHaveLength(generatedCatalog.length);
+  });
+
+  it('falls back when the API response is not an array or has invalid fields', async () => {
+    for (const invalidPayload of [{ movies: apiMovies }, [{ ...apiMovies[0], created_at: null }]]) {
+      const fetcher = vi
+        .fn()
+        .mockResolvedValueOnce(new Response(JSON.stringify(invalidPayload)))
+        .mockResolvedValueOnce(new Response(JSON.stringify(generatedCatalog))) as typeof fetch;
+      const loaded = await loadCatalogue(
+        fetcher,
+        'https://example.test/',
+        'https://api.example.test/movies',
+      );
+      expect(loaded.source).toBe('fallback');
+    }
+  });
+
+  it('falls back when the API response is not valid JSON', async () => {
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(new Response('{not-json'))
+      .mockResolvedValueOnce(new Response(JSON.stringify(generatedCatalog))) as typeof fetch;
+    const loaded = await loadCatalogue(
+      fetcher,
+      'https://example.test/',
+      'https://api.example.test/movies',
+    );
+    expect(loaded.source).toBe('fallback');
+  });
+
+  it('fetches fresh API data again on a new application load', async () => {
+    const updatedMovies = [{ ...apiMovies[0], title: 'Updated synthetic movie' }];
+    const fetcher = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify(apiMovies)))
+      .mockResolvedValueOnce(new Response(JSON.stringify(updatedMovies))) as typeof fetch;
+    const firstLoad = await loadCatalogue(
+      fetcher,
+      'https://example.test/',
+      'https://api.example.test/movies',
+    );
+    const refreshedLoad = await loadCatalogue(
+      fetcher,
+      'https://example.test/',
+      'https://api.example.test/movies',
+    );
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(firstLoad.catalogue[0]?.title).toBe('Second synthetic movie');
+    expect(refreshedLoad.catalogue[0]?.title).toBe('Updated synthetic movie');
+  });
+
+  it('uses an origin-root fallback URL so nested routes do not alter asset paths', () => {
     expect(catalogueRequestUrl('http://127.0.0.1:5173/library/details/7')).toBe(
       'http://127.0.0.1:5173/data/media_catalog.json',
     );
@@ -33,9 +134,18 @@ describe('runtime catalogue loading and media resolution', () => {
     );
   });
 
-  it('does not substitute mock records when loading fails', async () => {
+  it('uses one configurable API URL with the production endpoint as its default', () => {
+    expect(moviesApiRequestUrl(' https://api.example.test/movies ')).toBe(
+      'https://api.example.test/movies',
+    );
+    expect(moviesApiRequestUrl('')).toBe(DEFAULT_MOVIES_API_URL);
+  });
+
+  it('reports an error only when both the API and local fallback fail', async () => {
     const fetcher = vi.fn(async () => new Response('missing', { status: 404 })) as typeof fetch;
-    await expect(loadCatalogue(fetcher, 'https://example.test/')).rejects.toThrow(/HTTP 404/);
+    await expect(
+      loadCatalogue(fetcher, 'https://example.test/', 'https://api.example.test/movies'),
+    ).rejects.toThrow(/Movies API failed.*local fallback failed/);
   });
 
   it('resolves local, remote, and failed poster images through one fallback contract', () => {
