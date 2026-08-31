@@ -41,6 +41,15 @@ async function detectWebPublicDirectory() {
   return matches[0];
 }
 
+async function optionalDirectory(path) {
+  try {
+    return (await stat(path)).isDirectory();
+  } catch (error) {
+    if (error && typeof error === 'object' && error.code === 'ENOENT') return false;
+    throw error;
+  }
+}
+
 export async function syncArtworkAndCatalog() {
   const publicDirectory = await detectWebPublicDirectory();
   const artworkDestination = resolve(publicDirectory, 'artwork');
@@ -52,7 +61,10 @@ export async function syncArtworkAndCatalog() {
 
   await rm(artworkDestination, { recursive: true, force: true });
   await mkdir(artworkDestination, { recursive: true });
-  await cp(sourceArtwork, artworkDestination, { recursive: true, force: true });
+  const artworkSourceAvailable = await optionalDirectory(sourceArtwork);
+  if (artworkSourceAvailable) {
+    await cp(sourceArtwork, artworkDestination, { recursive: true, force: true });
+  }
   await mkdir(dirname(catalogDestination), { recursive: true });
   await copyFile(sourceCatalog, catalogDestination);
   await copyFile(sourceShareImage, shareImageDestination);
@@ -65,6 +77,7 @@ export async function syncArtworkAndCatalog() {
     catalogDestination,
     shareImageDestination,
     artworkCount,
+    artworkSourceAvailable,
   };
 }
 
@@ -72,6 +85,11 @@ function printSyncReport(report) {
   console.log(
     `Synced ${report.artworkCount} artwork files to ${relative(repositoryRoot, report.artworkDestination)}.`,
   );
+  if (!report.artworkSourceAvailable) {
+    console.log(
+      'Skipped optional local artwork; the web viewer loads production artwork from the Movies API.',
+    );
+  }
   console.log(`Synced catalogue to ${relative(repositoryRoot, report.catalogDestination)}.`);
   console.log(`Synced share image to ${relative(repositoryRoot, report.shareImageDestination)}.`);
 }
