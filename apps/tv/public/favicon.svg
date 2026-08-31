@@ -1,0 +1,22 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 512 512"
+  role="img"
+  aria-labelledby="title"
+>
+  <title id="title">LELIBRAMBAS+ L plus monogram</title>
+  <rect width="512" height="512" rx="82" fill="#050505" />
+  <rect
+    x="4"
+    y="4"
+    width="504"
+    height="504"
+    rx="78"
+    fill="none"
+    stroke="#282319"
+    stroke-width="8"
+  />
+  <path fill="#796236" d="M155 143h54v173h110v54H155z" />
+  <path fill="#dec17e" d="M151 139h54v173h110v54H151z" />
+  <path fill="#dec17e" d="M316 154h40v44h44v40h-44v44h-40v-44h-44v-40h44z" />
+</svg>

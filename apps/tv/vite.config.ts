@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite';
 
+import { webIconPlugin } from './webIconPlugin.js';
+
 export default defineConfig({
+  plugins: [webIconPlugin()],
   base: './',
   cacheDir: '../../.tools/vite/tv',
   server: { host: '127.0.0.1', port: 5173, strictPort: true },
