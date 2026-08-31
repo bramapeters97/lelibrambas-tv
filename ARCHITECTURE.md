@@ -76,8 +76,11 @@ are retained only for tvOS, and native application targets are limited to iPhone
 - Electron has no preload or IPC bridge. Packaged launches authenticate through the protected web canonical origin in Electron's persistent cookie session before switching to the local shared renderer; both a successful protected response and a non-expired Access cookie are required. Focus and five-minute checks return expired sessions to that same gate, and verification failures use a script-free local retry surface without exposing the archive. Navigation is restricted to that origin, its learned Cloudflare Access team host, the gated local renderer/error page, and narrowly allowlisted Stream frames. Windows, downloads, webviews, device permissions, and unrelated permissions remain denied.
 
 The editable catalogue source is `media_catalog_populated.xlsx`. Generation produces the committed
-`data/media_catalog.json`; content preparation copies that JSON and approved artwork into ignored
-web runtime output. Catalogue order is numeric ID order throughout Home, Collections, Search results
+`data/media_catalog.json`; content preparation always copies that JSON into ignored web runtime
+output and copies approved local artwork only when the optional root `artwork/` directory exists.
+Cloudflare builds therefore do not depend on ignored local artwork: the browser requests the Movies
+API first and uses the committed JSON only as its development/offline fallback. Catalogue order is
+numeric ID order throughout Home, Collections, Search results
 before filtering, and Full Library. Runtime is nullable because the workbook has no authoritative
 duration column; actual HTML media metadata can drive player timing and locally persisted progress,
 but the catalogue adapter never invents a universal length.

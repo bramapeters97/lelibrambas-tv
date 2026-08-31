@@ -42,7 +42,10 @@ corepack yarn catalog:generate
 corepack yarn artwork:sync
 ```
 
-`artwork:sync` copies root artwork and the generated catalogue into the Vite public directory.
+`artwork:sync` copies root artwork, when that optional local directory exists, and the generated
+catalogue into the Vite public directory. Cloudflare production builds do not require the ignored
+root `artwork/` directory: the browser loads the Movies API first, including its hosted artwork
+URLs, while the copied JSON remains a development/offline fallback.
 The generated runtime copies are ignored; the root artwork and `data/media_catalog.json` remain
 canonical. `content:prepare` runs automatically before the root and TV workspace development and
 production-build commands.
