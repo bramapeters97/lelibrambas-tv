@@ -397,7 +397,8 @@ export function ArtCard({
   const isComingSoon = video.priority === -1;
   const [a, b, c] = video.artwork.palette;
   const style = { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
-  const usesMobilePlay = isAvailable && isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
+  const usesMobilePlay =
+    isAvailable && !isComingSoon && isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
   const progressDuration = progress?.durationSeconds ?? video.durationSeconds;
   const progressPercent =
     progress &&
@@ -422,7 +423,7 @@ export function ArtCard({
 
   return (
     <div
-      className={`art-card-shell${isAvailable ? '' : ' is-unavailable'}`}
+      className={`art-card-shell${isAvailable && !isComingSoon ? '' : ' is-unavailable'}`}
       data-catalogue-id={video.catalogueId}
       data-available={isAvailable ? 'true' : 'false'}
       data-coming-soon={isComingSoon ? 'true' : 'false'}
@@ -431,12 +432,17 @@ export function ArtCard({
     >
       <button
         type="button"
-        data-focusable={isAvailable ? true : undefined}
+        data-focusable
         data-focus-id={`browse-${video.id}`}
         data-card-action="primary"
         className="browse-card"
-        disabled={!isAvailable}
-        aria-label={isAvailable ? video.title : `${video.title} is not available yet`}
+        aria-label={
+          isComingSoon
+            ? `${video.title}, coming soon. View details`
+            : isAvailable
+              ? video.title
+              : `${video.title} is unavailable. View details`
+        }
         onClick={primaryAction}
       >
         <span className="browse-art">
@@ -447,8 +453,7 @@ export function ArtCard({
             onError={(event) => applyPosterFallback(event.currentTarget)}
           />
           <b>{String(index + 1).padStart(2, '0')}</b>
-          {isComingSoon && <span className="coming-soon-overlay">COMING SOON</span>}
-          {video.processingStatus !== 'ready' && (
+          {!isComingSoon && video.processingStatus !== 'ready' && (
             <em className={`status-${video.processingStatus}`}>
               {processingLabels[video.processingStatus]}
             </em>
@@ -468,6 +473,11 @@ export function ArtCard({
           )}
         </span>
       </button>
+      {isComingSoon && (
+        <span className="coming-soon-overlay" aria-hidden="true">
+          COMING SOON
+        </span>
+      )}
       {usesMobilePlay && (
         <button
           type="button"

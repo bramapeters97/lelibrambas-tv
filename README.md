@@ -50,8 +50,11 @@ The Movies API may additionally return binary `featured` and `available` fields 
 rank of `-1`, `0`, `1`, or `2`. The web viewer uses every featured record for Currently Trending and
 places priority `2` records before priority `1` records, followed by ordinary priority `0` records
 and unreleased priority `-1` records in last place with a Coming Soon overlay in both category
-shelves and the complete catalogue. It renders unavailable
-records as dimmed, non-interactive cards. A missing field retains the legacy fallback behavior.
+shelves and the complete catalogue. Coming Soon and unavailable cards are dimmed but remain
+clickable so their detail pages still open. On viewports up to 800px wide, the web viewer uses a
+bottom navigation bar, a three-column All Movies grid, and requests fullscreen landscape playback
+when the mobile browser supports orientation locking. A missing API field retains the legacy
+fallback behavior.
 The generated runtime copies are ignored; the root artwork and `data/media_catalog.json` remain
 canonical. `content:prepare` runs automatically before the root and TV workspace development and
 production-build commands.

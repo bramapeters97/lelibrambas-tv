@@ -39,14 +39,14 @@ test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ pag
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',
-    'https://lelibrambas.com/lelibrambas-share.png',
+    'https://lelibrambas.com/lelibrambas-studios.png',
   );
   await expect(page.locator('meta[property="og:image:type"]')).toHaveAttribute(
     'content',
     'image/png',
   );
-  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1672');
-  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '941');
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1536');
+  await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '1024');
   await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute(
     'content',
     launchDescription,
@@ -72,7 +72,7 @@ test('web share metadata exposes the LELIBRAMBAS preview contract', async ({ pag
     'href',
     /(?:^|\/)site\.webmanifest$/,
   );
-  expect((await request.get('/lelibrambas-share.png')).ok()).toBe(true);
+  expect((await request.get('/lelibrambas-studios.png')).ok()).toBe(true);
   expect((await request.get('/favicon.png')).ok()).toBe(true);
   expect((await request.get('/cinema-app-icon.png')).ok()).toBe(true);
   expect((await request.get('/safari-pinned-tab.png')).ok()).toBe(true);

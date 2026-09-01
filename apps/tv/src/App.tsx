@@ -58,6 +58,74 @@ type TransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { finished: Promise<void> };
 };
 
+type LegacyFullscreenVideo = HTMLVideoElement & {
+  webkitEnterFullscreen?: () => void;
+};
+
+type LockableScreenOrientation = ScreenOrientation & {
+  lock?: (orientation: 'landscape') => Promise<void>;
+  unlock?: () => void;
+};
+
+function isMobileWebViewport(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 800px)').matches;
+}
+
+async function lockMobileLandscape(): Promise<void> {
+  try {
+    const orientation = window.screen.orientation as LockableScreenOrientation | undefined;
+    await orientation?.lock?.('landscape');
+  } catch {
+    // Unsupported or denied orientation locks should never interrupt playback.
+  }
+}
+
+function prepareMobileLandscapePlayback(): void {
+  if (!isMobileWebViewport() || document.fullscreenElement) return;
+  const requestFullscreen = document.documentElement.requestFullscreen;
+  if (!requestFullscreen) return;
+
+  void requestFullscreen
+    .call(document.documentElement)
+    .then(lockMobileLandscape)
+    .catch(() => undefined);
+}
+
+function releaseMobileLandscapePlayback(): void {
+  if (!isMobileWebViewport()) return;
+  try {
+    const orientation = window.screen.orientation as LockableScreenOrientation | undefined;
+    orientation?.unlock?.();
+  } catch {
+    // Some browsers unlock automatically while leaving fullscreen.
+  }
+  if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
+}
+
+async function requestMobileLandscapePlayback(
+  playerScreen: HTMLElement | null,
+  videoElement: HTMLVideoElement,
+): Promise<void> {
+  if (!isMobileWebViewport()) return;
+
+  const legacyVideo = videoElement as LegacyFullscreenVideo;
+  try {
+    if (!document.fullscreenElement && playerScreen?.requestFullscreen) {
+      await playerScreen.requestFullscreen();
+    } else if (!document.fullscreenElement && legacyVideo.webkitEnterFullscreen) {
+      legacyVideo.webkitEnterFullscreen();
+    }
+  } catch {
+    try {
+      legacyVideo.webkitEnterFullscreen?.();
+    } catch {
+      // Fullscreen and orientation support varies by mobile browser; playback must continue.
+    }
+  }
+
+  await lockMobileLandscape();
+}
+
 export type PlaybackAvailability = {
   playable: boolean;
   eyebrow: string;
@@ -1309,11 +1377,16 @@ function Player({
     }
   }, []);
 
-  useEffect(() => () => flushProgress(), [flushProgress]);
+  useEffect(
+    () => () => {
+      flushProgress();
+      releaseMobileLandscapePlayback();
+    },
+    [flushProgress],
+  );
 
   useEffect(() => {
-    const updateFullscreenState = () =>
-      setFullscreen(document.fullscreenElement === playerScreenRef.current);
+    const updateFullscreenState = () => setFullscreen(Boolean(document.fullscreenElement));
     document.addEventListener('fullscreenchange', updateFullscreenState);
     return () => document.removeEventListener('fullscreenchange', updateFullscreenState);
   }, []);
@@ -1407,7 +1480,7 @@ function Player({
             data-playback-url={playbackSource.url}
             autoPlay
             muted={muted}
-            playsInline
+            playsInline={!isMobileWebViewport()}
             onLoadedMetadata={(event) => {
               const loadedDuration = finitePositiveDuration(event.currentTarget.duration);
               if (loadedDuration !== null) setMediaDurationSeconds(loadedDuration);
@@ -1421,7 +1494,10 @@ function Player({
                 );
               }
             }}
-            onPlay={() => setPlaying(true)}
+            onPlay={(event) => {
+              setPlaying(true);
+              void requestMobileLandscapePlayback(playerScreenRef.current, event.currentTarget);
+            }}
             onVolumeChange={(event) => setMuted(event.currentTarget.muted)}
             onPause={() => {
               setPlaying(false);
@@ -1844,6 +1920,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
         profile={profile}
         onBack={back}
         onPlay={(next) => {
+          prepareMobileLandscapePlayback();
           setVideo(next);
           go('player');
         }}
@@ -1862,6 +1939,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
     );
   const onNavigate = (next: BrowseScreenId) => go(next);
   const onPlay = (next: CatalogueVideoRecord) => {
+    prepareMobileLandscapePlayback();
     setVideo(next);
     go('player');
   };
