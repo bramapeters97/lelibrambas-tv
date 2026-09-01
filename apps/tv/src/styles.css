@@ -3281,3 +3281,30 @@ button:focus-visible,
     padding-top: max(180px, 45svh);
   }
 }
+
+/* Keep the end-of-playback card usable on phones rotated into landscape. */
+@media (max-height: 560px) and (orientation: landscape) {
+  .up-next-panel {
+    width: min(680px, calc(100vw - 32px));
+    max-height: calc(100svh - 24px);
+    padding: clamp(0.75rem, 3vh, 1.25rem);
+    overflow-y: auto;
+  }
+  .up-next-panel > p {
+    margin-bottom: 0.5rem;
+    font-size: 0.66rem;
+  }
+  .up-next-art {
+    height: clamp(72px, 24svh, 112px);
+  }
+  .up-next-panel h1 {
+    margin: 0.6rem 0 0.3rem;
+    font-size: clamp(1.4rem, 6vh, 2.2rem);
+  }
+  .up-next-panel .metadata {
+    margin-block: 0.45rem;
+  }
+  .up-next-panel .hero-actions {
+    margin-top: 0.5rem;
+  }
+}
