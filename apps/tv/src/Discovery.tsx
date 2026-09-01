@@ -393,9 +393,10 @@ export function ArtCard({
   index?: number;
 }) {
   const isMobileViewport = useMobileWebViewport();
+  const isAvailable = video.available;
   const [a, b, c] = video.artwork.palette;
   const style = { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
-  const usesMobilePlay = isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
+  const usesMobilePlay = isAvailable && isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
   const progressDuration = progress?.durationSeconds ?? video.durationSeconds;
   const progressPercent =
     progress &&
@@ -420,17 +421,20 @@ export function ArtCard({
 
   return (
     <div
-      className="art-card-shell"
+      className={`art-card-shell${isAvailable ? '' : ' is-unavailable'}`}
       data-catalogue-id={video.catalogueId}
+      data-available={isAvailable ? 'true' : 'false'}
       data-mobile-primary-play={usesMobilePlay ? 'true' : 'false'}
       style={style}
     >
       <button
         type="button"
-        data-focusable
+        data-focusable={isAvailable ? true : undefined}
         data-focus-id={`browse-${video.id}`}
         data-card-action="primary"
         className="browse-card"
+        disabled={!isAvailable}
+        aria-label={isAvailable ? video.title : `${video.title} is not available yet`}
         onClick={primaryAction}
       >
         <span className="browse-art">

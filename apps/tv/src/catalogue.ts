@@ -47,14 +47,33 @@ function collectionsInCatalogueOrder(catalogue: readonly CatalogueVideoRecord[])
   }));
 }
 
+export function orderCatalogueByPriority(
+  catalogue: readonly CatalogueVideoRecord[],
+): CatalogueVideoRecord[] {
+  return catalogue
+    .map((video, index) => ({ video, index }))
+    .sort(
+      (left, right) =>
+        Number(right.video.priority) - Number(left.video.priority) || left.index - right.index,
+    )
+    .map(({ video }) => video);
+}
+
+export function featuredCatalogue(
+  catalogue: readonly CatalogueVideoRecord[],
+): CatalogueVideoRecord[] {
+  return catalogue.filter((video) => video.featured);
+}
+
 function loadedCatalogue(
   catalogue: CatalogueVideoRecord[],
   source: LoadedCatalogue['source'],
 ): LoadedCatalogue {
   if (!catalogue.length) throw new Error('Catalogue contains no movies.');
+  const orderedCatalogue = orderCatalogueByPriority(catalogue);
   return {
-    catalogue,
-    collections: collectionsInCatalogueOrder(catalogue),
+    catalogue: orderedCatalogue,
+    collections: collectionsInCatalogueOrder(orderedCatalogue),
     source,
   };
 }

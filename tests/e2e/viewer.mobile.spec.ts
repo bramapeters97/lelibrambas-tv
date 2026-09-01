@@ -275,6 +275,18 @@ test.describe('mobile responsive viewer', () => {
       321,
     );
   });
+
+  test('shows four clickable same-category thumbnails below mobile detail metadata', async ({
+    page,
+  }) => {
+    await page.goto('/?screen=details&capture=1&video=40');
+    const related = page.locator('.mobile-related-videos button');
+    await expect(related).toHaveCount(4);
+    await expect(related.first()).toBeVisible();
+    const originalTitle = await page.locator('.details-title').textContent();
+    await related.first().click();
+    await expect(page.locator('.details-title')).not.toHaveText(originalTitle ?? '');
+  });
 });
 
 test('profile-isolated Recently watched is newest-first and carries saved progress', async ({

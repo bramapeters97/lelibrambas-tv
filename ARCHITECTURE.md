@@ -79,9 +79,11 @@ The editable catalogue source is `media_catalog_populated.xlsx`. Generation prod
 `data/media_catalog.json`; content preparation always copies that JSON into ignored web runtime
 output and copies approved local artwork only when the optional root `artwork/` directory exists.
 Cloudflare builds therefore do not depend on ignored local artwork: the browser requests the Movies
-API first and uses the committed JSON only as its development/offline fallback. Catalogue order is
-numeric ID order throughout Home, Collections, Search results
-before filtering, and Full Library. Runtime is nullable because the workbook has no authoritative
+API first and uses the committed JSON only as its development/offline fallback. The web catalogue
+places API records with binary `priority=1` before records with `priority=0`, preserving source order
+within each tier; category shelves inherit that order. Binary `featured` controls Currently Trending,
+and binary `available` controls card interactivity. Legacy generated JSON remains in numeric ID order
+when those API-only controls are absent. Runtime is nullable because the workbook has no authoritative
 duration column; actual HTML media metadata can drive player timing and locally persisted progress,
 but the catalogue adapter never invents a universal length.
 

@@ -69,5 +69,20 @@ describe('generated media catalogue', () => {
         { ...generatedCatalog[1], id: generatedCatalog[0]?.id },
       ]),
     ).toThrow(/repeats id/);
+    expect(() => createCatalogue([{ ...generatedCatalog[0], available: 2 }])).toThrow(
+      /invalid binary available/,
+    );
+  });
+
+  it('normalizes the three binary catalogue controls', () => {
+    const [video] = createCatalogue([
+      { ...generatedCatalog[0], featured: 1, priority: 1, available: 0 },
+    ]);
+    expect(video).toMatchObject({
+      featured: true,
+      priority: true,
+      available: false,
+      processingStatus: 'unavailable',
+    });
   });
 });

@@ -3,6 +3,7 @@ import generatedCatalog from '../../../data/media_catalog.json';
 import {
   DEFAULT_MOVIES_API_URL,
   catalogueRequestUrl,
+  featuredCatalogue,
   loadCatalogue,
   moviesApiRequestUrl,
 } from './catalogue';
@@ -24,6 +25,9 @@ const apiMovies = [
     poster_url: 'https://images.example/second.png',
     stream_video_id: 'https://media.example/second.mp4',
     created_at: '2026-08-28T10:00:00.000Z',
+    featured: 1,
+    priority: 0,
+    available: 1,
   },
   {
     id: '10',
@@ -34,11 +38,14 @@ const apiMovies = [
     poster_url: 'https://images.example/first.png',
     stream_video_id: 'https://media.example/first.mp4',
     created_at: '2026-08-27T10:00:00.000Z',
+    featured: 1,
+    priority: 1,
+    available: 0,
   },
 ];
 
 describe('runtime catalogue loading and media resolution', () => {
-  it('loads and normalizes the API catalogue while preserving API order', async () => {
+  it('loads API flags and puts priority titles first in the catalogue and category', async () => {
     const fetcher = vi.fn(async () => new Response(JSON.stringify(apiMovies))) as typeof fetch;
     const loaded = await loadCatalogue(
       fetcher,
@@ -50,13 +57,20 @@ describe('runtime catalogue loading and media resolution', () => {
       cache: 'no-store',
     });
     expect(loaded.source).toBe('api');
-    expect(loaded.catalogue.map((video) => video.catalogueId)).toEqual([20, 10]);
-    expect(loaded.collections[0]?.videoIds).toEqual(['20', '10']);
+    expect(loaded.catalogue.map((video) => video.catalogueId)).toEqual([10, 20]);
+    expect(loaded.collections[0]?.videoIds).toEqual(['10', '20']);
     expect(loaded.catalogue[0]).toMatchObject({
-      posterUrl: apiMovies[0]?.poster_url,
-      streamVideoId: apiMovies[0]?.stream_video_id,
-      addedDate: apiMovies[0]?.created_at,
+      posterUrl: apiMovies[1]?.poster_url,
+      streamVideoId: apiMovies[1]?.stream_video_id,
+      addedDate: apiMovies[1]?.created_at,
+      featured: true,
+      priority: true,
+      available: false,
+      processingStatus: 'unavailable',
     });
+    expect(featuredCatalogue(loaded.catalogue).map((video) => video.catalogueId)).toEqual([
+      10, 20,
+    ]);
   });
 
   it('falls back to the generated local catalogue when the API request fails', async () => {

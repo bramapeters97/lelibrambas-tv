@@ -13,6 +13,7 @@ import {
 } from '@lelibrambas/shared';
 import type { Collection, PlaybackProgress, Profile } from '@lelibrambas/types';
 import {
+  featuredCatalogue,
   loadCatalogue,
   profiles,
   type CatalogueVideoRecord,
@@ -42,6 +43,16 @@ export const DETAILS_PREVIEW_DELAY_MS = 1000;
 export const HOME_PREVIEW_START_SECONDS = 40;
 export const DETAILS_PREVIEW_START_SECONDS = 120;
 const MIN_PROGRESS_DURATION_SECONDS = 1;
+const RELATED_VIDEO_ORDER_SEED = Math.random();
+
+function relatedVideoOrder(currentId: string, candidateId: string): number {
+  let hash = 2_166_136_261;
+  for (const character of `${RELATED_VIDEO_ORDER_SEED}:${currentId}:${candidateId}`) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16_777_619);
+  }
+  return hash >>> 0;
+}
 
 type TransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { finished: Promise<void> };
@@ -656,10 +667,7 @@ function Home({
   const saved = progressFor(profile, hero);
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
   const ambientPreview = useAmbientPreviewState(heroAvailability.playable);
-  const trendingIds = [22, 23, 7, 40];
-  const trending = trendingIds
-    .map((id) => catalogue.find((item) => item.catalogueId === id))
-    .filter((item): item is CatalogueVideoRecord => Boolean(item));
+  const trending = featuredCatalogue(catalogue);
   const recentlyWatched = useMemo(
     () => recentlyWatchedFor(profile, catalogue),
     [catalogue, profile],
@@ -854,21 +862,43 @@ function Home({
 }
 
 function Details({
+  catalogue,
   video,
   profile,
   onBack,
   onPlay,
+  onSelectRelated,
 }: {
+  catalogue: readonly CatalogueVideoRecord[];
   video: CatalogueVideoRecord;
   profile: Profile;
   onBack: () => void;
   onPlay: (video: CatalogueVideoRecord) => void;
+  onSelectRelated: (video: CatalogueVideoRecord) => void;
 }) {
   const [saved, setSaved] = useState(() => progressFor(profile, video));
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
   const duration = knownDuration(video);
   const availability = playbackAvailability(video);
   const ambientPreview = useAmbientPreviewState(availability.playable, DETAILS_PREVIEW_DELAY_MS);
+  const relatedVideos = useMemo(
+    () =>
+      catalogue
+        .filter(
+          (candidate) =>
+            candidate.id !== video.id &&
+            candidate.available &&
+            candidate.categories.some((category) => video.categories.includes(category)),
+        )
+        .map((candidate) => ({
+          candidate,
+          order: relatedVideoOrder(video.id, candidate.id),
+        }))
+        .sort((left, right) => left.order - right.order)
+        .slice(0, 4)
+        .map(({ candidate }) => candidate),
+    [catalogue, video],
+  );
   useEffect(() => setSaved(progressFor(profile, video)), [profile, video]);
   const savePosition = (seconds: number, completed: boolean) => {
     const progress = {
@@ -999,6 +1029,25 @@ function Details({
           <span>More from {video.year ?? 'this era'}</span>
           <span>{video.tags.slice(0, 3).join(' - ') || 'No tags yet'}</span>
         </div>
+        {relatedVideos.length > 0 && (
+          <div className="mobile-related-videos" aria-label="Related videos">
+            {relatedVideos.map((related) => (
+              <button
+                key={related.id}
+                type="button"
+                onClick={() => onSelectRelated(related)}
+                aria-label={`Open ${related.title}`}
+              >
+                <img
+                  src={resolvePosterUrl(related.posterUrl)}
+                  alt=""
+                  loading="lazy"
+                  onError={(event) => applyPosterFallback(event.currentTarget)}
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );
@@ -1790,6 +1839,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
   if (screen === 'details')
     return renderScreen(
       <Details
+        catalogue={catalogue}
         video={video}
         profile={profile}
         onBack={back}
@@ -1797,6 +1847,7 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
           setVideo(next);
           go('player');
         }}
+        onSelectRelated={setVideo}
       />,
     );
   if (screen === 'player')
