@@ -10,7 +10,7 @@ export interface MediaCatalogItem {
   poster_url: string;
   stream_video_id: string;
   featured: 0 | 1;
-  priority: 0 | 1 | 2;
+  priority: -1 | 0 | 1 | 2;
   available: 0 | 1;
 }
 
@@ -19,7 +19,7 @@ export interface CatalogueVideoRecord extends Omit<VideoRecord, 'durationSeconds
   posterUrl: string;
   streamVideoId: string;
   durationSeconds: number | null;
-  priority: 0 | 1 | 2;
+  priority: -1 | 0 | 1 | 2;
   available: boolean;
 }
 
@@ -83,10 +83,10 @@ function binaryValue(
   return value;
 }
 
-function priorityValue(record: Record<string, unknown>, index: number): 0 | 1 | 2 {
+function priorityValue(record: Record<string, unknown>, index: number): -1 | 0 | 1 | 2 {
   const value = record.priority;
   if (value === undefined) return 0;
-  if (value !== 0 && value !== 1 && value !== 2) {
+  if (value !== -1 && value !== 0 && value !== 1 && value !== 2) {
     throw new Error(`Catalogue item ${index + 1} has an invalid priority.`);
   }
   return value;

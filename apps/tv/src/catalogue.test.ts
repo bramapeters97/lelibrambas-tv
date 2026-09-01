@@ -44,7 +44,24 @@ const apiMovies = [
   },
 ];
 
+const priorityMovies = [
+  { ...apiMovies[0], id: '1', title: 'Ordinary', priority: 0 },
+  { ...apiMovies[0], id: '2', title: 'Coming soon', priority: -1 },
+  { ...apiMovies[0], id: '3', title: 'Priority', priority: 1 },
+  { ...apiMovies[0], id: '4', title: 'Top priority', priority: 2 },
+];
+
 describe('runtime catalogue loading and media resolution', () => {
+  it('orders priority 2 first and unreleased priority -1 last', async () => {
+    const fetcher = vi.fn(async () => new Response(JSON.stringify(priorityMovies))) as typeof fetch;
+    const loaded = await loadCatalogue(
+      fetcher,
+      'https://example.test/',
+      'https://api.example.test/movies',
+    );
+    expect(loaded.catalogue.map((video) => video.priority)).toEqual([2, 1, 0, -1]);
+  });
+
   it('loads API flags and puts priority titles first in the catalogue and category', async () => {
     const fetcher = vi.fn(async () => new Response(JSON.stringify(apiMovies))) as typeof fetch;
     const loaded = await loadCatalogue(

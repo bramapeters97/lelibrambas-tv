@@ -74,7 +74,7 @@ describe('generated media catalogue', () => {
     );
   });
 
-  it('normalizes binary catalogue controls and the three-level priority rank', () => {
+  it('normalizes binary catalogue controls and the four-level priority rank', () => {
     const [video] = createCatalogue([
       { ...generatedCatalog[0], featured: 1, priority: 2, available: 0 },
     ]);
@@ -87,5 +87,6 @@ describe('generated media catalogue', () => {
     expect(() => createCatalogue([{ ...generatedCatalog[0], priority: 3 }])).toThrow(
       /invalid priority/,
     );
+    expect(createCatalogue([{ ...generatedCatalog[0], priority: -1 }])[0]?.priority).toBe(-1);
   });
 });

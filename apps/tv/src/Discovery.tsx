@@ -394,6 +394,7 @@ export function ArtCard({
 }) {
   const isMobileViewport = useMobileWebViewport();
   const isAvailable = video.available;
+  const isComingSoon = video.priority === -1;
   const [a, b, c] = video.artwork.palette;
   const style = { '--art-a': a, '--art-b': b, '--art-c': c } as React.CSSProperties;
   const usesMobilePlay = isAvailable && isMobileViewport && mobilePrimaryPlay && Boolean(onPlay);
@@ -424,6 +425,7 @@ export function ArtCard({
       className={`art-card-shell${isAvailable ? '' : ' is-unavailable'}`}
       data-catalogue-id={video.catalogueId}
       data-available={isAvailable ? 'true' : 'false'}
+      data-coming-soon={isComingSoon ? 'true' : 'false'}
       data-mobile-primary-play={usesMobilePlay ? 'true' : 'false'}
       style={style}
     >
@@ -445,6 +447,7 @@ export function ArtCard({
             onError={(event) => applyPosterFallback(event.currentTarget)}
           />
           <b>{String(index + 1).padStart(2, '0')}</b>
+          {isComingSoon && <span className="coming-soon-overlay">COMING SOON</span>}
           {video.processingStatus !== 'ready' && (
             <em className={`status-${video.processingStatus}`}>
               {processingLabels[video.processingStatus]}
