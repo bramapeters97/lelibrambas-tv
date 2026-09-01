@@ -27,6 +27,19 @@ test.describe('mobile responsive viewer', () => {
     await clearViewerStorage(page);
   });
 
+  test('keeps the up-next panel visible in mobile landscape', async ({ page }) => {
+    await page.setViewportSize({ width: 844, height: 390 });
+    await page.goto('/?screen=player&playerState=up-next&capture=1');
+
+    const panel = page.locator('.up-next-panel');
+    await expect(panel).toBeVisible();
+    const bounds = await panel.boundingBox();
+    expect(bounds).not.toBeNull();
+    expect(bounds!.y).toBeGreaterThanOrEqual(0);
+    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(390);
+    await expect(panel.getByRole('button', { name: /back to details/i })).toBeVisible();
+  });
+
   test('keeps all three profile cards centered on one row without page overflow', async ({
     page,
   }) => {
