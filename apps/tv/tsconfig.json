@@ -16,6 +16,7 @@
     "index.ts",
     "App.tsx",
     "app.config.ts",
-    "vite.config.ts"
+    "vite.config.ts",
+    "webIconPlugin.ts"
   ]
 }
