@@ -46,9 +46,10 @@ corepack yarn artwork:sync
 catalogue into the Vite public directory. Cloudflare production builds do not require the ignored
 root `artwork/` directory: the browser loads the Movies API first, including its hosted artwork
 URLs, while the copied JSON remains a development/offline fallback.
-The Movies API may additionally return binary `featured`, `priority`, and `available` fields.
-The web viewer uses every featured record for Currently Trending, places priority records before
-ordinary records in both category shelves and the complete catalogue, and renders unavailable
+The Movies API may additionally return binary `featured` and `available` fields plus a `priority`
+rank of `0`, `1`, or `2`. The web viewer uses every featured record for Currently Trending and
+places priority `2` records before priority `1` records, followed by ordinary priority `0` records
+in both category shelves and the complete catalogue, and renders unavailable
 records as dimmed, non-interactive cards. A missing field retains the legacy fallback behavior.
 The generated runtime copies are ignored; the root artwork and `data/media_catalog.json` remain
 canonical. `content:prepare` runs automatically before the root and TV workspace development and

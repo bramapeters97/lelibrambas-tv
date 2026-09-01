@@ -10,7 +10,7 @@ export interface MediaCatalogItem {
   poster_url: string;
   stream_video_id: string;
   featured: 0 | 1;
-  priority: 0 | 1;
+  priority: 0 | 1 | 2;
   available: 0 | 1;
 }
 
@@ -19,7 +19,7 @@ export interface CatalogueVideoRecord extends Omit<VideoRecord, 'durationSeconds
   posterUrl: string;
   streamVideoId: string;
   durationSeconds: number | null;
-  priority: boolean;
+  priority: 0 | 1 | 2;
   available: boolean;
 }
 
@@ -71,7 +71,7 @@ function assertString(record: Record<string, unknown>, key: string, index: numbe
 
 function binaryValue(
   record: Record<string, unknown>,
-  key: 'featured' | 'priority' | 'available',
+  key: 'featured' | 'available',
   index: number,
   fallback: 0 | 1,
 ): 0 | 1 {
@@ -79,6 +79,15 @@ function binaryValue(
   if (value === undefined) return fallback;
   if (value !== 0 && value !== 1) {
     throw new Error(`Catalogue item ${index + 1} has an invalid binary ${key}.`);
+  }
+  return value;
+}
+
+function priorityValue(record: Record<string, unknown>, index: number): 0 | 1 | 2 {
+  const value = record.priority;
+  if (value === undefined) return 0;
+  if (value !== 0 && value !== 1 && value !== 2) {
+    throw new Error(`Catalogue item ${index + 1} has an invalid priority.`);
   }
   return value;
 }
@@ -121,7 +130,7 @@ export function parseMediaCatalog(input: unknown): MediaCatalogItem[] {
       poster_url: posterUrl,
       stream_video_id: streamVideoId,
       featured: binaryValue(record, 'featured', index, index === 0 ? 1 : 0),
-      priority: binaryValue(record, 'priority', index, 0),
+      priority: priorityValue(record, index),
       available: binaryValue(record, 'available', index, 1),
     };
   });
@@ -175,7 +184,7 @@ export function createCatalogue(input: unknown): CatalogueVideoRecord[] {
       },
       previewStartSeconds: 0,
       featured: item.featured === 1,
-      priority: item.priority === 1,
+      priority: item.priority,
       available: item.available === 1,
       visibility: 'family',
       processingStatus: item.available === 1 ? 'ready' : 'unavailable',

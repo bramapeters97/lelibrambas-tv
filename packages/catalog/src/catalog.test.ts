@@ -74,15 +74,18 @@ describe('generated media catalogue', () => {
     );
   });
 
-  it('normalizes the three binary catalogue controls', () => {
+  it('normalizes binary catalogue controls and the three-level priority rank', () => {
     const [video] = createCatalogue([
-      { ...generatedCatalog[0], featured: 1, priority: 1, available: 0 },
+      { ...generatedCatalog[0], featured: 1, priority: 2, available: 0 },
     ]);
     expect(video).toMatchObject({
       featured: true,
-      priority: true,
+      priority: 2,
       available: false,
       processingStatus: 'unavailable',
     });
+    expect(() => createCatalogue([{ ...generatedCatalog[0], priority: 3 }])).toThrow(
+      /invalid priority/,
+    );
   });
 });

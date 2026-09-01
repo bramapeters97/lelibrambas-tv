@@ -39,7 +39,7 @@ const apiMovies = [
     stream_video_id: 'https://media.example/first.mp4',
     created_at: '2026-08-27T10:00:00.000Z',
     featured: 1,
-    priority: 1,
+    priority: 2,
     available: 0,
   },
 ];
@@ -64,7 +64,7 @@ describe('runtime catalogue loading and media resolution', () => {
       streamVideoId: apiMovies[1]?.stream_video_id,
       addedDate: apiMovies[1]?.created_at,
       featured: true,
-      priority: true,
+      priority: 2,
       available: false,
       processingStatus: 'unavailable',
     });
