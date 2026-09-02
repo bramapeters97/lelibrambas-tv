@@ -191,6 +191,17 @@ test('profile to home to details passes the selected row exact stream URL to pla
   await expect(page.locator('.details-screen')).toBeVisible();
 });
 
+test('movie page back controls have useful destinations from direct web links', async ({ page }) => {
+  await page.goto('/?screen=player&capture=1&video=7');
+  await expect(page.locator('.player-screen')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back to details' }).click();
+  await expect(page.locator('.details-screen')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Back', exact: true }).click();
+  await expect(page.locator('[data-focus-id="hero-play"]')).toBeVisible();
+});
+
 test('arrow navigation exposes a visible deterministic focus state', async ({ page }) => {
   await page.getByRole('button', { name: /Bram & Edvin/i }).click();
   await expect(page.locator('[data-focus-id="hero-play"]')).toBeVisible();
