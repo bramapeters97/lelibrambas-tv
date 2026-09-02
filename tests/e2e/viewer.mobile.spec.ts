@@ -1,18 +1,4 @@
 import { expect, test } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-
-interface GeneratedMovie {
-  id: number;
-  title: string;
-  description: string;
-  category: string;
-  poster_url: string;
-  stream_video_id: string;
-}
-
-const generatedCatalog = JSON.parse(
-  readFileSync(new URL('../../data/media_catalog.json', import.meta.url), 'utf8'),
-) as GeneratedMovie[];
 
 async function clearViewerStorage(page: import('@playwright/test').Page) {
   await page.goto('/?screen=profiles&capture=1');
@@ -27,17 +13,18 @@ test.describe('mobile responsive viewer', () => {
     await clearViewerStorage(page);
   });
 
-  test('keeps the up-next panel visible in mobile landscape', async ({ page }) => {
+  test('keeps the Play Next recommendation visible in mobile landscape', async ({ page }) => {
     await page.setViewportSize({ width: 844, height: 390 });
-    await page.goto('/?screen=player&playerState=up-next&capture=1');
+    await page.goto('/?screen=player&playerState=up-next&capture=1&video=3');
 
-    const panel = page.locator('.up-next-panel');
+    const panel = page.locator('.play-next-recommendation');
     await expect(panel).toBeVisible();
     const bounds = await panel.boundingBox();
     expect(bounds).not.toBeNull();
     expect(bounds!.y).toBeGreaterThanOrEqual(0);
     expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(390);
-    await expect(panel.getByRole('button', { name: /back to details/i })).toBeVisible();
+    await expect(panel.getByRole('button', { name: /^play .* next$/i }).first()).toBeVisible();
+    await expect(panel.getByRole('button', { name: /dismiss play next/i })).toBeVisible();
   });
 
   test('keeps all three profile cards centered on one row without page overflow', async ({

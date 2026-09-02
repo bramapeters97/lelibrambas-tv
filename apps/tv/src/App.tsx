@@ -31,7 +31,9 @@ import {
   sectionIconForLabel,
   type BrowseScreenId,
 } from './Discovery';
+import { PlayNextRecommendation } from './PlayNextRecommendation';
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
+import { selectPlayNextVideo, shouldRevealPlayNext } from './playNext';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
 import heroLogoUrl from '../../../lelibrambas_productions.png';
 
@@ -224,30 +226,6 @@ export function mediaSeekTarget(
   return duration === null
     ? Math.max(0, current + deltaSeconds)
     : clampSeek(current, deltaSeconds, duration);
-}
-
-export function nextPlayableVideo(
-  current: CatalogueVideoRecord,
-  records: readonly CatalogueVideoRecord[],
-): CatalogueVideoRecord | null {
-  const playable = (candidate: CatalogueVideoRecord) =>
-    candidate.id !== current.id &&
-    playbackAvailability(candidate).playable &&
-    candidate.visibility !== 'hidden';
-  if (current.collectionId) {
-    const episodes = records
-      .filter((candidate) => candidate.collectionId === current.collectionId)
-      .sort((a, b) => (a.episodeNumber ?? 0) - (b.episodeNumber ?? 0));
-    const currentIndex = episodes.findIndex((candidate) => candidate.id === current.id);
-    const nextEpisode = episodes.slice(currentIndex + 1).find(playable);
-    if (nextEpisode) return nextEpisode;
-  }
-  const currentIndex = records.findIndex((candidate) => candidate.id === current.id);
-  return (
-    [...records.slice(currentIndex + 1), ...records.slice(0, Math.max(0, currentIndex))].find(
-      playable,
-    ) ?? null
-  );
 }
 
 export function knownDuration(video: CatalogueVideoRecord): number | null {
@@ -1166,13 +1144,28 @@ function Player({
       }),
     [video.streamVideoId],
   );
-  const nextVideo = useMemo(() => nextPlayableVideo(video, catalogue), [catalogue, video]);
+  const recommendationSession = useRef<{
+    currentVideoId: string;
+    recommendation: CatalogueVideoRecord | null;
+  } | null>(null);
+  if (recommendationSession.current?.currentVideoId !== video.id) {
+    recommendationSession.current = {
+      currentVideoId: video.id,
+      recommendation: selectPlayNextVideo(video, catalogue),
+    };
+  }
+  const nextVideo = recommendationSession.current.recommendation;
   const forcedPlayerState = new URLSearchParams(location.search).get('playerState');
   const [playing, setPlaying] = useState(false);
   const [current, setCurrent] = useState(initialSeconds);
   const [muted, setMuted] = useState(false);
   const [error, setError] = useState(forcedPlayerState === 'error');
   const [ended, setEnded] = useState(forcedPlayerState === 'up-next');
+  const [recommendationVisible, setRecommendationVisible] = useState(
+    forcedPlayerState === 'up-next' || forcedPlayerState === 'play-next',
+  );
+  const [recommendationDismissed, setRecommendationDismissed] = useState(false);
+  const recommendationDismissedRef = useRef(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [mediaDurationSeconds, setMediaDurationSeconds] = useState<number | null>(null);
@@ -1291,6 +1284,25 @@ function Player({
     if (persistenceTimer.current !== null) window.clearTimeout(persistenceTimer.current);
     persistenceTimer.current = window.setTimeout(() => flushProgress(), 900);
   }, [flushProgress]);
+
+  const revealRecommendation = useCallback(() => {
+    if (!nextVideo || recommendationDismissedRef.current) return;
+    setRecommendationVisible(true);
+  }, [nextVideo]);
+
+  const dismissRecommendation = useCallback(() => {
+    recommendationDismissedRef.current = true;
+    setRecommendationDismissed(true);
+    setRecommendationVisible(false);
+  }, []);
+
+  const playRecommendation = useCallback(() => {
+    if (!nextVideo) return;
+    videoRef.current?.pause();
+    flushProgress(ended);
+    setRecommendationVisible(false);
+    onPlayNext(nextVideo);
+  }, [ended, flushProgress, nextVideo, onPlayNext]);
 
   const setPresentationTime = useCallback(
     (seconds: number, duration = progressDurationSeconds) => {
@@ -1533,10 +1545,17 @@ function Player({
               setPresentationTime(seconds, presentationDuration);
               dirty.current = true;
               scheduleProgress();
+              if (
+                !event.currentTarget.paused &&
+                shouldRevealPlayNext(event.currentTarget.currentTime, event.currentTarget.duration)
+              ) {
+                revealRecommendation();
+              }
             }}
             onEnded={() => {
               setPlaying(false);
               setEnded(true);
+              revealRecommendation();
               setPresentationTime(progressDurationSeconds);
               dirty.current = true;
               flushProgress(true);
@@ -1594,49 +1613,21 @@ function Player({
           </div>
         </section>
       )}
-      {ended && !error && availability.playable && (
-        <section className="up-next-panel" aria-live="polite">
-          <p>{nextVideo ? 'UP NEXT' : 'PRESENTATION COMPLETE'}</p>
-          {nextVideo ? (
-            <>
-              <div className="up-next-art" style={paletteStyle(nextVideo)}>
-                <img
-                  src={resolvePosterUrl(nextVideo.posterUrl)}
-                  alt=""
-                  onError={(event) => applyPosterFallback(event.currentTarget)}
-                />
-                <span>{nextVideo.location ?? 'The family archive'}</span>
-              </div>
-              <h1>{nextVideo.title}</h1>
-              <div className="metadata">
-                <span>{nextVideo.year ?? 'Date unknown'}</span>
-                {durationLabel(nextVideo) && <span>{durationLabel(nextVideo)}</span>}
-                {nextVideo.aspectRatio !== 'unknown' && <span>{nextVideo.aspectRatio}</span>}
-              </div>
-              <div className="hero-actions">
-                <ActionButton
-                  id="play-next"
-                  onClick={() => {
-                    flushProgress(true);
-                    onPlayNext(nextVideo);
-                  }}
-                >
-                  ▶ Play next
-                </ActionButton>
-                <ActionButton id="up-next-back" tone="secondary" onClick={leave}>
-                  Back to details
-                </ActionButton>
-              </div>
-            </>
-          ) : (
-            <>
-              <h1>That’s all for this chapter.</h1>
-              <p>The memory has been marked as watched.</p>
-              <ActionButton id="up-next-back" onClick={leave}>
-                Back to details
-              </ActionButton>
-            </>
-          )}
+      {recommendationVisible && nextVideo && !error && availability.playable && (
+        <PlayNextRecommendation
+          video={nextVideo}
+          onPlay={playRecommendation}
+          onClose={dismissRecommendation}
+        />
+      )}
+      {ended && !error && availability.playable && (!nextVideo || recommendationDismissed) && (
+        <section className="up-next-panel presentation-complete" aria-live="polite">
+          <p>PRESENTATION COMPLETE</p>
+          <h1>That’s all for this chapter.</h1>
+          <p>The memory has been marked as watched.</p>
+          <ActionButton id="up-next-back" onClick={leave}>
+            Back to details
+          </ActionButton>
         </section>
       )}
       {!error &&

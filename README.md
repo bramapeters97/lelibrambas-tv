@@ -55,6 +55,10 @@ clickable so their detail pages still open. On viewports up to 800px wide, the w
 bottom navigation bar, a three-column All Movies grid, and requests fullscreen landscape playback
 when the mobile browser supports orientation locking. A missing API field retains the legacy
 fallback behavior.
+During web playback, one deduplicated, released, available movie from the same category is selected
+per playback session for the responsive Play Next card. The card uses the media element's timing
+events to appear at 15 seconds remaining and falls back to the playback-ended event when necessary;
+dismissing it suppresses it for the rest of that session.
 The generated runtime copies are ignored; the root artwork and `data/media_catalog.json` remain
 canonical. `content:prepare` runs automatically before the root and TV workspace development and
 production-build commands.

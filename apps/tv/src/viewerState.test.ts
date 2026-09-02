@@ -3,7 +3,6 @@ import { catalogue } from '@lelibrambas/catalog';
 import {
   mediaSeekTarget,
   mediaSecondsForPresentation,
-  nextPlayableVideo,
   playbackAvailability,
   presentationSecondsForMedia,
 } from './App';
@@ -35,7 +34,6 @@ describe('viewer playback state', () => {
       expect(playbackAvailability(video).description.length).toBeGreaterThan(20);
     }
   });
-
   it('plays an unavailable catalogue entry when its details provide a video source', () => {
     const video = {
       ...catalogue[0]!,
@@ -46,11 +44,5 @@ describe('viewer playback state', () => {
 
     expect(playbackAvailability(video).playable).toBe(false);
     expect(playbackAvailability(video, true).playable).toBe(true);
-  });
-
-  it('offers the next JSON record by numeric catalogue order', () => {
-    const next = nextPlayableVideo(catalogue[0]!, catalogue);
-    expect(next?.catalogueId).toBe(catalogue[1]?.catalogueId);
-    expect(next?.streamVideoId).toBe(catalogue[1]?.streamVideoId);
   });
 });
