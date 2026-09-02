@@ -63,6 +63,7 @@ type TransitionDocument = Document & {
 
 type LegacyFullscreenVideo = HTMLVideoElement & {
   webkitEnterFullscreen?: () => void;
+  webkitExitFullscreen?: () => void;
 };
 
 type LockableScreenOrientation = ScreenOrientation & {
@@ -94,14 +95,22 @@ function prepareMobileLandscapePlayback(): void {
     .catch(() => undefined);
 }
 
-function releaseMobileLandscapePlayback(): void {
-  if (!isMobileWebViewport()) return;
+function releaseMobileLandscapePlayback(videoElement?: HTMLVideoElement | null): void {
   try {
     const orientation = window.screen.orientation as LockableScreenOrientation | undefined;
     orientation?.unlock?.();
   } catch {
     // Some browsers unlock automatically while leaving fullscreen.
   }
+
+  // iPhone and embedded Apple web views present video in a native fullscreen player that is
+  // separate from the Fullscreen API. Dismiss it before rendering Play Next over the web player.
+  try {
+    (videoElement as LegacyFullscreenVideo | null | undefined)?.webkitExitFullscreen?.();
+  } catch {
+    // The native player may already have closed itself when playback ended.
+  }
+
   if (document.fullscreenElement) void document.exitFullscreen().catch(() => undefined);
 }
 
@@ -1426,7 +1435,7 @@ function Player({
   useEffect(
     () => () => {
       flushProgress();
-      releaseMobileLandscapePlayback();
+      releaseMobileLandscapePlayback(videoRef.current);
     },
     [flushProgress],
   );
@@ -1571,7 +1580,8 @@ function Player({
                 revealRecommendation();
               }
             }}
-            onEnded={() => {
+            onEnded={(event) => {
+              releaseMobileLandscapePlayback(event.currentTarget);
               setPlaying(false);
               setEnded(true);
               revealRecommendation();
