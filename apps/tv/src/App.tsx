@@ -1845,7 +1845,10 @@ function ViewerApp({ catalogue, collections }: LoadedCatalogue) {
 
   const back = useCallback(() => {
     const previous = history.current.pop();
-    const next = previous?.screen ?? 'home';
+    // A deep-linked player has no in-app entry in the navigation stack. Its back control
+    // must still return to its movie description instead of dropping the viewer at Home.
+    // Details pages, in turn, always have Home as a useful fallback destination.
+    const next = previous?.screen ?? (screenRef.current === 'player' ? 'details' : 'home');
     if (next === screenRef.current && !previous) return;
     screenRef.current = next;
     pendingFocusId.current = previous?.focusId ?? null;
