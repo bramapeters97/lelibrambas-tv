@@ -167,6 +167,25 @@ test('shows no recommendation when the category has no other available released 
   await expect(page.getByText('PRESENTATION COMPLETE')).toBeVisible();
 });
 
+test('closes the Apple native player when playback ends so Play Next is immediately visible', async ({
+  page,
+}) => {
+  const player = await openPlayer(page);
+  await player.evaluate((element) => {
+    const video = element as HTMLVideoElement & {
+      webkitExitFullscreen?: () => void;
+    };
+    video.dataset.nativePlayerClosed = 'false';
+    video.webkitExitFullscreen = () => {
+      video.dataset.nativePlayerClosed = 'true';
+    };
+    video.dispatchEvent(new Event('ended'));
+  });
+
+  await expect(player).toHaveAttribute('data-native-player-closed', 'true');
+  await expect(page.locator('.play-next-recommendation')).toBeVisible();
+});
+
 test('keeps the recommendation in view through resize, rotation, fullscreen, and reduced motion', async ({
   page,
 }) => {
