@@ -718,6 +718,11 @@ button:focus-visible,
   background: transparent;
   color: var(--secondary);
 }
+.share-status {
+  min-width: 7rem;
+  color: var(--secondary);
+  font-size: 0.78rem;
+}
 .progress-track {
   display: block;
   height: 3px;
