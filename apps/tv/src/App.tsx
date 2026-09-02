@@ -133,7 +133,10 @@ export type PlaybackAvailability = {
   description: string;
 };
 
-export function playbackAvailability(video: CatalogueVideoRecord): PlaybackAvailability {
+export function playbackAvailability(
+  video: CatalogueVideoRecord,
+  allowUnavailableSource = false,
+): PlaybackAvailability {
   if (video.processingStatus === 'processing') {
     return {
       playable: false,
@@ -151,6 +154,17 @@ export function playbackAvailability(video: CatalogueVideoRecord): PlaybackAvail
     };
   }
   if (video.processingStatus === 'unavailable') {
+    if (
+      allowUnavailableSource &&
+      resolvePlaybackSource(video.streamVideoId).kind !== 'unsupported'
+    ) {
+      return {
+        playable: true,
+        eyebrow: 'READY TO PLAY',
+        title: 'Ready to play',
+        description: 'Private viewing copy available.',
+      };
+    }
     return {
       playable: false,
       eyebrow: 'TEMPORARILY UNAVAILABLE',
@@ -948,6 +962,7 @@ function Details({
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
   const duration = knownDuration(video);
   const availability = playbackAvailability(video);
+  const detailPlayable = playbackAvailability(video, true).playable;
   const ambientPreview = useAmbientPreviewState(availability.playable, DETAILS_PREVIEW_DELAY_MS);
   const relatedVideos = useMemo(
     () =>
@@ -1035,10 +1050,10 @@ function Details({
         <div className="hero-actions">
           <ActionButton
             id="detail-play"
-            disabled={!availability.playable}
+            disabled={!detailPlayable}
             onClick={() => onPlay(video)}
           >
-            {availability.playable ? (resumeSeconds > 0 ? 'Resume' : 'Play') : availability.title}
+            {detailPlayable ? (resumeSeconds > 0 ? 'Resume' : 'Play') : availability.title}
           </ActionButton>
           <ActionButton
             id="detail-restart"
@@ -1142,7 +1157,7 @@ function Player({
   const saved = progressFor(profile, video);
   const initialSeconds = saved.completed ? 0 : saved.seconds;
   const currentRef = useRef(initialSeconds);
-  const availability = playbackAvailability(video);
+  const availability = playbackAvailability(video, true);
   const playbackSource = useMemo(
     () =>
       resolvePlaybackSource(video.streamVideoId, {

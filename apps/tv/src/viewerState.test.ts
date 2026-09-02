@@ -36,6 +36,18 @@ describe('viewer playback state', () => {
     }
   });
 
+  it('plays an unavailable catalogue entry when its details provide a video source', () => {
+    const video = {
+      ...catalogue[0]!,
+      available: false,
+      processingStatus: 'unavailable' as const,
+      streamVideoId: 'https://media.example/synthetic-memory.mp4',
+    };
+
+    expect(playbackAvailability(video).playable).toBe(false);
+    expect(playbackAvailability(video, true).playable).toBe(true);
+  });
+
   it('offers the next JSON record by numeric catalogue order', () => {
     const next = nextPlayableVideo(catalogue[0]!, catalogue);
     expect(next?.catalogueId).toBe(catalogue[1]?.catalogueId);
