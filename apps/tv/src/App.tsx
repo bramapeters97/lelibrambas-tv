@@ -34,6 +34,7 @@ import {
 import { PlayNextRecommendation } from './PlayNextRecommendation';
 import { applyPosterFallback, resolvePlaybackSource, resolvePosterUrl } from './media';
 import { selectPlayNextVideo, shouldRevealPlayNext } from './playNext';
+import { shareVideo } from './shareVideo';
 import launchJingleUrl from '../assets/lelibrambas-plus-magical-app-launch-universal-192k.mp3';
 import heroLogoUrl from '../../../lelibrambas_productions.png';
 
@@ -937,6 +938,7 @@ function Details({
   onSelectRelated: (video: CatalogueVideoRecord) => void;
 }) {
   const [saved, setSaved] = useState(() => progressFor(profile, video));
+  const [shareStatus, setShareStatus] = useState('');
   const resumeSeconds = saved.completed ? 0 : saved.seconds;
   const duration = knownDuration(video);
   const availability = playbackAvailability(video);
@@ -961,6 +963,17 @@ function Details({
     [catalogue, video],
   );
   useEffect(() => setSaved(progressFor(profile, video)), [profile, video]);
+  useEffect(() => setShareStatus(''), [video.id]);
+  const share = async () => {
+    setShareStatus('');
+    try {
+      const result = await shareVideo(video);
+      setShareStatus(result === 'shared' ? 'Video shared' : 'Link copied');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return;
+      setShareStatus('Unable to share video');
+    }
+  };
   const savePosition = (seconds: number, completed: boolean) => {
     const progress = {
       profileId: profile.id,
@@ -1044,6 +1057,9 @@ function Details({
           >
             Restart
           </ActionButton>
+          <ActionButton id="detail-share" tone="secondary" onClick={() => void share()}>
+            Share video
+          </ActionButton>
           <ActionButton
             id="detail-watched"
             tone="quiet"
@@ -1052,6 +1068,9 @@ function Details({
           >
             {saved.completed ? 'Watched' : 'Mark watched'}
           </ActionButton>
+          <span className="share-status" role="status" aria-live="polite">
+            {shareStatus}
+          </span>
         </div>
         {resumeSeconds > 0 && (
           <div className="resume-row">
