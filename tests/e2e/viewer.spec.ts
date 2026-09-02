@@ -224,6 +224,27 @@ test('search, watched state, and generated collections are functional', async ({
   await expect(page.getByRole('button', { name: /OTHERS/i })).toBeVisible();
 });
 
+test('mobile navigation centers its links without the cinema shortcut', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: /Eline & Luca/i }).click();
+
+  const navigation = page.getByRole('complementary', { name: 'Main navigation' });
+  const cinemaShortcut = navigation.getByRole('button', {
+    name: 'Replay entrance with logo and tune',
+  });
+  await expect(cinemaShortcut).toBeHidden();
+
+  const links = navigation.locator('.nav-button');
+  await expect(links).toHaveCount(4);
+  const linksCenterOffset = await links.evaluateAll((elements) => {
+    const bounds = elements.map((element) => element.getBoundingClientRect());
+    const left = Math.min(...bounds.map((bound) => bound.left));
+    const right = Math.max(...bounds.map((bound) => bound.right));
+    return (left + right) / 2 - window.innerWidth / 2;
+  });
+  expect(Math.abs(linksCenterOffset)).toBeLessThan(1);
+});
+
 test('intro, profiles, and poster-backed cinema hero preserve the viewer contract', async ({
   page,
 }) => {
