@@ -1105,6 +1105,9 @@ button:focus-visible,
   font-size: 1.35rem;
   backdrop-filter: blur(10px);
 }
+.round-back {
+  z-index: 3;
+}
 .details-copy {
   position: absolute;
   left: 4.6vw;

@@ -274,6 +274,17 @@ test.describe('mobile responsive viewer', () => {
     await related.first().click();
     await expect(page.locator('.details-title')).not.toHaveText(originalTitle ?? '');
   });
+
+  test('movie details back button returns to the previous screen', async ({ page }) => {
+    await page.getByRole('button', { name: /Bart & Astrid/i }).click();
+    await page.getByRole('button', { name: /More information/i }).click();
+    await expect(page.locator('.details-screen')).toBeVisible();
+
+    await page.getByRole('button', { name: 'Back', exact: true }).click();
+
+    await expect(page.locator('.details-screen')).toBeHidden();
+    await expect(page.locator('[data-focus-id="hero-play"]')).toBeVisible();
+  });
 });
 
 test('profile-isolated Recently watched is newest-first and carries saved progress', async ({
