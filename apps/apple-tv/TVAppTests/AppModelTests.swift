@@ -256,8 +256,8 @@ final class AppModelTests: XCTestCase {
     }
 
     func testPreviewPolicyWaitsOneSecondAndTargetsTwoMinutes() {
-        XCTAssertEqual(LBPreviewPolicy.delayNanoseconds, 1_000_000_000)
-        XCTAssertEqual(LBPreviewPolicy.delaySeconds, 1, accuracy: 0.000_001)
+        XCTAssertEqual(LBPreviewPolicy.delayNanoseconds, 3_000_000_000)
+        XCTAssertEqual(LBPreviewPolicy.delaySeconds, 3, accuracy: 0.000_001)
         XCTAssertEqual(LBPreviewPolicy.targetStartSeconds, 120, accuracy: 0.000_001)
     }
 

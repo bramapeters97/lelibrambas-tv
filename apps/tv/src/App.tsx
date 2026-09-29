@@ -42,7 +42,7 @@ type Screen = 'ident' | 'profiles' | 'loading' | 'details' | 'player' | BrowseSc
 
 export const PROFILE_LOADING_DELAY_MS = 3000;
 export const HERO_IDLE_DELAY_MS = 2000;
-export const DETAILS_PREVIEW_DELAY_MS = 1000;
+export const DETAILS_PREVIEW_DELAY_MS = 3000;
 export const HOME_PREVIEW_START_SECONDS = 40;
 export const DETAILS_PREVIEW_START_SECONDS = 120;
 const MIN_PROGRESS_DURATION_SECONDS = 1;
@@ -855,7 +855,7 @@ function Home({
                     durationSeconds: progress.durationSeconds,
                   }}
                 />
-              ))}
+                ))}
             </div>
           </section>
         )}
@@ -1119,8 +1119,10 @@ function Details({
           <span>{video.tags.slice(0, 3).join(' - ') || 'No tags yet'}</span>
         </div>
         {relatedVideos.length > 0 && (
-          <div className="mobile-related-videos" aria-label="Related videos">
-            {relatedVideos.map((related) => (
+          <section className="related-videos" aria-labelledby="related-videos-heading">
+            <h2 id="related-videos-heading">Related Movies</h2>
+            <div className="mobile-related-videos">
+              {relatedVideos.map((related) => (
               <button
                 key={related.id}
                 type="button"
@@ -1135,7 +1137,8 @@ function Details({
                 />
               </button>
             ))}
-          </div>
+            </div>
+          </section>
         )}
       </section>
     </main>

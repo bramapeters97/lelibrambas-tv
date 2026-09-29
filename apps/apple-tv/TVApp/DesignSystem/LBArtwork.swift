@@ -143,12 +143,14 @@ private struct LBRemoteArtwork<Fallback: View>: View {
 }
 
 struct LBStudioArtwork: View {
-    private static let imageCache = NSCache<NSString, UIImage>()
+    private static let artworkURL = URL(
+        string: "https://assets.lelibrambas.com/lelibrambas_studios.png"
+    )!
 
     var body: some View {
-        Group {
-            if let image = bundledImage {
-                Image(uiImage: image)
+        AsyncImage(url: Self.artworkURL) { phase in
+            if let image = phase.image {
+                image
                     .resizable()
                     .scaledToFill()
             } else {
@@ -157,17 +159,6 @@ struct LBStudioArtwork: View {
         }
         .clipped()
         .accessibilityHidden(true)
-    }
-
-    private var bundledImage: UIImage? {
-        guard let url = Bundle.main.url(forResource: "lelibrambas-studios", withExtension: "png") else {
-            return nil
-        }
-        let cacheKey = url.path as NSString
-        if let cached = Self.imageCache.object(forKey: cacheKey) { return cached }
-        guard let image = UIImage(contentsOfFile: url.path) else { return nil }
-        Self.imageCache.setObject(image, forKey: cacheKey)
-        return image
     }
 }
 

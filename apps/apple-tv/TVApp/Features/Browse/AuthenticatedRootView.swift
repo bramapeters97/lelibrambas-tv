@@ -120,6 +120,8 @@ struct BrowseRootView: View {
                 featured: LBContentSelection.hero(in: model.items),
                 items: model.items,
                 sections: model.sections,
+        profile: profile,
+        progressStore: progressStore,
                 startAtShelves: startsAtShelves,
                 focusScope: browseFocusScope,
                 prefersInitialFocus: path.isEmpty,
@@ -163,10 +165,12 @@ struct BrowseRootView: View {
                     progressStore: progressStore,
                     isPreparingPlayback: isPreparingPlayback,
                     focusScope: browseFocusScope,
-                    onPlay: preparePlayback
+          onPlay: preparePlayback,
+          onSelect: { path.append(.details($0.id)) }
                 )
             } else {
-                LBEmptyState(title: "Film not found", message: "This film is no longer in the available archive.")
+        LBEmptyState(
+          title: "Film not found", message: "This film is no longer in the available archive.")
             }
         }
     }

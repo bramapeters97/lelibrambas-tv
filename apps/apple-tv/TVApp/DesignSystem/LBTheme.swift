@@ -1,8 +1,8 @@
 import SwiftUI
 
 enum LBColor {
-    static let canvas = Color(red: 3 / 255, green: 5 / 255, blue: 11 / 255)
-    static let canvasRaised = Color(red: 7 / 255, green: 11 / 255, blue: 20 / 255)
+  static let canvas = Color.black
+  static let canvasRaised = Color.black
     static let surface = Color(red: 17 / 255, green: 28 / 255, blue: 51 / 255)
     static let surfaceRaised = Color(red: 23 / 255, green: 37 / 255, blue: 65 / 255)
     static let text = Color(red: 247 / 255, green: 249 / 255, blue: 254 / 255)
@@ -15,14 +15,7 @@ enum LBColor {
     static let rose = Color(red: 197 / 255, green: 109 / 255, blue: 114 / 255)
 
     static let background = LinearGradient(
-        stops: [
-            .init(color: canvasRaised, location: 0),
-            .init(color: Color(red: 4 / 255, green: 7 / 255, blue: 13 / 255), location: 0.38),
-            .init(color: canvas, location: 0.78),
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-    )
+    colors: [.black, .black], startPoint: .top, endPoint: .bottom)
 
     static let aurora = LinearGradient(
         colors: [cyan, indigo],
@@ -74,7 +67,8 @@ enum LBLayout {
     static let navigationIconInset: CGFloat = 12
     static let navigationItemHeight: CGFloat = 68
     static let navigationFocusedItemWidth: CGFloat = 216
-    static let navigationFocusedItemOffset: CGFloat = (navigationFocusedItemWidth - navigationWidth) / 2
+  static let navigationFocusedItemOffset: CGFloat =
+    (navigationFocusedItemWidth - navigationWidth) / 2
     static let navigationShellSafeAreaEdges: Edge.Set = [.top, .bottom, .leading]
     static let navigationDividerSafeAreaEdges: Edge.Set = .vertical
     static let contentMaxWidth: CGFloat = 1700
@@ -118,15 +112,7 @@ enum LBMotion {
 
 struct LBBackground: View {
     var body: some View {
-        ZStack {
             LBColor.background
-            RadialGradient(
-                colors: [Color(red: 32 / 255, green: 48 / 255, blue: 78 / 255).opacity(0.09), .clear],
-                center: UnitPoint(x: 0.82, y: 0),
-                startRadius: 20,
-                endRadius: 820
-            )
-        }
         .ignoresSafeArea()
     }
 }
@@ -167,7 +153,10 @@ struct LBLogo: View {
             .foregroundStyle(LBColor.navigationGold)
             .padding(size * 0.205)
         .frame(width: size, height: size)
-        .background(LBColor.surfaceRaised.opacity(0.001), in: RoundedRectangle(cornerRadius: size * 0.25, style: .continuous))
+      .background(
+        LBColor.surfaceRaised.opacity(0.001),
+        in: RoundedRectangle(cornerRadius: size * 0.25, style: .continuous)
+      )
         .shadow(color: LBColor.gold.opacity(0.38), radius: size * 0.2)
         .accessibilityHidden(true)
     }

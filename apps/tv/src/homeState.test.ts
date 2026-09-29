@@ -99,7 +99,7 @@ describe('home progress state', () => {
 
   it('keeps the ambient preview timing contract explicit', () => {
     expect(HERO_IDLE_DELAY_MS).toBe(2000);
-    expect(DETAILS_PREVIEW_DELAY_MS).toBe(1000);
+    expect(DETAILS_PREVIEW_DELAY_MS).toBe(3000);
     expect(HOME_PREVIEW_START_SECONDS).toBe(40);
     expect(DETAILS_PREVIEW_START_SECONDS).toBeGreaterThanOrEqual(120);
   });

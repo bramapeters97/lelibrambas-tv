@@ -172,9 +172,8 @@ struct LBHero: View {
     private var heroBackground: some View {
         ZStack {
             heroArtwork
-                .frame(width: 1420, height: 780)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
-                .offset(x: 28)
                 .saturation(0.88)
                 .brightness(-0.13)
                 .opacity(0.78)
@@ -319,8 +318,8 @@ struct LBHero: View {
     }
 }
 
-private extension String {
-    func leftPadded(to length: Int) -> String {
+extension String {
+  fileprivate func leftPadded(to length: Int) -> String {
         String(repeating: "0", count: max(0, length - count)) + self
     }
 }

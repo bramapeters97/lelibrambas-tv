@@ -2,8 +2,8 @@ import LeliBrambasCore
 import SwiftUI
 
 enum LBPreviewPolicy {
-    static let delayNanoseconds: UInt64 = 1_000_000_000
-    static let delaySeconds: Double = 1
+  static let delayNanoseconds: UInt64 = 3_000_000_000
+  static let delaySeconds: Double = 3
     static let targetStartSeconds: Double = 120
 
     static func startSeconds(for durationSeconds: Double?) -> Double {
@@ -18,6 +18,7 @@ struct MediaDetailView: View {
     private enum FocusTarget: Hashable {
         case play
         case restart
+    case watched
         case back
     }
 
@@ -31,13 +32,17 @@ struct MediaDetailView: View {
     let isPreparingPlayback: Bool
     let focusScope: Namespace.ID
     let onPlay: (MediaItem, Double) -> Void
+  let onSelect: (MediaItem) -> Void
 
     @State private var previewURL: URL?
     @State private var previewIsPlaying = false
     @State private var previewRequestGeneration = 0
+  @State private var relatedSeed = UUID()
     @FocusState private var focusedAction: FocusTarget?
 
     var body: some View {
+    ScrollView(.vertical, showsIndicators: false) {
+      VStack(alignment: .leading, spacing: 36) {
         ZStack(alignment: .topLeading) {
             backdrop
                 .saturation(0.9)
@@ -82,17 +87,23 @@ struct MediaDetailView: View {
                     .frame(maxWidth: 850, alignment: .leading)
                     .accessibilityIdentifier("details-title")
 
-                Text([item.category, item.year.map(String.init)].compactMap { $0 }.joined(separator: " - "))
+            Text(
+              [item.category, item.year.map(String.init)].compactMap { $0 }.joined(separator: " - ")
+            )
                     .font(LBTypography.title(size: 23, weight: .semibold))
                     .foregroundStyle(LBColor.gold)
                     .padding(.top, 13)
 
                 LBMetadataRow(
-                    values: [item.year.map(String.init), item.category, "16:9"].compactMap { $0 }
+              values: [item.year.map(String.init), item.category, formattedDuration, "16:9"]
+                .compactMap { $0 }
                 )
                 .padding(.top, 17)
 
-                Text(item.description.isEmpty ? "No description is available for this film." : item.description)
+            Text(
+              item.description.isEmpty
+                ? "No description is available for this film." : item.description
+            )
                     .font(LBTypography.body(size: 23))
                     .foregroundStyle(LBColor.textSecondary)
                     .lineSpacing(7)
@@ -149,6 +160,11 @@ struct MediaDetailView: View {
                         .focused($focusedAction, equals: .restart)
                         .accessibilityIdentifier("details-restart")
                     }
+              LBSecondaryButton(action: markWatched) {
+                Label(isWatched ? "Watched" : "Mark watched", systemImage: "checkmark")
+              }
+              .focused($focusedAction, equals: .watched)
+              .accessibilityIdentifier("details-watched")
                 }
                 .padding(.top, 27)
             }
@@ -156,6 +172,12 @@ struct MediaDetailView: View {
             .padding(.bottom, 76)
             .frame(maxWidth: 900, maxHeight: .infinity, alignment: .leading)
         }
+        .frame(height: 900)
+        relatedMovies
+          .padding(.horizontal, LBSpacing.safeHorizontal)
+        Color.clear.frame(height: LBSpacing.safeVertical)
+      }
+    }
         .background(LBColor.canvas)
         .ignoresSafeArea()
         .focusSection()
@@ -227,6 +249,61 @@ struct MediaDetailView: View {
         return progressStore.resumableProgress(profileID: profile.id, movieID: item.id)
     }
 
+  private var savedProgress: PlaybackProgress? {
+    _ = progressStore.revision
+    return progressStore.progress(profileID: profile.id, movieID: item.id)
+  }
+
+  private var knownDuration: Double? {
+    item.durationSeconds ?? savedProgress?.durationSeconds
+  }
+
+  private var formattedDuration: String? {
+    guard let seconds = knownDuration, seconds.isFinite, seconds > 0 else { return nil }
+    let minutes = Int((seconds / 60).rounded())
+    return String(format: "%02d:%02d", minutes / 60, minutes % 60)
+  }
+
+  private var isWatched: Bool { savedProgress?.completed == true }
+
+  private func markWatched() {
+    guard let duration = knownDuration else { return }
+    progressStore.save(
+      profileID: profile.id,
+      movieID: item.id,
+      seconds: duration,
+      durationSeconds: duration,
+      completed: true
+    )
+  }
+
+  private var relatedItems: [MediaItem] {
+    model.items
+      .filter { $0.id != item.id && $0.category == item.category }
+      .sorted { relatedOrder($0.id) < relatedOrder($1.id) }
+      .prefix(4)
+      .map { $0 }
+  }
+
+  private func relatedOrder(_ id: Int) -> Int {
+    var hasher = Hasher()
+    hasher.combine(relatedSeed)
+    hasher.combine(id)
+    return hasher.finalize()
+  }
+
+  private var relatedMovies: some View {
+    VStack(alignment: .leading, spacing: 15) {
+      LBSectionTitle(title: "Related Movies")
+      HStack(alignment: .top, spacing: LBSpacing.shelfGap) {
+        ForEach(Array(relatedItems.enumerated()), id: \.element.id) { index, related in
+          LBMediaCard(item: related, index: index) { onSelect(related) }
+        }
+      }
+      .focusSection()
+    }
+  }
+
     private func progressFraction(_ progress: PlaybackProgress) -> CGFloat {
         guard progress.durationSeconds > 0 else { return 0 }
         return CGFloat(min(1, max(0, progress.seconds / progress.durationSeconds)))
@@ -252,7 +329,10 @@ private struct DetailBackButton: View {
                 .foregroundStyle(LBColor.text)
                 .frame(width: 56, height: 56)
                 .background(LBColor.canvas.opacity(0.52), in: Circle())
-                .overlay(Circle().stroke(isFocused ? LBColor.text : LBColor.text.opacity(0.14), lineWidth: isFocused ? 3 : 1))
+        .overlay(
+          Circle().stroke(
+            isFocused ? LBColor.text : LBColor.text.opacity(0.14), lineWidth: isFocused ? 3 : 1)
+        )
                 .scaleEffect(isFocused ? 1.06 : 1)
                 .shadow(color: isFocused ? LBColor.gold.opacity(0.25) : .black.opacity(0.25), radius: 16)
                 .animation(reduceMotion ? nil : LBMotion.standard, value: isFocused)

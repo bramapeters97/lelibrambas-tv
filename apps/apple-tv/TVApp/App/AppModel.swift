@@ -129,7 +129,8 @@ enum LBPlaybackProgressPolicy {
         guard seconds.isFinite,
               durationSeconds.isFinite,
               durationSeconds > 0,
-              seconds >= minimumResumeSeconds else {
+      seconds >= minimumResumeSeconds
+    else {
             return false
         }
         return seconds / durationSeconds < completionFraction
@@ -177,7 +178,8 @@ final class PlaybackProgressStore: ObservableObject {
         guard let data = defaults.data(forKey: key(profileID: profileID, movieID: movieID)),
               let progress = try? decoder.decode(PlaybackProgress.self, from: data),
               progress.profileID == profileID,
-              progress.movieID == movieID else {
+      progress.movieID == movieID
+    else {
             return nil
         }
         return progress
@@ -189,11 +191,23 @@ final class PlaybackProgressStore: ObservableObject {
               LBPlaybackProgressPolicy.canResume(
                   seconds: progress.seconds,
                   durationSeconds: progress.durationSeconds
-              ) else {
+      )
+    else {
             return nil
         }
         return progress
     }
+
+  func recentlyWatched(profileID: String, items: [MediaItem]) -> [MediaItem] {
+    items.compactMap { item -> (MediaItem, Date)? in
+      guard let progress = progress(profileID: profileID, movieID: item.id),
+        progress.seconds > 0 || progress.completed
+      else { return nil }
+      return (item, progress.updatedAt)
+    }
+    .sorted { $0.1 > $1.1 }
+    .map(\.0)
+  }
 
     func save(
         profileID: String,
@@ -214,7 +228,8 @@ final class PlaybackProgressStore: ObservableObject {
             seconds: normalizedSeconds,
             durationSeconds: durationSeconds,
             updatedAt: updatedAt,
-            completed: completed ?? LBPlaybackProgressPolicy.isComplete(
+      completed: completed
+        ?? LBPlaybackProgressPolicy.isComplete(
                 seconds: normalizedSeconds,
                 durationSeconds: durationSeconds
             )

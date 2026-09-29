@@ -14,6 +14,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     public let sortOrder: Int
     public let featured: Bool
     public let previewStartSeconds: Double
+  public let durationSeconds: Double?
 
     public init(
         id: Int,
@@ -28,7 +29,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         createdAt: String? = nil,
         sortOrder: Int? = nil,
         featured: Bool = false,
-        previewStartSeconds: Double = 0
+    previewStartSeconds: Double = 0,
+    durationSeconds: Double? = nil
     ) {
         self.id = id
         self.title = title
@@ -43,6 +45,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         self.sortOrder = sortOrder ?? id
         self.featured = featured
         self.previewStartSeconds = max(0, previewStartSeconds)
+    self.durationSeconds = durationSeconds
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -59,6 +62,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         case sortOrder = "sort_order"
         case featured
         case previewStartSeconds = "preview_start_seconds"
+    case durationSeconds = "duration_seconds"
     }
 
     public init(from decoder: Decoder) throws {
@@ -66,7 +70,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         if let integerID = try? values.decode(Int.self, forKey: .id) {
             id = integerID
         } else if let stringID = try? values.decode(String.self, forKey: .id),
-                  let integerID = Int(stringID) {
+      let integerID = Int(stringID)
+    {
             id = integerID
         } else {
             throw DecodingError.dataCorruptedError(
@@ -90,6 +95,7 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
             0,
             try values.decodeIfPresent(Double.self, forKey: .previewStartSeconds) ?? 0
         )
+    durationSeconds = try values.decodeIfPresent(Double.self, forKey: .durationSeconds)
     }
 }
 
