@@ -13,8 +13,8 @@ struct HomeView: View {
     let featured: MediaItem?
     let items: [MediaItem]
     let sections: [CatalogSection]
-  let profile: ViewerProfile
-  @ObservedObject var progressStore: PlaybackProgressStore
+    let profile: ViewerProfile
+    @ObservedObject var progressStore: PlaybackProgressStore
     var startAtShelves = false
     let focusScope: Namespace.ID
     var prefersInitialFocus = true
@@ -51,16 +51,20 @@ struct HomeView: View {
                     if !sections.isEmpty {
                         homeCollections
                     }
-          if let recentlyWatchedSection {
-            LBMediaShelf(section: recentlyWatchedSection, onSelect: onSelect)
-              .id("shelf-recently-watched")
-          }
+                    if let recentlyWatchedSection {
+                        LBMediaShelf(section: recentlyWatchedSection, onSelect: onSelect)
+                            .id("shelf-recently-watched")
+                    }
                     if let trendingSection {
                         LBMediaShelf(section: trendingSection, onSelect: onSelect)
                             .id("shelf-currently-trending")
                     }
+                    ForEach(sections) { section in
+                        LBMediaShelf(section: section, onSelect: onSelect)
+                            .id("shelf-\(section.id)")
+                    }
                     if let allMoviesSection {
-            allMoviesGrid(allMoviesSection)
+                        allMoviesGrid(allMoviesSection)
                             .id("shelf-all-movies")
                     }
                     Color.clear.frame(height: LBSpacing.safeVertical)
@@ -103,17 +107,17 @@ struct HomeView: View {
     }
 
     private var trendingSection: CatalogSection? {
-    let items = items.filter(\.featured)
+        let items = items.filter(\.featured)
         guard !items.isEmpty else { return nil }
         return CatalogSection(id: "currently-trending", title: "Currently Trending", items: items)
     }
 
-  private var recentlyWatchedSection: CatalogSection? {
-    _ = progressStore.revision
-    let recent = progressStore.recentlyWatched(profileID: profile.id, items: items)
-    guard !recent.isEmpty else { return nil }
-    return CatalogSection(id: "recently-watched", title: "Recently Watched", items: recent)
-  }
+    private var recentlyWatchedSection: CatalogSection? {
+        _ = progressStore.revision
+        let recent = progressStore.recentlyWatched(profileID: profile.id, items: items)
+        guard !recent.isEmpty else { return nil }
+        return CatalogSection(id: "recently-watched", title: "Recently Watched", items: recent)
+    }
 
     private var allMoviesSection: CatalogSection? {
         LBHomeContent.allMovies(from: items)
@@ -145,22 +149,22 @@ struct HomeView: View {
         .accessibilityIdentifier("home-collections")
     }
 
-  private func allMoviesGrid(_ section: CatalogSection) -> some View {
-    let columns = Array(
-      repeating: GridItem(.flexible(), spacing: LBSpacing.shelfGap, alignment: .top),
-      count: 5
-    )
-    return VStack(alignment: .leading, spacing: 15) {
-      LBSectionTitle(title: section.title, countText: "\(section.items.count) titles")
-      LazyVGrid(columns: columns, alignment: .leading, spacing: 36) {
-        ForEach(Array(section.items.enumerated()), id: \.element.id) { index, item in
-          LBMediaCard(item: item, width: 300, index: index) { onSelect(item) }
+    private func allMoviesGrid(_ section: CatalogSection) -> some View {
+        let columns = Array(
+            repeating: GridItem(.flexible(), spacing: LBSpacing.shelfGap, alignment: .top),
+            count: 5
+        )
+        return VStack(alignment: .leading, spacing: 15) {
+            LBSectionTitle(title: section.title, countText: "\(section.items.count) titles")
+            LazyVGrid(columns: columns, alignment: .leading, spacing: 36) {
+                ForEach(Array(section.items.enumerated()), id: \.element.id) { index, item in
+                    LBMediaCard(item: item, width: 300, index: index) { onSelect(item) }
+                }
+            }
+            .focusSection()
         }
-      }
-      .focusSection()
+        .padding(.horizontal, LBSpacing.safeHorizontal)
     }
-    .padding(.horizontal, LBSpacing.safeHorizontal)
-  }
 }
 
 enum LBHomeContent {
