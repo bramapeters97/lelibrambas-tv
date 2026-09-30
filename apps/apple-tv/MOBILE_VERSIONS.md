@@ -78,7 +78,12 @@ The production sorting implementation is unchanged.
 ## Validation and acceptance
 
 The existing native CI workflow now has three iOS matrix jobs. Each saves the
-generated project, logs and test results. The TV build/test job is retained.
+generated project, logs and test results. A separate compatibility job tests the
+shared package and builds/tests the committed TV project without regenerating it.
+The original TV build/test job is retained. Its project-generation check currently
+reports pre-existing drift between project.yml and the committed project's signing
+settings, version and file identifiers. Resolving that drift requires reconciling
+the existing release configuration; the mobile work does not overwrite it.
 This Windows host cannot run Xcode or Simulator locally. Configured checks
 are not evidence that a native build passed; consult the actual CI results.
 

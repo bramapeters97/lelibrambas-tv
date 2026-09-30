@@ -60,7 +60,6 @@ struct MobileMovieCard: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(MobilePressedStyle())
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel([item.title, item.year.map(String.init),
                              MobileCatalogue.availability(item)].compactMap { $0 }.joined(separator: ", "))
         .accessibilityHint("Open film details")

@@ -15,7 +15,9 @@ final class MobileFlowTests: XCTestCase {
         XCTAssertTrue(search.waitForExistence(timeout: 5))
         search.tap()
         search.typeText("North Sea")
-        let result = app.buttons["movie-2"]
+        // Query the native NavigationLink button; SwiftUI may attach the test
+        // identifier to its enclosing accessibility container.
+        let result = app.buttons["North Sea Summer, 2004"]
         XCTAssertTrue(result.waitForExistence(timeout: 5))
         result.tap()
         XCTAssertTrue(app.staticTexts["details-title"].waitForExistence(timeout: 5))

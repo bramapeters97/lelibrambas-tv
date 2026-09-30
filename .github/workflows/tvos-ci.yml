@@ -19,6 +19,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  tvos-compatibility:
+    name: Shared core and existing tvOS compatibility
+    runs-on: macos-26
+    timeout-minutes: 25
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/apple-tv
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select stable Xcode
+        run: bash Scripts/select-stable-xcode.sh
+      - name: Test shared core
+        run: swift test --package-path Packages/LeliBrambasCore
+      - name: Test the committed tvOS project without changing signing settings
+        run: |
+          mkdir -p BuildArtifacts/Compatibility
+          destination="$(bash Scripts/resolve-simulator.sh)"
+          xcodebuild -project LeliBrambasTV.xcodeproj -scheme LeliBrambasTV \
+            -destination "$destination" -derivedDataPath BuildArtifacts/Compatibility/DerivedData \
+            -resultBundlePath BuildArtifacts/Compatibility/tvos.xcresult \
+            -only-testing:LeliBrambasTVTests CODE_SIGNING_ALLOWED=NO test \
+            | tee BuildArtifacts/Compatibility/tvos.log
+      - name: Save compatibility results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tvos-compatibility-${{ github.run_id }}
+          path: |
+            apps/apple-tv/BuildArtifacts/Compatibility/*.log
+            apps/apple-tv/BuildArtifacts/Compatibility/*.xcresult/
+          retention-days: 7
+
   ios-versions:
     name: iPhone ${{ matrix.scheme }}
     runs-on: macos-26

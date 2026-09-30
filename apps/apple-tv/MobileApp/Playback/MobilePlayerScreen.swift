@@ -70,7 +70,8 @@ private struct MobilePlayerContent: View {
         .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { notification in
             guard let ended = notification.object as? AVPlayerItem,
                   ended === controller.player.currentItem else { return }
-            // PlayerController receives the same event first and persists completion.
+            // Persist final progress before tearing down the presentation.
+            controller.stop()
             onDismiss()
         }
         .accessibilityIdentifier("player-screen")
