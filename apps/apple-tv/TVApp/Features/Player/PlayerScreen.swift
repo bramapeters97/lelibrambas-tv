@@ -4,6 +4,7 @@ import Combine
 import SwiftUI
 import UIKit
 
+#if os(tvOS)
 struct PlayerScreen: View {
     private enum ErrorAction: Hashable {
         case retry
@@ -88,6 +89,8 @@ struct PlayerScreen: View {
         .accessibilityIdentifier("player-screen")
     }
 }
+
+#endif
 
 @MainActor
 final class PlayerController: ObservableObject {
@@ -336,6 +339,7 @@ final class PlayerController: ObservableObject {
     }
 }
 
+#if os(tvOS)
 private struct NativePlayerView: UIViewControllerRepresentable {
     @ObservedObject var controller: PlayerController
 
@@ -373,3 +377,5 @@ private struct NativePlayerView: UIViewControllerRepresentable {
         uiViewController.player = nil
     }
 }
+
+#endif

@@ -50,7 +50,16 @@ final class MediaItemTests: XCTestCase {
         let sections = CatalogOrganizer.sectionsPreservingItemOrder(from: items)
 
         XCTAssertEqual(sections.map(\.title), ["JEUGDFILMS", "VAKANTIEFILMS", "EVENTS", "SCI-FI & FANTASY"])
-        XCTAssertEqual(sections.flatMap(\.items).map(\.id), [102, 104, 101, 103])
+        // Each fixture has a different category, so flattening follows the category order above.
+        XCTAssertEqual(sections.flatMap(\.items).map(\.id), [101, 102, 103, 104])
+    }
+
+    func testSourceOrderIsPreservedWithinOneCategory() {
+        let items = [makeItem(id: 9, sortOrder: 30, featured: false),
+                     makeItem(id: 2, sortOrder: 10, featured: false),
+                     makeItem(id: 7, sortOrder: 20, featured: false)]
+        XCTAssertEqual(CatalogOrganizer.sectionsPreservingItemOrder(from: items).flatMap(\.items).map(\.id), [9, 2, 7])
+        XCTAssertEqual(CatalogOrganizer.sections(from: items).flatMap(\.items).map(\.id), [2, 7, 9])
     }
 
     func testFeaturedItemUsesSortedFeaturedThenFirstFallback() {

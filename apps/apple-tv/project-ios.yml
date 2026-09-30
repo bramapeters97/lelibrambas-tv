@@ -1,0 +1,177 @@
+name: LeliBrambasMobile
+options:
+  minimumXcodeGenVersion: 2.46.0
+  projectFormat: xcode16_0
+  deploymentTarget:
+    iOS: '17.0'
+  createIntermediateGroups: true
+  defaultConfig: Debug
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    SWIFT_STRICT_CONCURRENCY: targeted
+    MARKETING_VERSION: 1.0.0
+    CURRENT_PROJECT_VERSION: 1
+    TARGETED_DEVICE_FAMILY: '1'
+    SUPPORTED_PLATFORMS: iphoneos iphonesimulator
+    SUPPORTS_MACCATALYST: NO
+    SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+packages:
+  LeliBrambasCore:
+    path: Packages/LeliBrambasCore
+targetTemplates:
+  MobileApp:
+    type: application
+    platform: iOS
+    deploymentTarget: '17.0'
+    sources:
+      - path: MobileApp
+        excludes: [Resources/Info.plist]
+      - path: TVApp/App/AppModel.swift
+      - path: TVApp/App/MoviesAPICatalogLoader.swift
+      - path: TVApp/App/DebugFixtureServices.swift
+      - path: TVApp/App/ViewerProfile.swift
+      - path: TVApp/DesignSystem/LBTheme.swift
+      - path: TVApp/DesignSystem/LBArtwork.swift
+      - path: TVApp/DesignSystem/LBMediaComponents.swift
+      - path: TVApp/Features/Browse/SearchView.swift
+      - path: TVApp/Features/Details/MediaDetailView.swift
+      - path: TVApp/Features/Player/PlayerScreen.swift
+    dependencies:
+      - package: LeliBrambasCore
+    settings:
+      base:
+        INFOPLIST_FILE: MobileApp/Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_PREVIEWS: YES
+  UnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: '17.0'
+    sources: [MobileAppTests]
+    dependencies:
+      - target: ${app}
+      - package: LeliBrambasCore
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.${variant}.tests
+        SWIFT_ACTIVE_COMPILATION_CONDITIONS: $(inherited) ${flag}
+  UITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: '17.0'
+    sources: [MobileAppUITests]
+    dependencies:
+      - target: ${app}
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.${variant}.uitests
+        TEST_TARGET_NAME: ${app}
+targets:
+  LeliBrambasClassic:
+    templates: [MobileApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.classic
+        LB_MOBILE_VARIANT: classic
+        LB_DISPLAY_NAME: LeliBrambas+ Classic
+  LeliBrambasClassicTests:
+    templates: [UnitTests]
+    templateAttributes:
+      app: LeliBrambasClassic
+      variant: classic
+      flag: LB_CLASSIC
+  LeliBrambasClassicUITests:
+    templates: [UITests]
+    templateAttributes:
+      app: LeliBrambasClassic
+      variant: classic
+  LeliBrambasCinema:
+    templates: [MobileApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.cinema
+        LB_MOBILE_VARIANT: cinema
+        LB_DISPLAY_NAME: LeliBrambas+ Cinema
+  LeliBrambasCinemaTests:
+    templates: [UnitTests]
+    templateAttributes:
+      app: LeliBrambasCinema
+      variant: cinema
+      flag: LB_CINEMA
+  LeliBrambasCinemaUITests:
+    templates: [UITests]
+    templateAttributes:
+      app: LeliBrambasCinema
+      variant: cinema
+  LeliBrambasCompact:
+    templates: [MobileApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.lelibrambas.plus.compact
+        LB_MOBILE_VARIANT: compact
+        LB_DISPLAY_NAME: LeliBrambas+ Compact
+  LeliBrambasCompactTests:
+    templates: [UnitTests]
+    templateAttributes:
+      app: LeliBrambasCompact
+      variant: compact
+      flag: LB_COMPACT
+  LeliBrambasCompactUITests:
+    templates: [UITests]
+    templateAttributes:
+      app: LeliBrambasCompact
+      variant: compact
+schemes:
+  LeliBrambasClassic:
+    build:
+      targets:
+        LeliBrambasClassic: all
+        LeliBrambasClassicTests: [test]
+        LeliBrambasClassicUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - LeliBrambasClassicTests
+        - LeliBrambasClassicUITests
+    archive:
+      config: Release
+  LeliBrambasCinema:
+    build:
+      targets:
+        LeliBrambasCinema: all
+        LeliBrambasCinemaTests: [test]
+        LeliBrambasCinemaUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - LeliBrambasCinemaTests
+        - LeliBrambasCinemaUITests
+    archive:
+      config: Release
+  LeliBrambasCompact:
+    build:
+      targets:
+        LeliBrambasCompact: all
+        LeliBrambasCompactTests: [test]
+        LeliBrambasCompactUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - LeliBrambasCompactTests
+        - LeliBrambasCompactUITests
+    archive:
+      config: Release

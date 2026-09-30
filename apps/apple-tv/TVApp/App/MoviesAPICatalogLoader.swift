@@ -49,13 +49,16 @@ struct URLSessionMoviesAPITransport: MoviesAPITransport {
 struct MoviesAPICatalogLoader: CatalogLoading {
     private let endpoint: URL
     private let transport: any MoviesAPITransport
+    private let includesEditorialMetadata: Bool
 
     init(
         endpoint: URL = MoviesAPIConfiguration.endpoint,
-        transport: any MoviesAPITransport = URLSessionMoviesAPITransport()
+        transport: any MoviesAPITransport = URLSessionMoviesAPITransport(),
+        includesEditorialMetadata: Bool = false
     ) {
         self.endpoint = endpoint
         self.transport = transport
+        self.includesEditorialMetadata = includesEditorialMetadata
     }
 
     func loadCatalog() async throws -> [MediaItem] {
@@ -85,7 +88,7 @@ struct MoviesAPICatalogLoader: CatalogLoading {
             guard seenIDs.insert(record.id).inserted else {
                 throw MoviesAPIError.duplicateID(record.id)
             }
-            return record.mediaItem
+            return record.mediaItem(includingEditorialMetadata: includesEditorialMetadata)
         }
     }
 }
@@ -99,6 +102,12 @@ private struct MoviesAPIRecord: Decodable {
     let posterURL: String
     let streamURL: String
     let createdAt: String
+    let featured: Bool
+    let available: Bool
+    let priority: Int
+    let backdropURL: String?
+    let durationSeconds: Double?
+    let previewStartSeconds: Double
 
     fileprivate enum CodingKeys: String, CodingKey {
         case id
@@ -109,6 +118,10 @@ private struct MoviesAPIRecord: Decodable {
         case posterURL = "poster_url"
         case streamURL = "stream_video_id"
         case createdAt = "created_at"
+        case featured, available, priority
+        case backdropURL = "backdrop_url"
+        case durationSeconds = "duration_seconds"
+        case previewStartSeconds = "preview_start_seconds"
     }
 
     init(from decoder: Decoder) throws {
@@ -149,9 +162,16 @@ private struct MoviesAPIRecord: Decodable {
         }
         streamURL = try values.decodeRequiredNonemptyString(forKey: .streamURL)
         createdAt = try values.decode(String.self, forKey: .createdAt)
+        // Optional editorial fields are opt-in at mapping time, preserving the TV client.
+        featured = values.binaryFlag(forKey: .featured, fallback: false)
+        available = values.binaryFlag(forKey: .available, fallback: true)
+        priority = (try? values.decode(Int.self, forKey: .priority)) ?? 0
+        backdropURL = try? values.decode(String.self, forKey: .backdropURL)
+        durationSeconds = try? values.decode(Double.self, forKey: .durationSeconds)
+        previewStartSeconds = (try? values.decode(Double.self, forKey: .previewStartSeconds)) ?? 0
     }
 
-    var mediaItem: MediaItem {
+    func mediaItem(includingEditorialMetadata: Bool) -> MediaItem {
         MediaItem(
             id: id,
             title: title,
@@ -159,13 +179,27 @@ private struct MoviesAPIRecord: Decodable {
             description: description,
             category: category,
             posterURL: posterURL,
+            backdropURL: includingEditorialMetadata ? backdropURL : nil,
             streamURL: streamURL,
-            createdAt: createdAt
+            createdAt: createdAt,
+            featured: includingEditorialMetadata && featured,
+            previewStartSeconds: includingEditorialMetadata ? previewStartSeconds : 0,
+            durationSeconds: includingEditorialMetadata ? durationSeconds : nil,
+            available: !includingEditorialMetadata || available,
+            priority: includingEditorialMetadata ? priority : 0
         )
     }
 }
 
 fileprivate extension KeyedDecodingContainer where Key == MoviesAPIRecord.CodingKeys {
+    func binaryFlag(forKey key: Key, fallback: Bool) -> Bool {
+        if let value = try? decode(Bool.self, forKey: key) { return value }
+        if let value = try? decode(Int.self, forKey: key), value == 0 || value == 1 {
+            return value == 1
+        }
+        return fallback
+    }
+
     func decodeRequiredNonemptyString(forKey key: Key) throws -> String {
         let value = try decode(String.self, forKey: key)
         guard !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {

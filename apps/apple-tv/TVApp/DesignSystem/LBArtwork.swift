@@ -1,4 +1,5 @@
 import AVFoundation
+import ImageIO
 import LeliBrambasCore
 import SwiftUI
 import UIKit
@@ -95,11 +96,14 @@ private enum LBRemoteArtworkCache {
     static let images = NSCache<NSURL, UIImage>()
 }
 
-private struct LBRemoteArtwork<Fallback: View>: View {
+struct LBRemoteArtwork<Fallback: View>: View {
     let url: URL
+    var maximumPixelSize: Int? = nil
+    var showsLoadingIndicator = false
     @ViewBuilder let fallback: () -> Fallback
 
     @State private var image: UIImage?
+    @State private var isLoading = true
 
     var body: some View {
         Group {
@@ -111,9 +115,18 @@ private struct LBRemoteArtwork<Fallback: View>: View {
                 fallback()
             }
         }
+        .overlay {
+            if showsLoadingIndicator && isLoading {
+                ProgressView().tint(.white).accessibilityHidden(true)
+            }
+        }
         .task(id: url) {
             image = nil
-            let cacheKey = url as NSURL
+            isLoading = true
+            defer { isLoading = false }
+            let cacheKey = maximumPixelSize.map {
+                NSURL(string: url.absoluteString + "#pixels=\($0)") ?? (url as NSURL)
+            } ?? (url as NSURL)
             if let cached = LBRemoteArtworkCache.images.object(forKey: cacheKey) {
                 image = cached
                 return
@@ -130,16 +143,31 @@ private struct LBRemoteArtwork<Fallback: View>: View {
                 guard !Task.isCancelled,
                       let response = response as? HTTPURLResponse,
                       (200..<300).contains(response.statusCode),
-                      let loadedImage = UIImage(data: data) else {
+                      let loadedImage = decodeImage(data) else {
                     return
                 }
-                LBRemoteArtworkCache.images.setObject(loadedImage, forKey: cacheKey)
+                LBRemoteArtworkCache.images.totalCostLimit = 64 * 1_024 * 1_024
+                LBRemoteArtworkCache.images.setObject(
+                    loadedImage, forKey: cacheKey,
+                    cost: Int(loadedImage.size.width * loadedImage.size.height * loadedImage.scale * loadedImage.scale * 4)
+                )
                 image = loadedImage
             } catch {
                 // The code-rendered placeholder remains visible when remote artwork fails.
             }
         }
     }
+    private func decodeImage(_ data: Data) -> UIImage? {
+        guard let maximumPixelSize else { return UIImage(data: data) }
+        guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+              let image = CGImageSourceCreateThumbnailAtIndex(source, 0, [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: maximumPixelSize
+              ] as CFDictionary) else { return nil }
+        return UIImage(cgImage: image)
+    }
+
 }
 
 struct LBStudioArtwork: View {

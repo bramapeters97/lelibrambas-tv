@@ -9,6 +9,7 @@ enum LBContentSelection {
     }
 }
 
+#if os(tvOS)
 struct LBMediaCard: View {
     let item: MediaItem
     var width = LBLayout.mediaCardWidth
@@ -323,3 +324,5 @@ extension String {
         String(repeating: "0", count: max(0, length - count)) + self
     }
 }
+
+#endif

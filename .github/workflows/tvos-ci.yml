@@ -19,6 +19,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  ios-versions:
+    name: iPhone ${{ matrix.scheme }}
+    runs-on: macos-26
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        scheme: [LeliBrambasClassic, LeliBrambasCinema, LeliBrambasCompact]
+    defaults:
+      run:
+        shell: bash
+        working-directory: apps/apple-tv
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select stable Xcode
+        run: bash Scripts/select-stable-xcode.sh
+      - name: Test two iPhone sizes and build Release
+        run: bash MobileTools/test.sh ${{ matrix.scheme }}
+      - name: Save generated project and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ matrix.scheme }}-${{ github.run_id }}
+          path: |
+            apps/apple-tv/LeliBrambasMobile.xcodeproj/
+            apps/apple-tv/BuildArtifacts/iOS/${{ matrix.scheme }}/*.log
+            apps/apple-tv/BuildArtifacts/iOS/${{ matrix.scheme }}/*.xcresult/
+          retention-days: 7
+
   build-and-test:
     name: Build and test native tvOS
     runs-on: macos-26

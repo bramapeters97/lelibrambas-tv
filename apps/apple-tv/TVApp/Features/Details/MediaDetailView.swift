@@ -14,6 +14,7 @@ enum LBPreviewPolicy {
     }
 }
 
+#if os(tvOS)
 struct MediaDetailView: View {
     private enum FocusTarget: Hashable {
         case play
@@ -343,3 +344,5 @@ private struct DetailBackButton: View {
         .accessibilityIdentifier("details-back")
     }
 }
+
+#endif

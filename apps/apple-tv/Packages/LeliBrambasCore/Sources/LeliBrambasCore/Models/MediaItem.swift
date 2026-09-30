@@ -12,6 +12,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
     public let playbackAssetID: String?
     public let createdAt: String?
     public let sortOrder: Int
+    public let available: Bool
+    public let priority: Int
     public let featured: Bool
     public let previewStartSeconds: Double
   public let durationSeconds: Double?
@@ -30,7 +32,9 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         sortOrder: Int? = nil,
         featured: Bool = false,
     previewStartSeconds: Double = 0,
-    durationSeconds: Double? = nil
+    durationSeconds: Double? = nil,
+    available: Bool = true,
+    priority: Int = 0
     ) {
         self.id = id
         self.title = title
@@ -43,6 +47,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         self.playbackAssetID = playbackAssetID
         self.createdAt = createdAt
         self.sortOrder = sortOrder ?? id
+        self.available = available
+        self.priority = priority
         self.featured = featured
         self.previewStartSeconds = max(0, previewStartSeconds)
     self.durationSeconds = durationSeconds
@@ -61,6 +67,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         case createdAt = "created_at"
         case sortOrder = "sort_order"
         case featured
+        case available
+        case priority
         case previewStartSeconds = "preview_start_seconds"
     case durationSeconds = "duration_seconds"
     }
@@ -91,6 +99,8 @@ public struct MediaItem: Codable, Identifiable, Hashable, Sendable {
         createdAt = try values.decodeIfPresent(String.self, forKey: .createdAt)
         sortOrder = try values.decodeIfPresent(Int.self, forKey: .sortOrder) ?? id
         featured = try values.decodeIfPresent(Bool.self, forKey: .featured) ?? false
+        available = try values.decodeIfPresent(Bool.self, forKey: .available) ?? true
+        priority = try values.decodeIfPresent(Int.self, forKey: .priority) ?? 0
         previewStartSeconds = max(
             0,
             try values.decodeIfPresent(Double.self, forKey: .previewStartSeconds) ?? 0

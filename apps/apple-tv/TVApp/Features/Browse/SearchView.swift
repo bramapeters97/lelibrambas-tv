@@ -22,6 +22,7 @@ enum LBSearchIndex {
     }
 }
 
+#if os(tvOS)
 struct SearchView: View {
     let items: [MediaItem]
     let focusScope: Namespace.ID
@@ -185,3 +186,5 @@ private struct ClearSearchButton: View {
         .accessibilityIdentifier("search-clear")
     }
 }
+
+#endif

@@ -1,5 +1,6 @@
 # Generated build output (the generated .xcodeproj and shared scheme are committed)
 BuildArtifacts/
+LeliBrambasMobile.xcodeproj/
 DerivedData/
 Packages/*/.build/
 .swiftpm/
