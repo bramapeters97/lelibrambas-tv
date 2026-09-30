@@ -340,6 +340,7 @@ export function NavigationRail({
           data-focus-id={`nav-${item.id}`}
           className={`nav-button ${active === item.id ? 'selected' : ''}`}
           aria-label={item.label}
+          aria-current={active === item.id ? 'page' : undefined}
           onClick={() => onNavigate(item.id)}
         >
           <NavIcon name={item.icon} />
@@ -517,7 +518,7 @@ function BrowseChrome({
   onProfile: () => void;
 }) {
   return (
-    <main className="browse-shell">
+    <main className={`browse-shell browse-shell--${active}`}>
       <NavigationRail
         active={active}
         profile={profile}
@@ -687,20 +688,12 @@ export function SearchScreen({
   return (
     <BrowseChrome
       active="search"
-      title="Search the archive"
-      kicker="Titles, folder groups, years and collections"
+      title="Find something to watch"
+      kicker="Discover"
       profile={profile}
       onNavigate={onNavigate}
       onReplayIntro={onReplayIntro}
       onProfile={onProfile}
-      action={
-        <span
-          className="voice-placeholder search-mobile-extras"
-          aria-label="Voice search architecture placeholder"
-        >
-          Voice search - future adapter
-        </span>
-      }
     >
       <div className="search-layout" data-search-layout>
         <section className="search-panel" data-search-panel>
@@ -708,15 +701,19 @@ export function SearchScreen({
             Which folder should we open?
           </label>
           <div className="search-input" data-search-input>
-            <span>S</span>
+            <svg className="search-input__icon" aria-hidden="true" viewBox="0 0 24 24">
+              <circle cx="10.8" cy="10.8" r="6.3" />
+              <path d="m15.4 15.4 5.1 5.1" />
+            </svg>
             <input
               id="archive-search"
+              type="search"
               data-focusable
               data-focus-id="search-input"
               autoFocus
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Try a title, year or category"
+              placeholder="Search your archive"
             />
             <button
               data-focusable
@@ -724,12 +721,15 @@ export function SearchScreen({
               onClick={() => setQuery('')}
               aria-label="Clear search"
             >
-              x
+              <span aria-hidden="true">×</span>
             </button>
           </div>
-          <div className="search-mobile-extras" data-search-extras>
+          <details className="search-mobile-extras search-keyboard" data-search-extras>
+            <summary data-focusable data-focus-id="search-keyboard-toggle">
+              On-screen keyboard
+            </summary>
             <div className="recent-searches">
-              <span>Recent</span>
+              <span>Browse</span>
               {suggestions.map((item) => (
                 <button
                   key={item}
@@ -769,7 +769,7 @@ export function SearchScreen({
                 Delete
               </button>
             </div>
-          </div>
+          </details>
         </section>
         <section
           className="search-results"
@@ -780,7 +780,7 @@ export function SearchScreen({
           <div className="result-title">
             <div>
               <p>{normalized ? 'Matches' : 'Suggested for you'}</p>
-              <h2>{normalized ? `"${query}"` : 'Start with a familiar shelf'}</h2>
+              <h2>{normalized ? `"${query}"` : 'Explore your archive'}</h2>
             </div>
             <span>{results.length} results</span>
           </div>

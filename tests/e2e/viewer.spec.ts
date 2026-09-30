@@ -191,7 +191,9 @@ test('profile to home to details passes the selected row exact stream URL to pla
   await expect(page.locator('.details-screen')).toBeVisible();
 });
 
-test('movie page back controls have useful destinations from direct web links', async ({ page }) => {
+test('movie page back controls have useful destinations from direct web links', async ({
+  page,
+}) => {
   await page.goto('/?screen=player&capture=1&video=7');
   await expect(page.locator('.player-screen')).toBeVisible();
 
@@ -223,7 +225,7 @@ test('search, watched state, and generated collections are functional', async ({
   const movie = byId.get(7)!;
   await page.getByRole('button', { name: /Eline & Luca/i }).click();
   await page.keyboard.press('s');
-  await expect(page.getByRole('heading', { name: /Search the archive/i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Find something to watch/i })).toBeVisible();
   await page.getByLabel(/Which folder should we open/i).fill(movie.title);
   await page.getByRole('button', { name: movie.title }).first().click();
   await page.getByRole('button', { name: 'Mark watched' }).click();
@@ -341,9 +343,9 @@ test('home collection shortcuts open the selected collection and home rows mirro
       iterations: 'infinite',
     })),
   );
-  expect((await page.locator('.home-hubs-row button').first().boundingBox())!.width).toBeGreaterThanOrEqual(
-    230,
-  );
+  expect(
+    (await page.locator('.home-hubs-row button').first().boundingBox())!.width,
+  ).toBeGreaterThanOrEqual(230);
 
   const trendingIds = await page
     .locator('[data-home-rail="currently-trending"] [data-catalogue-id]')
@@ -426,15 +428,17 @@ test('full library and home All movies contain every catalogue id exactly once i
   const expectedIds = generatedCatalog.map((movie) => movie.id);
   const homeCards = page.locator('[data-all-movies-grid] [data-catalogue-id]');
   await expect(homeCards).toHaveCount(expectedIds.length);
-  const homeIds = await homeCards
-    .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
+  const homeIds = await homeCards.evaluateAll((elements) =>
+    elements.map((element) => Number(element.dataset.catalogueId)),
+  );
   expect(homeIds).toEqual(expectedIds);
 
   await page.getByRole('button', { name: 'Full Library' }).click();
   const libraryCards = page.locator('[data-library-grid] [data-catalogue-id]');
   await expect(libraryCards).toHaveCount(expectedIds.length);
-  const libraryIds = await libraryCards
-    .evaluateAll((elements) => elements.map((element) => Number(element.dataset.catalogueId)));
+  const libraryIds = await libraryCards.evaluateAll((elements) =>
+    elements.map((element) => Number(element.dataset.catalogueId)),
+  );
   expect(libraryIds).toEqual(expectedIds);
   expect(new Set(libraryIds).size).toBe(expectedIds.length);
   await expect(page.getByText('Format unknown')).toHaveCount(0);

@@ -65,7 +65,7 @@ test.describe('mobile responsive viewer', () => {
     await page.clock.resume();
   });
 
-  test('uses compact mobile home cards and preserves the desktop collection shimmer', async ({
+  test('uses readable mobile artwork cards and preserves the desktop collection shimmer', async ({
     page,
   }) => {
     await page.getByRole('button', { name: /Bart & Astrid/i }).click();
@@ -104,10 +104,11 @@ test.describe('mobile responsive viewer', () => {
           return cardBounds.left < railBounds.right && cardBounds.right > railBounds.left;
         }).length;
       });
-    expect(visibleCardCount).toBeGreaterThanOrEqual(3);
-    expect(
-      (await page.locator('.card-rail .art-card-shell').first().boundingBox())!.width,
-    ).toBeLessThanOrEqual(135);
+    expect(visibleCardCount).toBeGreaterThanOrEqual(2);
+    const cardWidth = (await page.locator('.card-rail .art-card-shell').first().boundingBox())!
+      .width;
+    expect(cardWidth).toBeGreaterThanOrEqual(195);
+    expect(cardWidth).toBeLessThanOrEqual(250);
   });
 
   test('renders stable scrollable collection selectors and an exact two-column movie grid', async ({

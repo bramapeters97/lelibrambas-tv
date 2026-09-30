@@ -800,6 +800,9 @@ function Home({
                 disabled={!heroAvailability.playable}
                 onClick={() => onPlay(hero)}
               >
+                <span className="action-icon" aria-hidden="true">
+                  ▶
+                </span>
                 {heroAvailability.playable ? 'Play Trailer' : 'Trailer unavailable'}
               </ActionButton>
               <ActionButton id="hero-info" tone="secondary" onClick={() => onDetails(hero)}>
@@ -855,7 +858,7 @@ function Home({
                     durationSeconds: progress.durationSeconds,
                   }}
                 />
-                ))}
+              ))}
             </div>
           </section>
         )}
@@ -1048,11 +1051,7 @@ function Details({
           </div>
         )}
         <div className="hero-actions">
-          <ActionButton
-            id="detail-play"
-            disabled={!detailPlayable}
-            onClick={() => onPlay(video)}
-          >
+          <ActionButton id="detail-play" disabled={!detailPlayable} onClick={() => onPlay(video)}>
             {detailPlayable ? (resumeSeconds > 0 ? 'Resume' : 'Play') : availability.title}
           </ActionButton>
           <ActionButton
@@ -1123,20 +1122,20 @@ function Details({
             <h2 id="related-videos-heading">Related Movies</h2>
             <div className="mobile-related-videos">
               {relatedVideos.map((related) => (
-              <button
-                key={related.id}
-                type="button"
-                onClick={() => onSelectRelated(related)}
-                aria-label={`Open ${related.title}`}
-              >
-                <img
-                  src={resolvePosterUrl(related.posterUrl)}
-                  alt=""
-                  loading="lazy"
-                  onError={(event) => applyPosterFallback(event.currentTarget)}
-                />
-              </button>
-            ))}
+                <button
+                  key={related.id}
+                  type="button"
+                  onClick={() => onSelectRelated(related)}
+                  aria-label={`Open ${related.title}`}
+                >
+                  <img
+                    src={resolvePosterUrl(related.posterUrl)}
+                    alt=""
+                    loading="lazy"
+                    onError={(event) => applyPosterFallback(event.currentTarget)}
+                  />
+                </button>
+              ))}
             </div>
           </section>
         )}
