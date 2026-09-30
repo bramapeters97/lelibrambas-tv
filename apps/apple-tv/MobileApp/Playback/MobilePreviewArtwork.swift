@@ -11,6 +11,7 @@ struct MobilePreviewArtwork: View {
     let delay: UInt64
     let startSeconds: Double
     @State private var isVisible = false
+    @State private var isOnScreen = false
     @State private var isPaused = false
     @State private var previewURL: URL?
     @State private var isPlaying = false
@@ -19,7 +20,7 @@ struct MobilePreviewArtwork: View {
 #if DEBUG
         if DebugLaunchOptions.fixtureMode { return false }
 #endif
-        return isVisible && isActive && scenePhase == .active && !reduceMotion
+        return isVisible && isOnScreen && isActive && scenePhase == .active && !reduceMotion
             && !isPaused && MobileCatalogue.canPlay(item)
     }
 
@@ -37,11 +38,12 @@ struct MobilePreviewArtwork: View {
                 }
             }
             .overlay(alignment: .bottomTrailing) {
-                if MobileCatalogue.canPlay(item) && !reduceMotion {
+                if (previewURL != nil || isPaused) && !reduceMotion {
                     Button {
                         isPaused.toggle()
                     } label: {
                         Image(systemName: isPaused ? "play.fill" : "pause.fill")
+                            .font(.system(size: 17, weight: .semibold))
                             .frame(width: 44, height: 44)
                             .background(.black.opacity(0.75), in: Circle())
                     }
@@ -53,6 +55,16 @@ struct MobilePreviewArtwork: View {
             .clipped()
             .onAppear { isVisible = true }
             .onDisappear { isVisible = false; stop() }
+            .onGeometryChange(for: Bool.self) { geometry in
+                let artwork = geometry.frame(in: .scrollView(axis: .vertical))
+                let viewport = CGRect(origin: .zero,
+                                      size: geometry.bounds(of: .scrollView(axis: .vertical))?.size ?? .zero)
+                // A retained scroll child must not keep a player alive offscreen.
+                return artwork.height > 0 && viewport.intersection(artwork).height >= artwork.height / 2
+            } action: { visible in
+                isOnScreen = visible
+                if !visible { stop() }
+            }
             .task(id: PreviewRequest(movieID: item.id, enabled: shouldPreview)) {
                 stop()
                 guard shouldPreview else { return }

@@ -55,8 +55,8 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
             Data("not-json".utf8),
             Data("{\"id\":1}".utf8),
             Data("[]".utf8),
-            Data("[\(record(id: \"1\")),\(record(id: \"1\"))]".utf8),
-            Data("[\(record(id: \"\\\"not-numeric\\\"\"))]".utf8),
+            Data("[\(record(id: "1")),\(record(id: "1"))]".utf8),
+            Data("[\(record(id: #""not-numeric""#))]".utf8),
             Data("[{\"id\":1,\"year\":null,\"description\":\"Synthetic\",\"category\":\"OTHERS\",\"poster_url\":\"https://assets.example.test/missing-title.png\",\"stream_video_id\":\"https://media.example.test/missing-title.m3u8\",\"created_at\":\"2026-08-28 12:00:00\"}]".utf8),
             Data("[{\"id\":1,\"title\":\"Synthetic\",\"description\":\"Synthetic\",\"category\":\"OTHERS\",\"poster_url\":\"https://assets.example.test/missing-year.png\",\"stream_video_id\":\"https://media.example.test/missing-year.m3u8\",\"created_at\":\"2026-08-28 12:00:00\"}]".utf8),
         ]
@@ -105,8 +105,8 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
     }
 
     func testEveryLoadPerformsAFreshAPIRequest() async throws {
-        let first = Data("[\(record(id: \"1\", title: \"First response\"))]".utf8)
-        let second = Data("[\(record(id: \"2\", title: \"Second response\"))]".utf8)
+        let first = Data("[\(record(id: "1", title: "First response"))]".utf8)
+        let second = Data("[\(record(id: "2", title: "Second response"))]".utf8)
         let transport = StubMoviesAPITransport(results: [
             .success(response(data: first)),
             .success(response(data: second)),
@@ -132,9 +132,19 @@ final class MoviesAPICatalogLoaderTests: XCTestCase {
     }
 
     private var validPayload: Data {
-        Data(
-            "[\(record(id: \"\\\"12\\\"\", title: \"Synthetic Twelve\", category: \"JEUGDFILMS\", poster: \"https://assets.example.test/synthetic-twelve.png\", stream: \"https://customer-example.cloudflarestream.com/synthetic-twelve/watch\", createdAt: \"2026-08-28 12:00:00\")),\(record(id: \"7\", title: \"Synthetic Seven\", category: \"EVENTS\", poster: \"https://assets.example.test/synthetic-seven.png\", stream: \"https://media.example.test/synthetic-seven.m3u8\", createdAt: \"2026-08-28 12:01:00\"))]".utf8
+        let first = record(
+            id: #""12""#, title: "Synthetic Twelve", category: "JEUGDFILMS",
+            poster: "https://assets.example.test/synthetic-twelve.png",
+            stream: "https://customer-example.cloudflarestream.com/synthetic-twelve/watch",
+            createdAt: "2026-08-28 12:00:00"
         )
+        let second = record(
+            id: "7", title: "Synthetic Seven", category: "EVENTS",
+            poster: "https://assets.example.test/synthetic-seven.png",
+            stream: "https://media.example.test/synthetic-seven.m3u8",
+            createdAt: "2026-08-28 12:01:00"
+        )
+        return Data("[\(first),\(second)]".utf8)
     }
 
     private func makeAPILoader(data: Data) -> MoviesAPICatalogLoader {
