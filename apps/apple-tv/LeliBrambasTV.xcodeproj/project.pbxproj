@@ -26,11 +26,11 @@
 		84E1CA656FE1F781660DBF1B /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719C2AFEC74622525A953D1C /* PlayerScreen.swift */; };
 		953003CE1CC2A0E6C95E93D4 /* AuthenticatedRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A2AA57C079338F74FC1DEF /* AuthenticatedRootView.swift */; };
 		A1FEE51504A4B2A03FB7E4A6 /* LBCollectionComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DFE14E3877B0CADD0CE82C /* LBCollectionComponents.swift */; };
+		A7C91B402D5E4F6890AB1234 /* MoviesAPICatalogLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D02C513E6F4079A1BC2345 /* MoviesAPICatalogLoaderTests.swift */; };
 		B1748AA4FBB7DAB91D80C36A /* CollectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9425CACC7CAB26F94E31597C /* CollectionsView.swift */; };
 		B3917EF88F1A75C6ED3C7F9A /* lelibrambas-studios.png in Resources */ = {isa = PBXBuildFile; fileRef = 29E0B8C86981412643335EDF /* lelibrambas-studios.png */; };
 		B3BDE3F1AA6AACC96311E090 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 604F25A75BB609E7C7A21545 /* LibraryView.swift */; };
 		BFCBADA76CA7FB1923080B55 /* AppModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15E191E046436319456D1A05 /* AppModelTests.swift */; };
-		A7C91B402D5E4F6890AB1234 /* MoviesAPICatalogLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8D02C513E6F4079A1BC2345 /* MoviesAPICatalogLoaderTests.swift */; };
 		C234315E69B4015D485A49D7 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9AE0BE1029EB1708DA812EF /* AppModel.swift */; };
 		C2724E1E8C2770FF8164B752 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 961F87CEB7661CA46DC68C31 /* SettingsView.swift */; };
 		E25184EDCB0634E357E31D49 /* ProfileSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B3994670AB44421DFD60885 /* ProfileSelectionView.swift */; };
@@ -63,7 +63,6 @@
 		1426E1B24FE97F21ECCC4650 /* validate-release-configuration.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "validate-release-configuration.sh"; sourceTree = "<group>"; };
 		147C9E1A4AE14235D9034D40 /* bootstrap-xcodegen.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "bootstrap-xcodegen.sh"; sourceTree = "<group>"; };
 		15E191E046436319456D1A05 /* AppModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModelTests.swift; sourceTree = "<group>"; };
-		A8D02C513E6F4079A1BC2345 /* MoviesAPICatalogLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesAPICatalogLoaderTests.swift; sourceTree = "<group>"; };
 		1D17A240A7C8739D5E51AF52 /* LeliBrambasTVUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeliBrambasTVUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DA66EC96AD59283897813D2 /* doctor.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = doctor.sh; sourceTree = "<group>"; };
 		1E4F2C95807018A5DAEBAB58 /* APP_REVIEW_NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_REVIEW_NOTES.md; sourceTree = "<group>"; };
@@ -115,6 +114,7 @@
 		A3B094F859A0CD522479197D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A5D6D035D96E3394175950CB /* LeliBrambasTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LeliBrambasTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A74C23E86A43D4CD5C1B79EC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A8D02C513E6F4079A1BC2345 /* MoviesAPICatalogLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesAPICatalogLoaderTests.swift; sourceTree = "<group>"; };
 		ABACF4CC8E45DE3406BD8197 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		ABB3CE5B3053F5792B2E9819 /* SCREENSHOT_PLAN.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SCREENSHOT_PLAN.md; sourceTree = "<group>"; };
 		AD4532F4137CCF004B86514A /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
@@ -621,20 +621,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "Apple Distribution: Bram Peters (4W75X459YD)";
-				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = "";
-				"DEVELOPMENT_TEAM[sdk=appletvos*]" = 4W75X459YD;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_MODULE_NAME = LeliBrambasTV;
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "LeliBrambas tvOS App Store";
 				SDKROOT = appletvos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -665,6 +661,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGNING_ALLOWED = NO;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -711,7 +708,7 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Apple Distribution";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -790,12 +787,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
-				DEVELOPMENT_TEAM = 4W75X459YD;
+				CURRENT_PROJECT_VERSION = 3;
+				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -813,6 +809,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGNING_ALLOWED = NO;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -831,6 +828,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGNING_ALLOWED = NO;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -854,7 +852,7 @@
 				BCE982E5CC671B6F9DE91474 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 		9B549F9EAC86931431CBDC4F /* Build configuration list for PBXProject "LeliBrambasTV" */ = {
 			isa = XCConfigurationList;
@@ -863,7 +861,7 @@
 				6DFBEC2CBE022505AC244F6C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 		A970B8B5B9D8F7531FDC2547 /* Build configuration list for PBXNativeTarget "LeliBrambasTVUITests" */ = {
 			isa = XCConfigurationList;
@@ -872,7 +870,7 @@
 				233A70D40BEE76E9F9C01C79 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 		D04B13322A050C08DC05718A /* Build configuration list for PBXNativeTarget "LeliBrambasTV" */ = {
 			isa = XCConfigurationList;
@@ -881,7 +879,7 @@
 				04CB62AAFD6829EC251E1F9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

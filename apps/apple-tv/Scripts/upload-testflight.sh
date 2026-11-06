@@ -15,6 +15,11 @@ if [[ "$archive_path" != /* ]]; then
   archive_path="$(CDPATH= cd -- "$(dirname -- "$archive_path")" && pwd)/$(basename -- "$archive_path")"
 fi
 [[ -d "$archive_path" && -f "$archive_path/Info.plist" ]] || fail "Not a valid Xcode archive: $archive_path"
+archive_team="$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:Team' "$archive_path/Info.plist" 2>/dev/null || true)"
+[[ -n "$archive_team" ]] || fail "This archive has no signing team. Finish the distribution-signing archive action before opening Organizer."
+application_path="$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:ApplicationPath' "$archive_path/Info.plist")"
+codesign --verify --deep --strict "$archive_path/Products/$application_path" \
+  || fail "The archive application has no valid signature. Do not distribute this archive."
 
 cat <<'INSTRUCTIONS'
 This script intentionally uses Xcode Organizer, Apple's supported interactive upload path.

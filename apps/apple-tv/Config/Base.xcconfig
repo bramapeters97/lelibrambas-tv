@@ -1,2 +1,4 @@
+CODE_SIGN_STYLE = Automatic
 #include "Shared.xcconfig"
+// Local developer team, excluded from version control.
 #include? "Signing.xcconfig"

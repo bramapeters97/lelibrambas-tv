@@ -55,7 +55,6 @@ targets:
       - package: LeliBrambasCore
     settings:
       base:
-        CODE_SIGN_STYLE: Automatic
         PRODUCT_MODULE_NAME: LeliBrambasTV
         ENABLE_PREVIEWS: YES
         SUPPORTS_MACCATALYST: NO
@@ -140,3 +139,9 @@ schemes:
       config: Debug
     archive:
       config: Release
+      postActions:
+        - name: Sign local TestFlight archive
+          settingsTarget: LeliBrambasTV
+          script: |
+            set -eu
+            python3 "${SRCROOT}/Scripts/sign-testflight-archive.py"

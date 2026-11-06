@@ -11,6 +11,14 @@ TestFlight is the beta and physical-device validation route, not the intended pe
 5. Review signing, symbols, bundle ID `com.lelibrambas.plus`, version, and build number, then explicitly confirm Upload.
 6. In App Store Connect open **My Apps > LeliBrambas+ > TestFlight** and wait for processing. Resolve every compliance or processing question; do not guess at encryption answers.
 
+### Mac without a registered Apple TV
+
+A development archive can fail with “Your team has no devices”. This Mac uses ignored `Config/Signing.xcconfig` (local `DEVELOPMENT_TEAM`) and `Config/Distribution.xcconfig` (`CODE_SIGNING_ALLOWED = NO`, `LB_SIGN_ARCHIVE_FOR_DISTRIBUTION = YES`). Product > Archive first compiles the app, then its scheme post-action runs `Scripts/sign-testflight-archive.py` to export locally with App Store signing and put the verified signed app back into the archive. It verifies the team, signature, bundle versions, and binary UUIDs before updating archive metadata. This requires Xcode account access and does not upload. The action is disabled unless explicitly opted in locally and skips unsigned CI validation. Inspect the archive action log for signing failures; an unsigned archive is not ready for Organizer distribution.
+
+The local `BuildArtifacts/ExportOptions-TestFlight.plist` selects `app-store-connect`, automatic signing, and a local export destination. Export an archive using `xcodebuild -exportArchive -archivePath <archive-path> -exportPath <new-export-directory> -exportOptionsPlist BuildArtifacts/ExportOptions-TestFlight.plist -allowProvisioningUpdates`. This exports a signed IPA without uploading it. Do not open the unsigned archive directly in Organizer: it can report “No Team Found in Archive” even with a team set in the project. The command-line export must supply `teamID` in its local options. Use the exported signed IPA for delivery, or an archive containing that verified distribution-signed app with matching binary UUIDs, dSYMs, Team, and SigningIdentity metadata. The repaired local `LeliBrambasTV-TestFlight-TeamFixed.xcarchive` has passed a fresh App Store export without a team override. The local plist contains team-specific configuration and must remain ignored.
+
+Remove the local override when returning to development signing on a registered device. The signed-archive script explicitly enables signing and still requires development provisioning. The upload helper refuses archives with no team or an invalid application signature. Older unsigned archives remain unusable; creating a new archive runs the corrected signing workflow.
+
 ## 2. Configure TestFlight
 
 1. Under **TestFlight > Additional > Test Information**, paste the reviewed fields from `../AppStore/TESTFLIGHT_METADATA.md`; replace every placeholder.

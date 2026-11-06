@@ -202,11 +202,13 @@ enum IntroSequencePhase: Int, Equatable {
 }
 
 protocol IntroAudioPlaying: AnyObject {
-    @discardableResult func play(volume: Float) -> Bool
+    @discardableResult func play(volume: Float) async -> Bool
     func stop()
 }
 
-final class BundledIntroAudioPlayer: IntroAudioPlaying {
+// Mutable audio state is confined to audioQueue, including preparation and session changes.
+final class BundledIntroAudioPlayer: IntroAudioPlaying, @unchecked Sendable {
+    private let audioQueue = DispatchQueue(label: "com.lelibrambas.intro-audio")
     private let bundle: Bundle
     private let audioSession: AVAudioSession
     private var player: AVAudioPlayer?
@@ -222,8 +224,16 @@ final class BundledIntroAudioPlayer: IntroAudioPlaying {
     }
 
     @discardableResult
-    func play(volume: Float) -> Bool {
-        stop()
+    func play(volume: Float) async -> Bool {
+        await withCheckedContinuation { continuation in
+            audioQueue.async {
+                continuation.resume(returning: self.playOnAudioQueue(volume: volume))
+            }
+        }
+    }
+
+    private func playOnAudioQueue(volume: Float) -> Bool {
+        stopOnAudioQueue()
         guard let resourceData = Self.resourceData(in: bundle) else { return false }
 
         do {
@@ -239,17 +249,21 @@ final class BundledIntroAudioPlayer: IntroAudioPlaying {
             player = nextPlayer
 
             guard nextPlayer.play() else {
-                stop()
+                stopOnAudioQueue()
                 return false
             }
             return true
         } catch {
-            stop()
+            stopOnAudioQueue()
             return false
         }
     }
 
     func stop() {
+        audioQueue.async { self.stopOnAudioQueue() }
+    }
+
+    private func stopOnAudioQueue() {
         player?.stop()
         player?.currentTime = 0
         player = nil
@@ -303,8 +317,9 @@ final class IntroSequenceModel: ObservableObject {
             guard !Task.isCancelled, !cancellationRequested else { return }
 
             if playAudio {
-                _ = audioPlayer.play(volume: IntroPresentation.jingleVolume)
                 audioNeedsStopping = true
+                _ = await audioPlayer.play(volume: IntroPresentation.jingleVolume)
+                guard !Task.isCancelled, !cancellationRequested else { return }
             }
             transition(to: .lights)
 

@@ -106,14 +106,22 @@ struct LBRemoteArtwork<Fallback: View>: View {
     @State private var isLoading = true
 
     var body: some View {
-        Group {
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                fallback()
+        GeometryReader { geometry in
+            Group {
+                if let image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    fallback()
+                }
             }
+            .frame(
+                width: geometry.size.width,
+                height: geometry.size.height,
+                alignment: .center
+            )
+            .clipped()
         }
         .overlay {
             if showsLoadingIndicator && isLoading {
@@ -176,16 +184,24 @@ struct LBStudioArtwork: View {
     )!
 
     var body: some View {
-        AsyncImage(url: Self.artworkURL) { phase in
-            if let image = phase.image {
-                image
-                    .resizable()
-                    .scaledToFill()
-            } else {
-                LBBackground()
+        GeometryReader { geometry in
+            AsyncImage(url: Self.artworkURL) { phase in
+                if let image = phase.image {
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .frame(
+                            width: geometry.size.width,
+                            height: geometry.size.height,
+                            alignment: .center
+                        )
+                } else {
+                    LBBackground()
+                }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
         }
-        .clipped()
         .accessibilityHidden(true)
     }
 }

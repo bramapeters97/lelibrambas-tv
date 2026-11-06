@@ -16,6 +16,14 @@ Run `./Scripts/validate-bundled-content.sh`. Release requires the production API
 
 Sign into Xcode, ensure the Account Holder has accepted current agreements, reserve `com.lelibrambas.plus`, select the correct team, and confirm automatic signing can create a tvOS App Store profile. Do not download certificates from untrusted sources or commit signing files.
 
+## Archive signing conflicts and icon dimensions
+
+If Xcode reports that a provisioning profile does not include the signing certificate, the selected manual profile and local identity do not match. For automatic signing, clear any explicit Provisioning Profile Specifier, including device-SDK overrides under both Debug and Release, and use Apple Development for the archive build. Distribution signing is selected during export. If manual signing is required, regenerate the profile with the matching certificate instead.
+
+If an image-stack background must exactly fill its stack, check the background PNG dimensions: the tvOS app icon uses 400×240 at 1x and 800×480 at 2x, and the App Store stack uses 1280×768 at 1x. Keep the build number numeric (for example, `3`, without a `±` prefix).
+
+A successful simulator build verifies asset compilation but does not verify device provisioning or a signed archive.
+
 ## Catalogue or poster fails to load
 
 Confirm the Apple TV can reach the configured public movies API and each item’s absolute HTTPS `poster_url`, then regenerate the Xcode project and run `./Scripts/build-simulator.sh`. A catalogue failure should show the existing retry action. Missing or failed item artwork uses the existing code-rendered placeholder; no local movie catalogue or poster PNG is required.

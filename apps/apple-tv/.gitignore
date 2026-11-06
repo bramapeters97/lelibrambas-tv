@@ -13,6 +13,7 @@ Packages/*/.build/
 
 # Local signing and endpoint overrides (templates remain tracked)
 Config/Signing.xcconfig
+Config/Distribution.xcconfig
 Config/Secrets.xcconfig
 
 # Generated App Store captures (plans/placeholders remain tracked)

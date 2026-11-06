@@ -1,5 +1,6 @@
 import AVFoundation
 import XCTest
+import Testing
 @testable import LeliBrambasTV
 import LeliBrambasCore
 
@@ -521,6 +522,42 @@ private final class IntroAudioPlayerSpy: IntroAudioPlaying {
         playCount += 1
         requestedVolumes.append(volume)
         return playResult
+    }
+
+    func stop() {
+        stopCount += 1
+    }
+}
+
+@MainActor
+struct IntroAudioCancellationTests {
+    @Test
+    func cancellationDuringAudioPreparationDoesNotAdvanceIntro() async {
+        let audio = SuspendedIntroAudioPlayer()
+        let model = IntroSequenceModel(audioPlayer: audio, sleeper: { _ in })
+        var completed = false
+        let run = Task {
+            await model.run(reduceMotion: false) { completed = true }
+        }
+
+        await audio.gate.waitUntilRequested()
+        model.cancel()
+        await audio.gate.resume()
+        await run.value
+
+        #expect(model.phaseHistory == [.idle])
+        #expect(!completed)
+        #expect(audio.stopCount == 1)
+    }
+}
+
+private final class SuspendedIntroAudioPlayer: IntroAudioPlaying {
+    let gate = IntroSleepGate()
+    private(set) var stopCount = 0
+
+    func play(volume: Float) async -> Bool {
+        try? await gate.sleep(delay: 0)
+        return true
     }
 
     func stop() {

@@ -51,6 +51,7 @@ xcodebuild_args=(
   -allowProvisioningUpdates
   DEVELOPMENT_TEAM="$team_id"
   CODE_SIGN_STYLE=Automatic
+  CODE_SIGNING_ALLOWED=YES
   MARKETING_VERSION="$version"
   CURRENT_PROJECT_VERSION="$build_number"
 )

@@ -1,4 +1,6 @@
 #include "Base.xcconfig"
+// Optional local archive preparation settings; distribution export must sign the app.
+#include? "Distribution.xcconfig"
 
 SWIFT_COMPILATION_MODE = wholemodule
 SWIFT_OPTIMIZATION_LEVEL = -O
