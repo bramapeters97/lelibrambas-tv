@@ -1,0 +1,36 @@
+{
+  "images" : [
+    {
+      "compression-type" : "lossless",
+      "filename" : "TopShelf@2x.png",
+      "idiom" : "tv",
+      "resizing" : {
+        "cap-insets" : {
+          "bottom" : 470,
+          "left" : 835,
+          "right" : 836,
+          "top" : 470
+        },
+        "center" : {
+          "height" : 1,
+          "mode" : "tile",
+          "width" : 1
+        },
+        "mode" : "9-part"
+      },
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "tv",
+      "scale" : "2x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "compression-type" : "automatic",
+    "template-rendering-intent" : "original"
+  }
+}

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3B094F859A0CD522479197D /* Assets.xcassets */; };
 		150EDF448F27D0E32A7AB867 /* MediaDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2881C69D789B172F8E82DDCA /* MediaDetailView.swift */; };
 		23A4577535EDBD961518D9C9 /* LBArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D7624166CEEFC1504CFC04 /* LBArtwork.swift */; };
 		263F331D6A6319FEB24DFE70 /* MoviesAPICatalogLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA32944B740AC724196F9E4C /* MoviesAPICatalogLoader.swift */; };
@@ -21,6 +20,7 @@
 		631C60091FE29F1CB17B9620 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 0CF05C60C3746AE6C128480B /* LeliBrambasCore */; };
 		642BF37621DC8D182C1AF45A /* LeliBrambasTVUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AC5B15C8055B925789C372D /* LeliBrambasTVUITests.swift */; };
 		6766B9233F3E456DD52D406D /* LeliBrambasTVApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 928C76DFE89D0FAF814A6DDE /* LeliBrambasTVApp.swift */; };
+		6A8A37D7309E53E500DE1798 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6A8A37D6309E53E500DE1798 /* Assets.xcassets */; };
 		770743F693A51316D01A18F8 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE741EB66A43FF0AAEB6D982 /* SearchView.swift */; };
 		8220F4CB9C4308321BC4F909 /* LeliBrambasCore in Frameworks */ = {isa = PBXBuildFile; productRef = 8A3E3777DABF12BC3DA8F56C /* LeliBrambasCore */; };
 		84E1CA656FE1F781660DBF1B /* PlayerScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 719C2AFEC74622525A953D1C /* PlayerScreen.swift */; };
@@ -88,6 +88,7 @@
 		5F48DAD104359FE4D74303F9 /* MARKETING_ASSET_CHECKLIST.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MARKETING_ASSET_CHECKLIST.md; sourceTree = "<group>"; };
 		604F25A75BB609E7C7A21545 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
 		636DC9DF37D6C862C65A2FD0 /* TESTFLIGHT_METADATA.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TESTFLIGHT_METADATA.md; sourceTree = "<group>"; };
+		6A8A37D5309E53E500DE1798 /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Base; path = Base.lproj/Assets.xcassets; sourceTree = "<group>"; };
 		6D441D700FCF53157BB44F08 /* LBMediaComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LBMediaComponents.swift; sourceTree = "<group>"; };
 		6D57545F71BED15752407106 /* UNLISTED_REQUEST_DRAFT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UNLISTED_REQUEST_DRAFT.md; sourceTree = "<group>"; };
 		6E184003D91CE2ECAFB7E7F3 /* LeliBrambasTVTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LeliBrambasTVTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -111,7 +112,6 @@
 		9B3994670AB44421DFD60885 /* ProfileSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSelectionView.swift; sourceTree = "<group>"; };
 		9C14ECC43223C1CF217D3C1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A0E8614C5ED2E2EE81024249 /* APP_RECORD_SETUP.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_RECORD_SETUP.md; sourceTree = "<group>"; };
-		A3B094F859A0CD522479197D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A5D6D035D96E3394175950CB /* LeliBrambasTV.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LeliBrambasTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A74C23E86A43D4CD5C1B79EC /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A8D02C513E6F4079A1BC2345 /* MoviesAPICatalogLoaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviesAPICatalogLoaderTests.swift; sourceTree = "<group>"; };
@@ -167,7 +167,7 @@
 				48DEC823580BEF434A14E307 /* DesignSystem */,
 				9D3E2F16C8D2041214CF6086 /* Features */,
 				16F045AF8DC9E1FF018D9564 /* Resources */,
-				A3B094F859A0CD522479197D /* Assets.xcassets */,
+				6A8A37D6309E53E500DE1798 /* Assets.xcassets */,
 			);
 			path = TVApp;
 			sourceTree = "<group>";
@@ -525,7 +525,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0BF5556513C627F65B8E1E1F /* Assets.xcassets in Resources */,
+				6A8A37D7309E53E500DE1798 /* Assets.xcassets in Resources */,
 				4C9358A28ED980EC8BF90341 /* Localizable.xcstrings in Resources */,
 				432BA582EDCAE64D4024CA4C /* PrivacyInfo.xcprivacy in Resources */,
 				B3917EF88F1A75C6ED3C7F9A /* lelibrambas-studios.png in Resources */,
@@ -616,13 +616,27 @@
 		};
 /* End PBXTargetDependency section */
 
+/* Begin PBXVariantGroup section */
+		6A8A37D6309E53E500DE1798 /* Assets.xcassets */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6A8A37D5309E53E500DE1798 /* Base */,
+			);
+			name = Assets.xcassets;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
 /* Begin XCBuildConfiguration section */
 		04CB62AAFD6829EC251E1F9B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 3;
-				DEVELOPMENT_TEAM = "$(inherited)";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = 4W75X459YD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
@@ -631,6 +645,8 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_MODULE_NAME = LeliBrambasTV;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "Lelibrambas Plus";
 				SDKROOT = appletvos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -710,6 +726,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -761,6 +778,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 4W75X459YD;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -787,8 +805,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 3;
-				DEVELOPMENT_TEAM = "$(inherited)";
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=appletvos*]" = 4W75X459YD;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = TVApp/Resources/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
@@ -797,6 +818,8 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_MODULE_NAME = LeliBrambasTV;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=appletvos*]" = "Lelibrambas Plus";
 				SDKROOT = appletvos;
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
