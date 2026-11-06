@@ -1,5 +1,11 @@
 # Testing and CI
 
+## Xcode design preview
+
+Open `TVApp/Features/Browse/HomeView.swift` and choose **Editor > Canvas**. Select **Home — Sample Catalogue** with an Apple TV simulator destination, and resume the preview if needed.
+
+The Debug-only preview uses the existing fictional catalogue and generated placeholder artwork, a sample viewer, and a separate preview preferences suite. It previews the Home content without the app navigation shell. Playback and navigation actions are intentionally inactive, and ambient video is disabled through the supplied callback. Use this canvas to review layout changes; it is not a freeform drag-and-drop design editor. Check real navigation and playback in the simulator or on Apple TV.
+
 ## Local Mac
 
 ```bash

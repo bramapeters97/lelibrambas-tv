@@ -167,6 +167,44 @@ struct HomeView: View {
     }
 }
 
+#if DEBUG
+#Preview("Home — Sample Catalogue") {
+    HomePreview()
+}
+
+private struct HomePreview: View {
+    @Namespace private var focusScope
+    @StateObject private var progressStore = PlaybackProgressStore(
+        defaults: UserDefaults(suiteName: "com.lelibrambas.preview") ?? UserDefaults()
+    )
+
+    private let items = FixtureCatalog.items
+    private let profile = ViewerProfile(
+        id: "preview-viewer",
+        name: "Sample Viewer",
+        initials: "SV",
+        accentHex: "#70D8FF"
+    )
+
+    var body: some View {
+        HomeView(
+            featured: items.first,
+            items: items,
+            sections: CatalogOrganizer.sectionsPreservingItemOrder(from: items),
+            profile: profile,
+            progressStore: progressStore,
+            focusScope: focusScope,
+            preparePreview: { _ in nil },
+            onPlay: { _ in },
+            onSelect: { _ in },
+            onOpenCollection: { _ in }
+        )
+        .focusScope(focusScope)
+        .preferredColorScheme(.dark)
+    }
+}
+#endif
+
 enum LBHomeContent {
     static func allMovies(from items: [MediaItem]) -> CatalogSection? {
         var seenIDs = Set<Int>()

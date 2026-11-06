@@ -332,6 +332,7 @@
       }
     },
     "Play" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -406,6 +407,9 @@
 
     },
     "Ready to watch" : {
+
+    },
+    "Resume at %@" : {
 
     },
     "Retry" : {
